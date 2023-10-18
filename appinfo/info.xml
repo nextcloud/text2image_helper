@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<info xmlns:xsi= "http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+  <!--
+    SPDX-FileCopyrightText: Nextcloud AG <contact@nextcloud.com>
+    SPDX-License-Identifier: CC0-1.0
+  -->
+  <id>text2image_helper</id>
+  <name>Text2Image helper</name>
+  <summary>A Smart Picker for interfacing with text-to-image providers</summary>
+  <description><![CDATA[A Smart Picker for interfacing with text-to-image providers.]]></description>
+  <version>1.0.0</version>
+  <license>agpl</license>
+  <author mail="sami.finnila@nextcloud.com" >Sami Finnilä</author>
+  <namespace>Text2ImageHelper</namespace>
+  <category>integration</category>
+  <website>https://github.com/nextcloud/text2image_helper</website>
+  <bugs>https://github.com/nextcloud/text2image_helper/issues</bugs>
+  <dependencies>
+    <nextcloud min-version="28" max-version="28" />
+  </dependencies>
+</info>
