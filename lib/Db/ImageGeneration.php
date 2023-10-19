@@ -10,13 +10,13 @@ use OCP\AppFramework\Db\Entity;
 
 /**
  * @method string getImageId()
- * @method void setImageId(int $imageId)
+ * @method void setImageId(string $imageId)
  * @method string getFileName()
  * @method string getPrompt()
  * @method void setPrompt(string $prompt)
  * @method void setFileName(string $fileName)
- * @method void setTs(int $ts)
- * @method int getTs()
+ * @method void setTimestamp(int $timestamp)
+ * @method int getTimestamp()
  */
 class ImageGeneration extends Entity implements \JsonSerializable
 {
@@ -28,14 +28,14 @@ class ImageGeneration extends Entity implements \JsonSerializable
 	/** @var string */
 	protected $prompt;
 	/** @var int */
-	protected $ts;
+	protected $timestamp;
 
 	public function __construct()
 	{
 		$this->addType('image_id', 'string');
 		$this->addType('file_name', 'string');
 		$this->addType('prompt', 'string');
-		$this->addType('ts', 'int');
+		$this->addType('timestamp', 'int');
 	}
 
 	#[\ReturnTypeWillChange]
@@ -46,7 +46,7 @@ class ImageGeneration extends Entity implements \JsonSerializable
 			'image_id' => $this->imageId,
 			'file_name' => $this->fileName,
 			'prompt' => $this->prompt,
-			'ts' => $this->ts,
+			'timestamp' => $this->timestamp,
 		];
 	}
 }

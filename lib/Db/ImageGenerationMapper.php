@@ -24,11 +24,11 @@ class ImageGenerationMapper extends QBMapper
 	}
 
 	/**
-	 * @param int $imageId
+	 * @param string $imageId
 	 * @return array|Entity
 	 * @throws Exception
 	 */
-	public function getImageGenerationsOfImage(int $imageId): array
+	public function getImageGenerationsOfImage(string $imageId): array
 	{
 		$qb = $this->db->getQueryBuilder();
 
@@ -42,14 +42,14 @@ class ImageGenerationMapper extends QBMapper
 	}
 
 	/**
-	 * @param int $imageId
+	 * @param string $imageId
 	 * @param int $fileNameId
 	 * @return ImageGeneration
 	 * @throws Exception
 	 * @throws DoesNotExistException
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getImageGenerationOfImageId(int $imageId): ImageGeneration
+	public function getImageGenerationOfImageId(string $imageId): ImageGeneration
 	{
 		$qb = $this->db->getQueryBuilder();
 
@@ -63,27 +63,29 @@ class ImageGenerationMapper extends QBMapper
 	}
 
 	/**
-	 * @param int $imageId
+	 * @param string $imageId
 	 * @param string $fileName
+	 * @param string $prompt
 	 * @return ImageGeneration
 	 * @throws Exception
 	 */
-	public function createImageGeneration(int $imageId, string $fileName): ImageGeneration
+	public function createImageGeneration(string $imageId, string $fileName, string $prompt = ''): ImageGeneration
 	{
 		$imageGeneration = new ImageGeneration();
 		$imageGeneration->setImageId($imageId);
 		$imageGeneration->setFileName($fileName);
-		$imageGeneration->setTs((new DateTime())->getTimestamp());
+		$imageGeneration->setTimestamp((new DateTime())->getTimestamp());
+		$imageGeneration->setPrompt($prompt);
 		return $this->insert($imageGeneration);
 	}
 
 	/**
 	 * Touch timestamp of image generation
-	 * @param int $imageId
+	 * @param string $imageId
 	 * @return int
 	 * @throws Exception
 	 */
-	public function touchImageGeneration(int $imageId): int
+	public function touchImageGeneration(string $imageId): int
 	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
@@ -97,11 +99,11 @@ class ImageGenerationMapper extends QBMapper
 	}
 
 	/**
-	 * @param int $imageId
+	 * @param string $imageId
 	 * @return void
 	 * @throws Exception
 	 */
-	public function deleteImageGenerations(int $imageId): void
+	public function deleteImageGenerations(string $imageId): void
 	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete($this->getTableName())

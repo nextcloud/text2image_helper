@@ -10,7 +10,7 @@ use OCP\DB\Types;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
-class Version010000Date20231018153845 extends SimpleMigrationStep {
+class Version010000Date20231018153846 extends SimpleMigrationStep {
 
 	/**
 	 * @param IOutput $output
@@ -51,14 +51,7 @@ class Version010000Date20231018153845 extends SimpleMigrationStep {
 			$table->addIndex(['user_id'], 't2ih_prompt_uid');
 		}
 
-		// Drop 't2ih_file_name'
-		if ($schema->hasTable('t2ih_file_name')) {
-			$table = $schema->getTable('t2ih_file_name');
-			$table->dropIndex('t2ih_fn_image_id');
-			$schema->dropTable('t2ih_file_name');
-		}
-
-		// Create 't2ih_generations' as a replacement
+		// Create 't2ih_generations'
 		if (!$schema->hasTable('t2ih_generations')) {
 			$table = $schema->createTable('t2ih_generations');
 			$table->addColumn('id', Types::BIGINT, [
@@ -66,6 +59,9 @@ class Version010000Date20231018153845 extends SimpleMigrationStep {
 				'notnull' => true,
 			]);
 			$table->addColumn('image_id', Types::STRING, [
+				'notnull' => true,
+			]);
+			$table->addColumn('file_name', Types::STRING, [
 				'notnull' => true,
 			]);
 			$table->addColumn('prompt', Types::STRING, [
