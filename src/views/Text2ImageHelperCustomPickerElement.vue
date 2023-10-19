@@ -156,10 +156,9 @@ export default {
 			result: null,
 			loading: false,
 			models: [],
-			inputPlaceholder: t('text2image_helper', 'What is the matter with putting pineapple on pizza?'),
+			inputPlaceholder: t('text2image_helper', 'A hedgehog laid back on a couch'),
 			poweredByTitle: '',
 			poweredByUrl: '',
-			modelPlaceholder: t('text2image_helper', 'Choose a model'),
 			showAdvanced: false,
 			includeQuery: false,
 			completionNumber: 1,
@@ -279,11 +278,11 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.text2image_helper-picker-content-wrapper {
+.text2image-picker-content-wrapper {
 	width: 100%;
 }
 
-.text2image_helper-picker-content {
+.text2image-picker-content {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -366,10 +365,6 @@ export default {
 
 			input {
 				width: 200px;
-			}
-
-			.model-select {
-				width: 300px;
 			}
 		}
 
