@@ -11,20 +11,27 @@
 				:size="44"
 				:title="t('text2image_helper', 'Loading image')" />
 		</div>
-		<img v-show="!isImageLoading && !failed"
+		<img v-if="imageUrl !== ''"
+			v-show="!isImageLoading && !failed"
 			class="image"
-			:src="src"
+			:src="imageUrl"
 			:aria-label="t('text2image_helper', 'Generated image')"
 			@load="isImageLoading = false"
 			@error="onError">
+		<div v-if="!failed && imageUrl === ''"
+			class="processing-notification">
+			{{ t('text2image_helper', 'Please note, that image generation can take a very long time depending on the provider.\n') }}
+			{{ t('text2image_helper', 'The generated image is shown once ready') }}
+		</div>
 		<span v-if="failed">
-			{{ t('text2image_helper', 'The image cannot be fetched. The image may have been cleaned up due to not being viewed for a while.') }}
+			{{ errorMsg }}
 		</span>
 	</div>
 </template>
 
 <script>
 import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
+import axios from '@nextcloud/axios'
 
 export default {
 	name: 'Text2ImageDisplay',
@@ -49,6 +56,8 @@ export default {
 		return {
 			isImageLoading: true,
 			failed: false,
+			imageUrl: '',
+			errorMsg: t('text2image_helper', 'Image generation failed'),
 		}
 	},
 
@@ -56,9 +65,37 @@ export default {
 	},
 
 	mounted() {
+		this.getImage()
 	},
 
 	methods: {
+		getImage() {
+			let success = false
+			axios.get(this.src, { responseType: 'arraybuffer' })
+				.then(response => {
+					if (response.status === 200) {
+						if (response.data?.body !== undefined) {
+							const blob = new Blob([response.data.body], { type: 'image/jpeg' })
+							this.imageUrl = URL.createObjectURL(blob)
+							success = true
+						}
+					} else {
+						console.error(response)
+						if (response.data?.error !== undefined) {
+							this.errorMsg = response.data.error
+							this.failed = true
+							this.isImageLoading = false
+						}
+					}
+				})
+				.catch(error => {
+					console.error(error)
+				})
+				// If we didn't succeed in loading the image, try again
+			if (!success && !this.failed) {
+				setTimeout(this.getImage, 3000)
+			}
+		},
 		onError(e) {
 			this.isImageLoading = false
 			this.failed = true
@@ -72,5 +109,11 @@ export default {
 	max-height: 300px;
 	max-width: 100%;
 	border-radius: var(--border-radius-large);
+}
+
+.processing-notification {
+	margin-top: 24px;
+	width: 100%;
+	align-items: center;
 }
 </style>

@@ -76,7 +76,27 @@ class ImageGenerationMapper extends QBMapper
 		$imageGeneration->setFileName($fileName);
 		$imageGeneration->setTimestamp((new DateTime())->getTimestamp());
 		$imageGeneration->setPrompt($prompt);
+		$imageGeneration->setIsGenerated(false);
 		return $this->insert($imageGeneration);
+	}
+
+	/**
+	 * Set image as processed
+	 * @param string $imageId
+	 * @return int
+	 * @throws Exception
+	 */ 
+	public function setImageGenerated(string $imageId): int
+	{
+		$qb = $this->db->getQueryBuilder();
+		$qb->update($this->getTableName())
+			->set('is_generated', $qb->createNamedParameter(true, IQueryBuilder::PARAM_BOOL))
+			->where(
+				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
+			);
+		$count = $qb->executeStatement();
+		$qb->resetQueryParts();
+		return $count;
 	}
 
 	/**
@@ -103,7 +123,7 @@ class ImageGenerationMapper extends QBMapper
 	 * @return void
 	 * @throws Exception
 	 */
-	public function deleteImageGenerations(string $imageId): void
+	public function deleteImageGeneration(string $imageId): void
 	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete($this->getTableName())

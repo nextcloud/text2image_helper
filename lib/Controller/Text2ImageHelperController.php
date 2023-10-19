@@ -57,8 +57,8 @@ class Text2ImageHelperController extends Controller
      */
     public function getImage(string $imageId): DataResponse {
         
-		$image = $this->text2ImageHelperService->getImage($imageId);
+		$result = $this->text2ImageHelperService->getImage($imageId);
 
-		return isset($image['error']) ? new DataResponse($image, Http::STATUS_BAD_REQUEST) : new DataResponse($image);
+		return (isset($result['error']) || $result === null) ? new DataResponse($result, Http::STATUS_BAD_REQUEST) : new DataResponse($result);
 	}
 }

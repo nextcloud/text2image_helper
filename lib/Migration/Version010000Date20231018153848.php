@@ -10,7 +10,7 @@ use OCP\DB\Types;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
-class Version010000Date20231018153846 extends SimpleMigrationStep {
+class Version010000Date20231018153848 extends SimpleMigrationStep {
 
 	/**
 	 * @param IOutput $output
@@ -63,6 +63,9 @@ class Version010000Date20231018153846 extends SimpleMigrationStep {
 			]);
 			$table->addColumn('file_name', Types::STRING, [
 				'notnull' => true,
+			]);
+			$table->addColumn('is_generated', Types::BOOLEAN, [
+				'notnull' => false, 'default' => false,
 			]);
 			$table->addColumn('prompt', Types::STRING, [
 				'notnull' => true,

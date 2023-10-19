@@ -2,9 +2,6 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 <template>
 	<div class="text2image-helper-reference">
-		<h3>
-			{{ 'OMGDEBUG' }}
-		</h3>
 		<div class="image">
 			<Text2ImageDisplay :src="richObject.proxied_url" />
 		</div>

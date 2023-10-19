@@ -29,6 +29,8 @@ class ImageGeneration extends Entity implements \JsonSerializable
 	protected $prompt;
 	/** @var int */
 	protected $timestamp;
+	/** @var boolean */
+	protected $isGenerated;
 
 	public function __construct()
 	{
@@ -36,6 +38,7 @@ class ImageGeneration extends Entity implements \JsonSerializable
 		$this->addType('file_name', 'string');
 		$this->addType('prompt', 'string');
 		$this->addType('timestamp', 'int');
+		$this->addType('is_generated', 'boolean');
 	}
 
 	#[\ReturnTypeWillChange]
@@ -47,6 +50,16 @@ class ImageGeneration extends Entity implements \JsonSerializable
 			'file_name' => $this->fileName,
 			'prompt' => $this->prompt,
 			'timestamp' => $this->timestamp,
+			'is_generated' => $this->isGenerated,
 		];
+	}
+
+	public function setIsGenerated(?bool $isGenerated)
+	{
+		$this->isGenerated = $isGenerated;
+	}
+	public function getIsGenerated(): bool
+	{
+		return $this->isGenerated === true;
 	}
 }

@@ -5,6 +5,7 @@
 namespace OCA\Text2ImageHelper\Service;
 
 use Exception;
+use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 use OCP\TextToImage\IManager;
@@ -134,6 +135,8 @@ class Text2ImageHelperService
 			$this->logger->debug('Image save error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			return;
 		}
+
+        $this->imageGenerationMapper->setImageGenerated($imageId);
 	}
 
 	/**
@@ -174,18 +177,26 @@ class Text2ImageHelperService
      * @return array|null
      */
     public function getImage(string $imageId): ?array
-    {        
-        $imageDataFolder = $this->getImageDataFolder();
-        if ($imageDataFolder === null) {
-            return null;
-        }
-
+    {
+        // Check whether the task has completed:
         try {
             $imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId($imageId);
         } catch (Exception $e) {
             $this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
-            return null;
+            return ['error' => 'Image not found or processing failed'];
         }
+        
+        if ($imageGeneration->getIsGenerated() === false) {
+            return ['processing' => 'Image not processed yet'];
+        }
+        
+        $imageDataFolder = $this->getImageDataFolder();
+        if ($imageDataFolder === null) {
+            $this->logger->debug('Image request error : Could not open image storage folder', ['app' => Application::APP_ID]);
+            return ['error' => 'Could not open image storage folder'];
+        }
+
+        
 
         // Load image from disk
         try {
@@ -198,9 +209,12 @@ class Text2ImageHelperService
                     'Content-Type' => ['image/jpeg'],
                 ],
             ];
-        } catch (Exception $e) {
+        } catch (NotFoundException $e) {
             $this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+                
+            return ['error' => 'Image file not found'];
         }
-        return null;
+
+        
     }
 }

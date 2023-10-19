@@ -32,7 +32,7 @@ if (features.picker_enabled === true || (features.picker_enabled === false && fe
 	})
 }
 
-registerWidget('text2image_helper', async (el, { richObjectType, richObject, accessible }) => {
+registerWidget('text2image_helper_image', async (el, { richObjectType, richObject, accessible }) => {
 	const { default: Vue } = await import(/* webpackChunkName: "vue-lazy" */'vue')
 	Vue.mixin({ methods: { t, n } })
 	const { default: Text2ImageHelperReferenceWidget } = await import(/* webpackChunkName: "reference-lazy" */'./views/Text2ImageHelperReferenceWidget.vue')

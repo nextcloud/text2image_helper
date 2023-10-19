@@ -9,6 +9,7 @@ use OCP\TextToImage\Events\AbstractTextToImageEvent;
 use OCP\TextToImage\Events\TaskSuccessfulEvent;
 use OCP\TextToImage\Events\TaskFailedEvent;
 use OCP\IImage;
+use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
 
 class Text2ImageResultListener implements IEventListener {
     /**
@@ -16,7 +17,8 @@ class Text2ImageResultListener implements IEventListener {
      * @param Text2ImageHelperService $text2ImageService
      */
     public function __construct(
-        private Text2ImageHelperService $text2ImageService
+        private Text2ImageHelperService $text2ImageService,
+        private ImageGenerationMapper $imageGenerationMapper
     ) {
     }
     
@@ -39,7 +41,7 @@ class Text2ImageResultListener implements IEventListener {
         if ($event instanceof TaskFailedEvent) {
             $error = $event->getErrorMessage();
             $userId = $event->getTask()->getUserId();
-            // TODO: Notify relevant user about failure
+            $this->imageGenerationMapper->deleteImageGeneration($event->getTask()->getIdentifier());
         }
     }
 }
