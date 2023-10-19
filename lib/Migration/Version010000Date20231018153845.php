@@ -10,7 +10,7 @@ use OCP\DB\Types;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
-class Version010000Date20231017153845 extends SimpleMigrationStep {
+class Version010000Date20231018153845 extends SimpleMigrationStep {
 
 	/**
 	 * @param IOutput $output
@@ -51,9 +51,16 @@ class Version010000Date20231017153845 extends SimpleMigrationStep {
 			$table->addIndex(['user_id'], 't2ih_prompt_uid');
 		}
 
-		// Create 't2ih_file_name'
-		if (!$schema->hasTable('t2ih_file_name')) {
-			$table = $schema->createTable('t2ih_file_name');
+		// Drop 't2ih_file_name'
+		if ($schema->hasTable('t2ih_file_name')) {
+			$table = $schema->getTable('t2ih_file_name');
+			$table->dropIndex('t2ih_fn_image_id');
+			$schema->dropTable('t2ih_file_name');
+		}
+
+		// Create 't2ih_generations' as a replacement
+		if (!$schema->hasTable('t2ih_generations')) {
+			$table = $schema->createTable('t2ih_generations');
 			$table->addColumn('id', Types::BIGINT, [
 				'autoincrement' => true,
 				'notnull' => true,
@@ -61,12 +68,14 @@ class Version010000Date20231017153845 extends SimpleMigrationStep {
 			$table->addColumn('image_id', Types::STRING, [
 				'notnull' => true,
 			]);
-			$table->addColumn('file_name', Types::STRING, [
+			$table->addColumn('prompt', Types::STRING, [
 				'notnull' => true,
-				'length' => 255,
+			]);
+			$table->addColumn('timestamp', Types::INTEGER, [
+				'notnull' => true,
 			]);
 			$table->setPrimaryKey(['id']);
-			$table->addIndex(['image_id'], 't2ih_fn_image_id');
+			$table->addIndex(['image_id'], 't2ih_gen_image_id');
 		}
 
 		return $schema;

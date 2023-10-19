@@ -12,10 +12,12 @@ use OCP\TextToImage\Task;
 use OCP\IImage;
 use OCP\Files\SimpleFS\ISimpleFolder;
 use OCP\Files\IAppData;
+use OCP\IURLGenerator;
 
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Db\PromptMapper;
-use OCA\Text2ImageHelper\Db\ImageFileNameMapper;
+use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
+
 
 class Text2ImageHelperService
 {
@@ -30,8 +32,9 @@ class Text2ImageHelperService
      * @param IManager $textToImageManager
      * @param string|null $userId
      * @param PromptMapper $promptMapper
-     * @param ImageFileNameMapper $imageFileNameMapper
-     * 
+     * @param ImageGenerationMapper $imageGenerationMapper
+     * @param IAppData $appData
+     * @param IURLGenerator $urlGenerator
      */
     public function __construct(
         private IConfig $config,
@@ -39,15 +42,20 @@ class Text2ImageHelperService
         private IManager $textToImageManager,
         private ?string $userId,
         private PromptMapper $promptMapper,
-        private ImageFileNameMapper $imageFileNameMapper,
+        private ImageGenerationMapper $imageGenerationMapper,
         private IAppData $appData,
+        private IURLGenerator $urlGenerator
     ) {
     }
     
     /**
      * Process a prompt using ImageProcessingProvider and return nResults generated image links
      * 
-     * For now just use a filler image returned by the ImageProcessingProvider
+     * @param string $prompt
+     * @param int $nResults
+     * @param string $userId
+     * @return array
+     * @throws Exception
      */
     public function processPrompt(string $prompt, int $nResults, string $userId): array
     {
@@ -59,16 +67,25 @@ class Text2ImageHelperService
         
 
         $result = [];
-        # Generate nResults prompts
+        // Generate nResults prompts
         for ($i = 0; $i < $nResults; $i++) {
             $imageId = (string) bin2hex(random_bytes(16));
             $promptTask = new Task($prompt, Application::APP_ID , $this->userId, $imageId);
             $this->textToImageManager->scheduleTask($promptTask);
-            # Store the image id to the db:
-            $this->imageFileNameMapper->createImageFileName($imageId, $imageId.'.jpg');
+            // Store the image id to the db:
+            $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg');
+
+            $imageUrl = $this->urlGenerator->linkToRouteAbsolute(
+                Application::APP_ID . '.Text2ImageHelper.getImage',
+                [
+                    'imageId' => $imageId,		
+                ]
+            );
+
+            $result[] = ['url'=>$imageUrl, 'prompt'=>$prompt];
         }
 
-        # Save the prompt to database
+        // Save the prompt to database
         $this->promptMapper->createPrompt($userId, $prompt);
 
         return $result;
@@ -164,7 +181,7 @@ class Text2ImageHelperService
         }
 
         try {
-            $fileNameEntry = $this->imageFileNameMapper->getImageFileNameOfImageId($imageId);
+            $imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId($imageId);
         } catch (Exception $e) {
             $this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
             return null;
@@ -172,7 +189,7 @@ class Text2ImageHelperService
 
         // Load image from disk
         try {
-            $imageFile = $imageDataFolder->getFile($fileNameEntry->getFileName());
+            $imageFile = $imageDataFolder->getFile($imageGeneration->getFileName());
             $imageContent = $imageFile->getContent();
             // Return image content and headers
             return [

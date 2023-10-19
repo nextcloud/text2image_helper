@@ -36,8 +36,7 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 	 * @inheritDoc
 	 */
 	public function getTitle(): string {
-		#return $this->l10n->t('AI text generation');		
-		return 'AI image generation';
+		return $this->l10n->t('AI image generation');		
 	}
 
 	/**
@@ -99,7 +98,7 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 	private function getImageId(string $url): ?string {
 		$start = $this->urlGenerator->getAbsoluteURL('/apps/' . Application::APP_ID);
 		$startIndex = $this->urlGenerator->getAbsoluteURL('/index.php/apps/' . Application::APP_ID);
-
+		
 		// link example: https://nextcloud.local/index.php/apps/text2image_helper/i/c3b80f5a758d2ba5ecae2531764c4a0c
 		preg_match('/^' . preg_quote($start, '/') . '\/i\/([0-9a-f]+)$/i', $url, $matches);
 		if (count($matches) > 1) {

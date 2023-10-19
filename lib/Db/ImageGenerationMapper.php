@@ -16,11 +16,11 @@ use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
-class ImageFileNameMapper extends QBMapper
+class ImageGenerationMapper extends QBMapper
 {
 	public function __construct(IDBConnection $db)
 	{
-		parent::__construct($db, 'text2image_helper_file_name', ImageFileName::class);
+		parent::__construct($db, 't2ih_generations', ImageGeneration::class);
 	}
 
 	/**
@@ -28,7 +28,7 @@ class ImageFileNameMapper extends QBMapper
 	 * @return array|Entity
 	 * @throws Exception
 	 */
-	public function getImageFileNamesOfImage(int $imageId): array
+	public function getImageGenerationsOfImage(int $imageId): array
 	{
 		$qb = $this->db->getQueryBuilder();
 
@@ -44,12 +44,12 @@ class ImageFileNameMapper extends QBMapper
 	/**
 	 * @param int $imageId
 	 * @param int $fileNameId
-	 * @return ImageFileName
+	 * @return ImageGeneration
 	 * @throws Exception
 	 * @throws DoesNotExistException
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getImageFileNameOfImageId(int $imageId): ImageFileName
+	public function getImageGenerationOfImageId(int $imageId): ImageGeneration
 	{
 		$qb = $this->db->getQueryBuilder();
 
@@ -65,15 +65,35 @@ class ImageFileNameMapper extends QBMapper
 	/**
 	 * @param int $imageId
 	 * @param string $fileName
-	 * @return ImageFileName
+	 * @return ImageGeneration
 	 * @throws Exception
 	 */
-	public function createImageFileName(int $imageId, string $fileName): ImageFileName
+	public function createImageGeneration(int $imageId, string $fileName): ImageGeneration
 	{
-		$imageFileName = new ImageFileName();
-		$imageFileName->setImageId($imageId);
-		$imageFileName->setFileName($fileName);
-		return $this->insert($imageFileName);
+		$imageGeneration = new ImageGeneration();
+		$imageGeneration->setImageId($imageId);
+		$imageGeneration->setFileName($fileName);
+		$imageGeneration->setTs((new DateTime())->getTimestamp());
+		return $this->insert($imageGeneration);
+	}
+
+	/**
+	 * Touch timestamp of image generation
+	 * @param int $imageId
+	 * @return int
+	 * @throws Exception
+	 */
+	public function touchImageGeneration(int $imageId): int
+	{
+		$qb = $this->db->getQueryBuilder();
+		$qb->update($this->getTableName())
+			->set('ts', $qb->createNamedParameter((new DateTime())->getTimestamp(), IQueryBuilder::PARAM_INT))
+			->where(
+				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
+			);
+		$count = $qb->executeStatement();
+		$qb->resetQueryParts();
+		return $count;
 	}
 
 	/**
@@ -81,10 +101,10 @@ class ImageFileNameMapper extends QBMapper
 	 * @return void
 	 * @throws Exception
 	 */
-	public function deleteImageFileNames(int $imageId): void
+	public function deleteImageGenerations(int $imageId): void
 	{
 		$qb = $this->db->getQueryBuilder();
-		$qb->delete('text2image_helper_file_name')
+		$qb->delete($this->getTableName())
 			->where(
 				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
 			);
@@ -117,7 +137,7 @@ class ImageFileNameMapper extends QBMapper
 
         # Delete the database entries
         $qb->resetQueryParts();
-        $qb->delete('text2image_helper_file_name')
+        $qb->delete($this->getTableName())
             ->where(
                 $qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
             );

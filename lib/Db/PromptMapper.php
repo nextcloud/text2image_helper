@@ -17,7 +17,7 @@ use OCP\IDBConnection;
 
 class PromptMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
-		parent::__construct($db, 'text2image_helper_prompts', Prompt::class);
+		parent::__construct($db, 't2ih_prompts', Prompt::class);
 	}
 
 	/**
