@@ -57,7 +57,7 @@ export default {
 			isImageLoading: true,
 			failed: false,
 			imageUrl: '',
-			errorMsg: t('text2image_helper', 'Image generation failed'),
+			errorMsg: 'Image generation failed', // t('text2image_helper', 'Image generation failed'),
 		}
 	},
 
@@ -93,6 +93,7 @@ export default {
 				})
 				// If we didn't succeed in loading the image, try again
 			if (!success && !this.failed) {
+				// TODO: prevent looping if the dialog is closed
 				setTimeout(this.getImage, 3000)
 			}
 		},

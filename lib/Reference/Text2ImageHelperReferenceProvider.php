@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 namespace OCA\Text2ImageHelper\Reference;
 
+use Exception;
 use OC\Collaboration\Reference\ReferenceManager;
 use OCP\Collaboration\Reference\Reference;
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Service\Text2ImageHelperService;
 use OCP\Collaboration\Reference\ADiscoverableReferenceProvider;
 use OCP\Collaboration\Reference\IReference;
+use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
 use OCP\IL10N;
 use OCP\IURLGenerator;
 
@@ -21,6 +23,7 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 		private IURLGenerator $urlGenerator,
 		private ReferenceManager $referenceManager,
 		private Text2ImageHelperService $text2ImageHelperService,
+		private ImageGenerationMapper $imageGenerationMapper,
 		private ?string $userId
 	) {
 	}
@@ -72,6 +75,16 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 			return null;
 		}
 
+		try {
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId((string)$imageId);
+		} catch (Exception $e) {
+			$imageGeneration = null;
+		}
+		
+		if ($imageGeneration !== null) {
+			$prompt = $imageGeneration->getPrompt();
+		}
+
 		$reference = new Reference($referenceText);
 		$imageUrl = $this->urlGenerator->linkToRouteAbsolute(
 			Application::APP_ID . '.Text2ImageHelper.getImage',
@@ -82,7 +95,7 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 
 		$reference->setImageUrl($imageUrl);
 		
-		$richObjectInfo = ['imageId' => $imageId];
+		$richObjectInfo = ['prompt' => $prompt, 'proxied_url' => $imageUrl];
 		$reference->setRichObject(
 			self::RICH_OBJECT_TYPE,
 			$richObjectInfo,

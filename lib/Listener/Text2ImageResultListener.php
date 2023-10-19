@@ -10,15 +10,19 @@ use OCP\TextToImage\Events\TaskSuccessfulEvent;
 use OCP\TextToImage\Events\TaskFailedEvent;
 use OCP\IImage;
 use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
+use Psr\Log\LoggerInterface;
 
 class Text2ImageResultListener implements IEventListener {
     /**
      * Constructor
      * @param Text2ImageHelperService $text2ImageService
+     * @param ImageGenerationMapper $imageGenerationMapper
+     * @param LoggerInterface $logger
      */
     public function __construct(
         private Text2ImageHelperService $text2ImageService,
-        private ImageGenerationMapper $imageGenerationMapper
+        private ImageGenerationMapper $imageGenerationMapper,
+        private LoggerInterface $logger
     ) {
     }
     
@@ -34,13 +38,15 @@ class Text2ImageResultListener implements IEventListener {
         if ($event instanceof TaskSuccessfulEvent) {
             /** @var IImage $image */
             $image = $event->getTask()->getOutputImage();
-            
+            //TODO: Notify user of success
             $this->text2ImageService->storeImage($image, $event->getTask()->getIdentifier());
         }
 
         if ($event instanceof TaskFailedEvent) {
+            $this->logger->warning('Image generation task failed');
             $error = $event->getErrorMessage();
             $userId = $event->getTask()->getUserId();
+            //TODO: Notify user of error
             $this->imageGenerationMapper->deleteImageGeneration($event->getTask()->getIdentifier());
         }
     }
