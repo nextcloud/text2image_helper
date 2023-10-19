@@ -14,7 +14,7 @@ use OCP\AppFramework\App;
 use OCP\Collaboration\Reference\RenderReferenceEvent;
 class Application extends App implements IBootstrap
 {
-	public const APP_ID = 'text2imagehelper';
+	public const APP_ID = 'text2image_helper';
 
 	public const MAX_STORED_PROMPTS_PER_USER = 5;
 	public const DEFAULT_MAX_IMAGE_IDLE_TIME = 60 * 60 * 24 * 90; // 90 days
