@@ -39,7 +39,8 @@
 			</div>
 			<div class="footer">
 				<div class="line">
-					<NcCheckboxRadioSwitch class="include-query" :checked.sync="includeQuery">
+					<NcCheckboxRadioSwitch class="include-query"
+						:checked.sync="displayPrompt">
 						{{ t('text2image_helper', 'Include the prompt in the result') }}
 					</NcCheckboxRadioSwitch>
 					<div class="spacer" />
@@ -124,8 +125,7 @@ export default {
 			loading: false,
 			models: [],
 			inputPlaceholder: t('text2image_helper', 'A hedgehog laid back on a couch'),
-			showAdvanced: false,
-			includeQuery: false,
+			displayPrompt: true,
 			completionNumber: 1,
 			prompts: null,
 		}
@@ -143,11 +143,18 @@ export default {
 	},
 
 	watch: {
+		displayPrompt(newValue) {
+			localStorage.setItem('text2image_display_prompt', JSON.stringify(newValue))
+		},
 	},
 
 	mounted() {
 		this.focusOnInput()
 		this.getPromptHistory()
+		const cachedValue = localStorage.getItem('text2image_display_prompt') === 'true'
+		if (cachedValue !== null) {
+			this.displayPrompt = cachedValue
+		}
 	},
 
 	methods: {
@@ -191,6 +198,7 @@ export default {
 			const params = {
 				prompt: this.query,
 				nResults: this.completionNumber,
+				displayPrompt: this.displayPrompt,
 			}
 			const url = generateUrl('/apps/text2image_helper/process_prompt')
 			return axios.post(url, params)

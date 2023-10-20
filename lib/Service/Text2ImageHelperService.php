@@ -55,10 +55,11 @@ class Text2ImageHelperService
      * @param string $prompt
      * @param int $nResults
      * @param string $userId
+     * @param bool $storePrompt
      * @return array
      * @throws Exception
      */
-    public function processPrompt(string $prompt, int $nResults, string $userId): array
+    public function processPrompt(string $prompt, int $nResults, string $userId, bool $displayPrompt): array
     {
         
         if (!$this->textToImageManager->hasProviders()) {
@@ -74,7 +75,8 @@ class Text2ImageHelperService
             $promptTask = new Task($prompt, Application::APP_ID , $this->userId, $imageId);
             $this->textToImageManager->scheduleTask($promptTask);
             // Store the image id to the db:
-            $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg', $prompt);
+            
+            $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg', $displayPrompt ? $prompt : '');
 
             $imageUrl = $this->urlGenerator->linkToRouteAbsolute(
                 Application::APP_ID . '.Text2ImageHelper.getImage',
@@ -85,6 +87,7 @@ class Text2ImageHelperService
 
             $result[] = ['url'=>$imageUrl, 'prompt'=>$prompt];
         }
+
 
         // Save the prompt to database
         $this->promptMapper->createPrompt($userId, $prompt);
