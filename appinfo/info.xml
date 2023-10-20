@@ -21,6 +21,10 @@
 	<commands>
 		<command>OCA\Text2ImageHelper\Command\CleanupImageGenerations</command>
 	</commands>
+	<settings>
+        <admin>OCA\Text2ImageHelper\Settings\Admin</admin>
+        <admin-section>OCA\Text2ImageHelper\Settings\AdminSection</admin-section>
+    </settings>
 	<dependencies>
 		<nextcloud min-version="28" max-version="28" />
 	</dependencies>

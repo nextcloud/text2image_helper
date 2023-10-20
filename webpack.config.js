@@ -19,7 +19,7 @@ webpackConfig.stats = {
 const appId = 'text2image_helper'
 webpackConfig.entry = {
 	reference: { import: path.join(__dirname, 'src', 'reference.js'), filename: appId + '-reference.js' },
-	// adminSettings: { import: path.join(__dirname, 'src', 'adminSettings.js'), filename: appId + '-adminSettings.js' },
+	adminSettings: { import: path.join(__dirname, 'src', 'adminSettings.js'), filename: appId + '-adminSettings.js' },
 }
 
 // this enables eslint and stylelint during compilation

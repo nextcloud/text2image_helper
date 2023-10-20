@@ -16,5 +16,7 @@ return [
 		['name' => 'Text2ImageHelper#processPrompt', 'url' => '/process_prompt', 'verb' => 'POST'],			
 		['name' => 'Text2ImageHelper#getPromptHistory', 'url' => '/prompt_history', 'verb' => 'GET'],
 		['name' => 'Text2ImageHelper#getImage', 'url' => '/i/{imageId}', 'verb' => 'GET'],
+
+		['name' => 'config#setAdminConfig', 'url' => '/admin-config', 'verb' => 'PUT'],
 	],
 ];
