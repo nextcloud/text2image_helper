@@ -74,7 +74,7 @@ class Text2ImageHelperService
             $promptTask = new Task($prompt, Application::APP_ID , $this->userId, $imageId);
             $this->textToImageManager->scheduleTask($promptTask);
             // Store the image id to the db:
-            $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg');
+            $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg', $prompt);
 
             $imageUrl = $this->urlGenerator->linkToRouteAbsolute(
                 Application::APP_ID . '.Text2ImageHelper.getImage',

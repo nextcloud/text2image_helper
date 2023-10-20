@@ -66,22 +66,6 @@
 					</template>
 				</NcButton>
 			</div>
-			<!-- For now, disable the number of results to generate, as the smart picker logic can't returning multiple links in one go
-				 Supporting multiple images per link would have to be implemented in the backend.
-				<div class="line">
-					<label for="nb-results">
-						{{ t('text2image_helper', 'How many results to generate') }}
-					</label>
-					<div class="spacer" />
-					<input id="nb-results"
-						v-model="completionNumber"
-						type="number"
-						min="1"
-						max="10"
-						step="1">
-				</div>
-			</div>
-			-->
 		</div>
 	</div>
 </template>

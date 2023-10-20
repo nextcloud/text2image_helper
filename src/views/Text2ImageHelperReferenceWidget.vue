@@ -3,7 +3,7 @@
 <template>
 	<div class="text2image-helper-reference">
 		<div class="image">
-			<Text2ImageDisplay :src="richObject.proxied_url" />
+			<Text2ImageDisplay :src="richObject.proxied_url" :prompt="richObject.prompt" />
 		</div>
 	</div>
 </template>

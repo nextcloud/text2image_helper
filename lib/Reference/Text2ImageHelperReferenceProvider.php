@@ -76,13 +76,15 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 		}
 
 		try {
-			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId((string)$imageId);
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId($imageId);
 		} catch (Exception $e) {
 			$imageGeneration = null;
 		}
 		
 		if ($imageGeneration !== null) {
 			$prompt = $imageGeneration->getPrompt();
+		} else {
+			$prompt = '';
 		}
 
 		$reference = new Reference($referenceText);
@@ -106,7 +108,7 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 
 	/**
 	 * @param string $url
-	 * @return array|null
+	 * @return string|null
 	 */
 	private function getImageId(string $url): ?string {
 		$start = $this->urlGenerator->getAbsoluteURL('/apps/' . Application::APP_ID);
