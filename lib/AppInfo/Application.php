@@ -12,15 +12,17 @@ use OCA\Text2ImageHelper\Listener\Text2ImageResultListener;
 use OCA\Text2ImageHelper\Reference\Text2ImageHelperReferenceProvider;
 use OCP\AppFramework\App;
 use OCP\Collaboration\Reference\RenderReferenceEvent;
+
 class Application extends App implements IBootstrap
 {
 	public const APP_ID = 'text2image_helper';
 
 	public const MAX_STORED_PROMPTS_PER_USER = 5;
-	public const DEFAULT_MAX_IMAGE_IDLE_TIME = 60 * 60 * 24 * 90; // 90 days
+	public const DEFAULT_MAX_GENERATION_IDLE_TIME = 60 * 60 * 24 * 90; // 90 days
 	public const IMAGE_FOLDER = 'generated_images';
 
-	public function __construct() {
+	public function __construct()
+	{
 		parent::__construct(self::APP_ID);
 
 	}

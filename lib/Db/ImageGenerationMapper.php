@@ -85,7 +85,7 @@ class ImageGenerationMapper extends QBMapper
 	 * @param string $imageId
 	 * @return int
 	 * @throws Exception
-	 */ 
+	 */
 	public function setImageGenerated(string $imageId): int
 	{
 		$qb = $this->db->getQueryBuilder();
@@ -139,33 +139,36 @@ class ImageGenerationMapper extends QBMapper
 	 * @return array # list of file names
 	 * @throws Exception
 	 */
-	public function cleanupFileNames(int $maxAge = Application::DEFAULT_MAX_IMAGE_IDLE_TIME): array
+	public function cleanupImageGenerations(int $maxAge = Application::DEFAULT_MAX_GENERATION_IDLE_TIME): array
 	{
 		$ts = (new DateTime())->getTimestamp();
 		$maxTimestamp = $ts - $maxAge;
 
 		$qb = $this->db->getQueryBuilder();
 
-        $qb->select('id')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
-            );
+		$qb->select('id')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
+			);
 
-        $fileNames = $this->findEntities($qb);
-        $fileNames = array_map(function($fileName) {
-            return $fileName->getFileName();
-        }, $fileNames);
+		$fileNames = $this->findEntities($qb);
+		$fileNames = array_map(function ($fileName) {
+			return $fileName->getFileName();
+		}, $fileNames);
 
-        # Delete the database entries
-        $qb->resetQueryParts();
-        $qb->delete($this->getTableName())
-            ->where(
-                $qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
-            );
-        $qb->executeStatement();
-        $qb->resetQueryParts();
+		# Delete the database entries
+		$qb->resetQueryParts();
+		$qb->delete($this->getTableName())
+			->where(
+				$qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
+			);
+		$countDelGens = $qb->executeStatement();
+		$qb->resetQueryParts();
 
-		return $fileNames;
+		return [
+			'deleted_generations' => $countDelGens,
+			'file_names' => $fileNames,
+		];
 	}
 }
