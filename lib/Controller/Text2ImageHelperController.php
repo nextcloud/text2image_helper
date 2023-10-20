@@ -34,6 +34,11 @@ class Text2ImageHelperController extends Controller
 	{
 		$displayPrompt === null ? false : $displayPrompt;
 		$result = $this->text2ImageHelperService->processPrompt($prompt, $nResults, $this->userId, $displayPrompt);
+		
+		if (isset($result['error'])) {
+			return new DataResponse($result, Http::STATUS_BAD_REQUEST);
+		}
+
 		return new DataResponse($result);
 	}
 

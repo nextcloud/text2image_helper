@@ -17,6 +17,8 @@ use OCP\AppFramework\Db\Entity;
  * @method void setFileName(string $fileName)
  * @method void setTimestamp(int $timestamp)
  * @method int getTimestamp()
+ * @method void setExpGenTime(int $expGenTime)
+ * @method int getExpGenTime()
  */
 class ImageGeneration extends Entity implements \JsonSerializable
 {
@@ -31,6 +33,9 @@ class ImageGeneration extends Entity implements \JsonSerializable
 	protected $timestamp;
 	/** @var boolean */
 	protected $isGenerated;
+	/** @var int */
+	protected $expGenTime;
+
 
 	public function __construct()
 	{
@@ -39,6 +44,7 @@ class ImageGeneration extends Entity implements \JsonSerializable
 		$this->addType('prompt', 'string');
 		$this->addType('timestamp', 'int');
 		$this->addType('is_generated', 'boolean');
+		$this->addType('exp_gen_time', 'int');
 	}
 
 	#[\ReturnTypeWillChange]
@@ -51,6 +57,7 @@ class ImageGeneration extends Entity implements \JsonSerializable
 			'prompt' => $this->prompt,
 			'timestamp' => $this->timestamp,
 			'is_generated' => $this->isGenerated,
+			'exp_gen_time' => $this->expGenTime,
 		];
 	}
 

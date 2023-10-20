@@ -51,6 +51,13 @@ class Version010000Date20231018153848 extends SimpleMigrationStep {
 			$table->addIndex(['user_id'], 't2ih_prompt_uid');
 		}
 
+		// Drop 't2ih_generations'
+		if ($schema->hasTable('t2ih_generations')) {
+			$table = $schema->getTable('t2ih_generations');
+			$table->dropIndex('t2ih_gen_image_id');
+			$schema->dropTable('t2ih_generations');
+		}
+
 		// Create 't2ih_generations'
 		if (!$schema->hasTable('t2ih_generations')) {
 			$table = $schema->createTable('t2ih_generations');
@@ -71,6 +78,9 @@ class Version010000Date20231018153848 extends SimpleMigrationStep {
 				'notnull' => true,
 			]);
 			$table->addColumn('timestamp', Types::INTEGER, [
+				'notnull' => true,
+			]);
+			$table->addColumn('exp_gen_time', Types::INTEGER, [
 				'notnull' => true,
 			]);
 			$table->setPrimaryKey(['id']);

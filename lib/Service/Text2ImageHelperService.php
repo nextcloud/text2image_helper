@@ -64,7 +64,7 @@ class Text2ImageHelperService
         
         if (!$this->textToImageManager->hasProviders()) {
             $this->logger->error('No text to image processing provider available');
-            return [];
+            return ['error' => 'No text to image processing provider available'];
         }
         
 
@@ -72,11 +72,12 @@ class Text2ImageHelperService
         // Generate nResults prompts
         for ($i = 0; $i < $nResults; $i++) {
             $imageId = (string) bin2hex(random_bytes(16));
-            $promptTask = new Task($prompt, Application::APP_ID , $this->userId, $imageId);
+            $promptTask = new Task($prompt, Application::APP_ID, 1, $this->userId, $imageId);
             $this->textToImageManager->scheduleTask($promptTask);
-            // Store the image id to the db:
-            
-            $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg', $displayPrompt ? $prompt : '');
+
+            $expCompletionTime = $promptTask->getCompletionExpectedAt();
+            // Store the image id to the db:            
+            $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg', $displayPrompt ? $prompt : '',$expCompletionTime->getTimestamp());
 
             $imageUrl = $this->urlGenerator->linkToRouteAbsolute(
                 Application::APP_ID . '.Text2ImageHelper.getImage',

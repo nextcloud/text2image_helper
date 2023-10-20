@@ -69,7 +69,7 @@ class ImageGenerationMapper extends QBMapper
 	 * @return ImageGeneration
 	 * @throws Exception
 	 */
-	public function createImageGeneration(string $imageId, string $fileName, string $prompt = ''): ImageGeneration
+	public function createImageGeneration(string $imageId, string $fileName, string $prompt = '',?int $expCompletionTime = null): ImageGeneration
 	{
 		$imageGeneration = new ImageGeneration();
 		$imageGeneration->setImageId($imageId);
@@ -77,6 +77,7 @@ class ImageGenerationMapper extends QBMapper
 		$imageGeneration->setTimestamp((new DateTime())->getTimestamp());
 		$imageGeneration->setPrompt($prompt);
 		$imageGeneration->setIsGenerated(false);
+		$imageGeneration->setExpGenTime($expCompletionTime ?? (new DateTime())->getTimestamp());
 		return $this->insert($imageGeneration);
 	}
 

@@ -36,8 +36,10 @@ class Text2ImageResultListener implements IEventListener {
         }
 
         if ($event instanceof TaskSuccessfulEvent) {
+
+            //TODO: For now only support generating/receiving single images
             /** @var IImage $image */
-            $image = $event->getTask()->getOutputImage();
+            $image = $event->getTask()->getOutputImages()[0];
             //TODO: Notify user of success
             $this->text2ImageService->storeImage($image, $event->getTask()->getIdentifier());
         }
