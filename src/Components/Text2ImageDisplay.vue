@@ -2,10 +2,17 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 
 <template>
-	<div>
-		<h3 v-if="prompt !== ''">
-			{{ prompt }}
-		</h3>
+	<div class="display-container">
+		<span class="title">
+			<Text2ImageHelperIcon :size="20" class="icon" />
+			<strong>
+				{{ t('text2image_helper', 'Image generation') + ':' }}
+			</strong>
+			&nbsp;
+			<span>
+				{{ prompt }}
+			</span>
+		</span>
 		<div v-if="isImageLoading" class="loading-icon">
 			<NcLoadingIcon
 				:size="44"
@@ -19,8 +26,8 @@
 			@load="isImageLoading = false"
 			@error="onError">
 		<div v-if="!failed && imageUrl === ''"
-			class="processing-notification">
-			<div class="line">
+			class="processing-notification-container">
+			<div class="processing-notification">
 				<InformationOutlineIcon :size="20" class="icon" />
 				{{ t('text2image_helper', 'Please, note that image generation can take a very long time depending on the provider.\n') }}
 				{{ t('text2image_helper', 'The generated image is shown once ready.') }}
@@ -36,6 +43,7 @@
 import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
 import InformationOutlineIcon from 'vue-material-design-icons/InformationOutline.vue'
 import axios from '@nextcloud/axios'
+import Text2ImageHelperIcon from '../Icons/Text2ImageHelperIcon.vue'
 
 export default {
 	name: 'Text2ImageDisplay',
@@ -43,6 +51,7 @@ export default {
 	components: {
 		NcLoadingIcon,
 		InformationOutlineIcon,
+		Text2ImageHelperIcon,
 	},
 
 	props: {
@@ -111,28 +120,51 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.image {
-	max-height: 300px;
-	max-width: 100%;
-	border-radius: var(--border-radius-large);
-}
-
-.processing-notification {
-	margin-top: 24px;
+.display-container {
+	display: flex;
+	flex-direction: column;
 	width: 100%;
-	align-items: center;
-	// Add a border
-	border: 3px solid var(--color-border);
-	border-radius: var(--border-radius-large);
-	padding: 12px;
-	// Reduce the font size
-	font-size: 0.8rem;
-	.line {
+	height: 100%;
+
+	.image {
+		max-height: 300px;
+		max-width: 100%;
+		border-radius: var(--border-radius-large);
+	}
+
+	.title {
+		margin-top: 0;
+		margin-bottom: 24px;
+		.icon {
+			display: inline;
+			position: relative;
+			top: 4px;
+		}
+	}
+
+	.processing-notification-container {
+		width: 100%;
 		display: flex;
-		flex-direction: row;
+		flex-direction: column;
 		align-items: center;
-		// Add some space between the icon and the text on the same line
-		column-gap: 24px;	
+		justify-content: center;
+		.processing-notification {
+			display: flex;
+			flex-direction: row;
+			margin-top: 24px;
+			width: 90%;
+			align-items: center;
+			justify-content: center;
+			// Add a border
+			border: 3px solid var(--color-border);
+			border-radius: var(--border-radius-large);
+			padding: 12px;
+			// Reduce the font size
+			font-size: 0.8rem;
+			// Add some space between the icon and the text on the same line
+			column-gap: 24px;
+		}
 	}
 }
+
 </style>

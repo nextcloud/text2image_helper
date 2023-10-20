@@ -9,9 +9,6 @@
 			<h2>
 				{{ t('text2image_helper', 'AI Image Generation') }}
 			</h2>
-			<a class="attribution" target="_blank" :href="poweredByUrl">
-				{{ poweredByTitle }}
-			</a>
 			<div class="input-wrapper">
 				<NcTextField ref="text2image-search-input"
 					:value.sync="query"
@@ -31,23 +28,22 @@
 					:display-name="p.value"
 					@click="query = p.value" />
 			</div>
-			<div v-if="results !== null" class="preview">
+			<div v-if="results !== null" class="preview-container">
 				<h3>{{ t('text2image_helper', 'Preview') }}</h3>
 				<!-- Loop through all results and display them in a Text2ImageDisplay -->
-				<div v-for="(r, index) in results" :key="index">
+				<div v-for="(r, index) in results"
+					:key="index"
+					class="image-preview">
 					<Text2ImageDisplay :src="r.url" :prompt="r.prompt" />
 				</div>
 			</div>
 			<div class="footer">
-				<NcButton class="advanced-button"
-					type="tertiary"
-					:aria-label="t('text2image_helper', 'Show/hide advanced options')"
-					@click="showAdvanced = !showAdvanced">
-					<template #icon>
-						<component :is="showAdvancedIcon" />
-					</template>
-					{{ t('text2image_helper', 'Advanced options') }}
-				</NcButton>
+				<div class="line">
+					<NcCheckboxRadioSwitch class="include-query" :checked.sync="includeQuery">
+						{{ t('text2image_helper', 'Include the prompt in the result') }}
+					</NcCheckboxRadioSwitch>
+					<div class="spacer" />
+				</div>
 				<NcButton type="secondary"
 					:aria-label="t('text2image_helper', 'Preview image generation by AI')"
 					:disabled="loading || !query"
@@ -70,13 +66,8 @@
 					</template>
 				</NcButton>
 			</div>
-			<div v-show="showAdvanced" class="advanced">
-				<div class="line">
-					<NcCheckboxRadioSwitch class="include-query" :checked.sync="includeQuery">
-						{{ t('text2image_helper', 'Include the prompt in the result') }}
-					</NcCheckboxRadioSwitch>
-					<div class="spacer" />
-				</div>
+			<!-- For now, disable the number of results to generate, as the smart picker logic can't returning multiple links in one go
+				 Supporting multiple images per link would have to be implemented in the backend.
 				<div class="line">
 					<label for="nb-results">
 						{{ t('text2image_helper', 'How many results to generate') }}
@@ -90,6 +81,7 @@
 						step="1">
 				</div>
 			</div>
+			-->
 		</div>
 	</div>
 </template>
@@ -98,17 +90,12 @@
 import EyeIcon from 'vue-material-design-icons/Eye.vue'
 import RefreshIcon from 'vue-material-design-icons/Refresh.vue'
 import ArrowRightIcon from 'vue-material-design-icons/ArrowRight.vue'
-import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
-import ChevronDownIcon from 'vue-material-design-icons/ChevronDown.vue'
-import HelpCircleIcon from 'vue-material-design-icons/HelpCircle.vue'
 
 import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
 import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
-import NcSelect from '@nextcloud/vue/dist/Components/NcSelect.js'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
 import NcUserBubble from '@nextcloud/vue/dist/Components/NcUserBubble.js'
-import NcRichContenteditable from '@nextcloud/vue/dist/Components/NcRichContenteditable.js'
 
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
@@ -123,16 +110,11 @@ export default {
 		NcButton,
 		NcLoadingIcon,
 		NcTextField,
-		NcSelect,
 		NcCheckboxRadioSwitch,
-		ChevronRightIcon,
-		ChevronDownIcon,
-		HelpCircleIcon,
 		ArrowRightIcon,
 		NcUserBubble,
 		RefreshIcon,
 		EyeIcon,
-		NcRichContenteditable,
 		Text2ImageDisplay,
 	},
 
@@ -166,11 +148,6 @@ export default {
 	},
 
 	computed: {
-		showAdvancedIcon() {
-			return this.showAdvanced
-				? ChevronDownIcon
-				: ChevronRightIcon
-		},
 		previewButtonLabel() {
 			return this.results !== null
 				? t('text2image_helper', 'Regenerate')
@@ -299,16 +276,14 @@ export default {
 		max-width: 250px;
 	}
 
-	.preview {
+	.preview-container {
 		width: 100%;
 
-		h3 {
-			font-weight: bold;
-		}
-
-		.editable-preview {
-			width: 100% !important;
-			max-height: 300px !important;
+		.image-preview {
+			margin-top: 8px;
+			border: 3px solid var(--color-border);
+			border-radius: var(--border-radius-large);
+			padding: 12px;
 		}
 	}
 
@@ -329,38 +304,18 @@ export default {
 	.footer {
 		width: 100%;
 		display: flex;
-		align-items: center;
-		justify-content: end;
+		flex-direction: row;
 		margin-top: 12px;
+		justify-content: space-between;
 
-		>* {
-			margin-left: 4px;
-		}
-	}
-
-	.advanced {
-		width: 100%;
-		padding: 12px 0;
-
-		.line {
+		.buttons {
+			width: 100%;
 			display: flex;
 			align-items: center;
-			margin-top: 8px;
 
-			input {
-				width: 200px;
+			>* {
+				margin-left: 4px;
 			}
-		}
-
-		input[type=number] {
-			width: 120px;
-			appearance: initial !important;
-			-moz-appearance: initial !important;
-			-webkit-appearance: initial !important;
-		}
-
-		.include-query {
-			margin-right: 16px;
 		}
 	}
 }
