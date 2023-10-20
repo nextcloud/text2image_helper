@@ -174,9 +174,10 @@ class Text2ImageHelperService
     /**
      * Get image based on imageId
      * @param string $imageId
+     * @param bool $updateTimestamp
      * @return array|null
      */
-    public function getImage(string $imageId): ?array
+    public function getImage(string $imageId, bool $updateTimestamp = false): ?array
     {
         // Check whether the task has completed:
         try {
@@ -202,19 +203,23 @@ class Text2ImageHelperService
         try {
             $imageFile = $imageDataFolder->getFile($imageGeneration->getFileName());
             $imageContent = $imageFile->getContent();
-            // Return image content and headers
-            return [
-                'body' => $imageContent,
-                'headers' => [
-                    'Content-Type' => ['image/jpeg'],
-                ],
-            ];
+
         } catch (NotFoundException $e) {
             $this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
                 
             return ['error' => 'Image file not found'];
         }
 
-        
+        if ($updateTimestamp) {
+            $this->imageGenerationMapper->touchImageGeneration($imageId);
+        }
+
+        // Return image content and headers
+        return [
+            'body' => $imageContent,
+            'headers' => [
+                'Content-Type' => ['image/jpeg'],
+            ],
+        ];
     }
 }

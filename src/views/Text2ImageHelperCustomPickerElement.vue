@@ -2,12 +2,12 @@
 	<div class="text2image-picker-content-wrapper">
 		<div v-if="!pickerEnabled" class="text2image-picker-content">
 			<h2>
-				{{ t('text2image_helper', 'ERROR: No free prompt provider available') }}
+				{{ t('text2image_helper', 'ERROR: No image generation provider available') }}
 			</h2>
 		</div>
 		<div v-if="pickerEnabled" class="text2image-picker-content">
 			<h2>
-				{{ t('text2image_helper', 'AI text generation') }}
+				{{ t('text2image_helper', 'AI Image Generation') }}
 			</h2>
 			<a class="attribution" target="_blank" :href="poweredByUrl">
 				{{ poweredByTitle }}
@@ -49,7 +49,7 @@
 					{{ t('text2image_helper', 'Advanced options') }}
 				</NcButton>
 				<NcButton type="secondary"
-					:aria-label="t('text2image_helper', 'Preview text generation by AI')"
+					:aria-label="t('text2image_helper', 'Preview image generation by AI')"
 					:disabled="loading || !query"
 					@click="generate">
 					{{ previewButtonLabel }}

@@ -20,8 +20,11 @@
 			@error="onError">
 		<div v-if="!failed && imageUrl === ''"
 			class="processing-notification">
-			{{ t('text2image_helper', 'Please note, that image generation can take a very long time depending on the provider.\n') }}
-			{{ t('text2image_helper', 'The generated image is shown once ready') }}
+			<div class="line">
+				<InformationOutlineIcon :size="20" class="icon" />
+				{{ t('text2image_helper', 'Please, note that image generation can take a very long time depending on the provider.\n') }}
+				{{ t('text2image_helper', 'The generated image is shown once ready.') }}
+			</div>
 		</div>
 		<span v-if="failed">
 			{{ errorMsg }}
@@ -31,6 +34,7 @@
 
 <script>
 import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
+import InformationOutlineIcon from 'vue-material-design-icons/InformationOutline.vue'
 import axios from '@nextcloud/axios'
 
 export default {
@@ -38,6 +42,7 @@ export default {
 
 	components: {
 		NcLoadingIcon,
+		InformationOutlineIcon,
 	},
 
 	props: {
@@ -57,7 +62,7 @@ export default {
 			isImageLoading: true,
 			failed: false,
 			imageUrl: '',
-			errorMsg: 'Image generation failed', // t('text2image_helper', 'Image generation failed'),
+			errorMsg: t('text2image_helper', 'Image generation failed'),
 		}
 	},
 
@@ -116,5 +121,18 @@ export default {
 	margin-top: 24px;
 	width: 100%;
 	align-items: center;
+	// Add a border
+	border: 3px solid var(--color-border);
+	border-radius: var(--border-radius-large);
+	padding: 12px;
+	// Reduce the font size
+	font-size: 0.8rem;
+	.line {
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		// Add some space between the icon and the text on the same line
+		column-gap: 24px;	
+	}
 }
 </style>
