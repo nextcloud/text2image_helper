@@ -14,6 +14,7 @@ use OCP\IImage;
 use OCP\Files\SimpleFS\ISimpleFolder;
 use OCP\Files\IAppData;
 use OCP\IURLGenerator;
+use DateTime;
 
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Db\PromptMapper;
@@ -76,6 +77,9 @@ class Text2ImageHelperService
             $this->textToImageManager->scheduleTask($promptTask);
 
             $expCompletionTime = $promptTask->getCompletionExpectedAt();
+            $expCompletionTime = $expCompletionTime ?? new DateTime('now');
+            
+            $this->logger->info('Task scheduled. Expected completion time: ' . $expCompletionTime->format('Y-m-d H:i:s'));
             // Store the image id to the db:            
             $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg', $displayPrompt ? $prompt : '',$expCompletionTime->getTimestamp());
 

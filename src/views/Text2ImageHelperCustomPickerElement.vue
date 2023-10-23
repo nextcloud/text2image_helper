@@ -204,11 +204,11 @@ export default {
 			return axios.post(url, params)
 				.then((response) => {
 					const data = response.data
-					if (data.length && data.length > 1) {
+					if (data.length && data.length > 0) {
 						this.processCompletion(data)
 						this.insertPrompt(this.query)
 					} else {
-						showError(t('text2image_helper', 'Unexpected response from server'))
+						showError(t('text2image_helper', 'Unexpected response from server.'))
 					}
 				})
 				.catch((error) => {

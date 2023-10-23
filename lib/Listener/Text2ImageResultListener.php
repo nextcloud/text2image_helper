@@ -34,6 +34,7 @@ class Text2ImageResultListener implements IEventListener {
         if (!$event instanceof AbstractTextToImageEvent || $event->getTask()->getAppId() !== Application::APP_ID) {
             return;
         }
+        $this->logger->warning("OOOOOOOOOOOOOOOOOOOMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGGGGGGGGGG!");
 
         if ($event instanceof TaskSuccessfulEvent) {
 
