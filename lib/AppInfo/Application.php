@@ -13,6 +13,8 @@ use OCA\Text2ImageHelper\Reference\Text2ImageHelperReferenceProvider;
 use OCA\Text2ImageHelper\TextProcessing\Text2ImageHelperProvider;
 use OCP\AppFramework\App;
 use OCP\Collaboration\Reference\RenderReferenceEvent;
+use OCP\TextToImage\Events\TaskSuccessfulEvent;
+use OCP\TextToImage\Events\TaskFailedEvent;
 
 class Application extends App implements IBootstrap
 {
@@ -32,7 +34,8 @@ class Application extends App implements IBootstrap
 	{
 		$context->registerReferenceProvider(Text2ImageHelperReferenceProvider::class);
 		$context->registerEventListener(RenderReferenceEvent::class, Text2ImageHelperReferenceListener::class);
-		$context->registerEventListener(RenderReferenceEvent::class, Text2ImageResultListener::class);
+		$context->registerEventListener(TaskSuccessfulEvent::class, Text2ImageResultListener::class);
+		$context->registerEventListener(TaskFailedEvent::class, Text2ImageResultListener::class);
 		$context->registerTextToImageProvider(Text2ImageHelperProvider::class);
 	}
 

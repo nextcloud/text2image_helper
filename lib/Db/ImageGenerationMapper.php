@@ -110,7 +110,7 @@ class ImageGenerationMapper extends QBMapper
 	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
-			->set('ts', $qb->createNamedParameter((new DateTime())->getTimestamp(), IQueryBuilder::PARAM_INT))
+			->set('timestamp', $qb->createNamedParameter((new DateTime())->getTimestamp(), IQueryBuilder::PARAM_INT))
 			->where(
 				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
 			);
