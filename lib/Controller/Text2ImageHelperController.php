@@ -4,6 +4,7 @@
 
 namespace OCA\Text2ImageHelper\Controller;
 
+use Exception;
 use OCA\Text2ImageHelper\Service\Text2ImageHelperService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -51,10 +52,12 @@ class Text2ImageHelperController extends Controller
 	 */
 	public function getPromptHistory(): DataResponse
 	{
-		$response = $this->text2ImageHelperService->getPromptHistory($this->userId);
-		if (isset($response['error'])) {
-			return new DataResponse($response, Http::STATUS_BAD_REQUEST);
+		try {
+			$response = $this->text2ImageHelperService->getPromptHistory($this->userId);
+		} catch (Exception $e) {
+			return new DataResponse($e->getMessage(), Http::STATUS_BAD_REQUEST);
 		}
+		
 		return new DataResponse($response);
 	}
 

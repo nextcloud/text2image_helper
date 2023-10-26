@@ -51,7 +51,7 @@ class Text2ImageHelperService
     }
     
     /**
-     * Process a prompt using ImageProcessingProvider and return nResults generated image links
+     * Process a prompt using ImageProcessingProvider and return a link to the generated image(s)
      * 
      * @param string $prompt
      * @param int $nResults
@@ -65,48 +65,37 @@ class Text2ImageHelperService
         
         if (!$this->textToImageManager->hasProviders()) {
             $this->logger->error('No text to image processing provider available');
-            return ['error' => 'No text to image processing provider available'];
+            throw new Exception('No text to image processing provider available');
         }
         
-
-        $result = [];
         // Generate nResults prompts
-        for ($i = 0; $i < $nResults; $i++) {
-            $imageId = (string) bin2hex(random_bytes(16));
-            $promptTask = new Task($prompt, Application::APP_ID, 1, $this->userId, $imageId);
-            try {
-                $this->textToImageManager->runOrScheduleTask($promptTask);
-            } catch (Exception $e) {
-                $this->logger->error('Image generation task or task scheduling failed: ' . $e->getMessage());
-                return ['error' => 'Image generation task or task scheduling failed'];
-            }
-            
-            if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
-                $expCompletionTime = new DateTime('now');    
-            } else {
-                $expCompletionTime = $promptTask->getCompletionExpectedAt();
-                $expCompletionTime = $expCompletionTime ?? new DateTime('now');
-            }
-            
+        $imageId = (string) bin2hex(random_bytes(16));
+        $promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageId);
+        
+        $this->textToImageManager->scheduleTask($promptTask);        
+        
+        if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
+            $expCompletionTime = new DateTime('now');    
+        } else {
+            $expCompletionTime = $promptTask->getCompletionExpectedAt();
+            $expCompletionTime = $expCompletionTime ?? new DateTime('now');
             $this->logger->info('Task scheduled. Expected completion time: ' . $expCompletionTime->format('Y-m-d H:i:s'));
-            // Store the image id to the db:            
-            $this->imageGenerationMapper->createImageGeneration($imageId, $imageId.'.jpg', $displayPrompt ? $prompt : '',$expCompletionTime->getTimestamp());
-
-            $imageUrl = $this->urlGenerator->linkToRouteAbsolute(
-                Application::APP_ID . '.Text2ImageHelper.getImage',
-                [
-                    'imageId' => $imageId,		
-                ]
-            );
-
-            $result[] = ['url'=>$imageUrl, 'prompt'=>$prompt, 'image_id'=>$imageId];
         }
+        
+        // Store the image id to the db:            
+        $this->imageGenerationMapper->createImageGeneration($imageId, '', $displayPrompt ? $prompt : '',$expCompletionTime->getTimestamp());
 
+        $imageUrl = $this->urlGenerator->linkToRouteAbsolute(
+            Application::APP_ID . '.Text2ImageHelper.getImage',
+            [
+                'imageId' => $imageId,		
+            ]
+        );
 
         // Save the prompt to database
         $this->promptMapper->createPrompt($userId, $prompt);
 
-        return $result;
+        return ['url' => $imageUrl, 'imageId' => $imageId, 'prompt' => $prompt];
     }
 
     /**

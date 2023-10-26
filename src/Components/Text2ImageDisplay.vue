@@ -89,7 +89,7 @@ export default {
 		getImage() {
 			let success = false
 			axios.get(this.src)
-				.then(response => {
+				.then((response) => {
 					if (response.status === 200) {
 						// Check the headers, if the response is image/jpeg:
 						if (response.headers['content-type'] === 'image/jpeg') {
@@ -108,15 +108,19 @@ export default {
 								}
 							}
 						}
+					} else {
+						console.error('Unexpected response status: ' + response.status)
 					}
 				})
-				.catch(error => {
-					console.error(error)
-					if (error.data?.error !== undefined) {
-						this.errorMsg = error.data.error
+				.catch((error) => {
+					if (error.response?.data?.error !== undefined) {
+						this.errorMsg = error.response.data.error
 						this.failed = true
 						this.isImageLoading = false
+					} else {
+						console.error('Could not handle response error: ' + error)
 					}
+
 				})
 				// If we didn't succeed in loading the image, try again
 			if (!success && !this.failed && !this.closed) {
