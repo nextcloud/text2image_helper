@@ -90,7 +90,7 @@ class Text2ImageHelperService
                 ]
             );
 
-            $result[] = ['url'=>$imageUrl, 'prompt'=>$prompt];
+            $result[] = ['url'=>$imageUrl, 'prompt'=>$prompt, 'image_id'=>$imageId];
         }
 
 
@@ -235,4 +235,55 @@ class Text2ImageHelperService
             ],
         ];
     }
+
+    /**
+     * Cancel image generation
+     * @param string $imageId
+     * @param string $userId
+     * @return void
+     */
+    public function cancelGeneration(string $imageId, string $userId): void 
+    {
+        // Get the task if it exists
+        try {
+            $task = $this->textToImageManager->getUserTasksByApp($userId, Application::APP_ID, $imageId);
+        } catch (Exception $e) {
+            $this->logger->debug('Task cancellation failed or it does not exist: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+            $task = [];
+        }
+
+        if (count($task) > 0) {
+            // Cancel the task
+            $this->textToImageManager->deleteTask($task[0]);
+        }
+        
+        // If the generation completed, delete the image file:
+        try {
+            $imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId($imageId);
+        } catch (Exception $e) {
+            $this->logger->debug('Image generation not in db: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+            $imageGeneration = null;
+        }
+        if ($imageGeneration) {
+            if ($imageGeneration->getIsGenerated()) {
+                $imageDataFolder = $this->getImageDataFolder();
+                if ($imageDataFolder !== null) {
+                    try {
+                        $imageFile = $imageDataFolder->getFile($imageGeneration->getFileName());
+                        $imageFile->delete();
+                    } catch (NotFoundException $e) {
+                        $this->logger->debug('Image deletion error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+                    }
+                }
+            }
+        }
+
+        // Delete the image generation from db
+        try {
+            $this->imageGenerationMapper->deleteImageGeneration($imageId);
+        } catch (Exception $e) {
+            $this->logger->debug('Image generation db entry deletion error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+        }
+    }
+
 }

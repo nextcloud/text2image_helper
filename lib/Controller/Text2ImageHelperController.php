@@ -84,4 +84,18 @@ class Text2ImageHelperController extends Controller
 			['Content-Type' => $result['headers']['Content-Type'][0] ?? 'image/jpeg']
 		);
 	}
+
+	/**
+	 * Cancel image generation
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * @param string $imageId
+	 * @return DataResponse
+	 */
+	public function cancelGeneration(string $imageId): DataResponse
+	{
+		// We also supply the userId to prevent users from cancelling other users' image generations
+		$this->text2ImageHelperService->cancelGeneration($imageId, $this->userId);
+		return new DataResponse('success', Http::STATUS_OK);
+	}
 }

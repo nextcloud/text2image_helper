@@ -38,6 +38,6 @@ class Text2ImageHelperProvider implements IProvider {
 	}
 
 	public function getExpectedRuntime(): int {
-		return 1;
+		return 1000;
 	}
 }

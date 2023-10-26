@@ -128,6 +128,7 @@ export default {
 			displayPrompt: true,
 			completionNumber: 1,
 			prompts: null,
+			submitted: false,
 		}
 	},
 
@@ -157,6 +158,12 @@ export default {
 		}
 	},
 
+	beforeDestroy() {
+		if (!this.submitted) {
+			this.cancelGenerations()
+		}
+	},
+
 	methods: {
 		focusOnInput() {
 			setTimeout(() => {
@@ -178,6 +185,7 @@ export default {
 				})
 		},
 		submit() {
+			this.submitted = true
 			// Get all urls in the results and emit them as one string
 			const emitString = this.results.map(r => r.url).join('\n')
 			this.$emit('submit', emitString.trim())
@@ -190,7 +198,30 @@ export default {
 				})
 			}
 		},
+		cancelGenerations() {
+			// Loop through the results and cancel all generations
+			this.results.forEach(r => {
+				const url = generateUrl('/apps/text2image_helper/cancel_generation')
+				axios.post(url, { imageId: r.image_id })
+					.catch((error) => {
+						console.error('Image generation cancel request error', error)
+						showError(
+							t('text2image_helper', 'Image generation cancel error') + ': '
+							+ (error.response?.data?.body?.error?.message
+								|| error.response?.data?.body?.error?.code
+								|| error.response?.data?.error
+								|| t('text2image_helper', 'Unknown image generation cancel error')
+							),
+						)
+					})
+			})
+		},
 		generate() {
+
+			if (this.results !== null) {
+				this.cancelGenerations()
+			}
+
 			if (this.query === '') {
 				return
 			}
@@ -227,7 +258,12 @@ export default {
 				})
 		},
 		processCompletion(response) {
-			this.results = response.filter(c => !!c.url && !!c.prompt).map(c => ({ url: c.url.replace(/^\s+|\s+$/g, ''), prompt: c.prompt.replace(/^\s+|\s+$/g, '') }))
+			this.results = response.filter(c => !!c.url && !!c.prompt)
+				.map(c => ({
+					url: c.url.replace(/^\s+|\s+$/g, ''),
+					prompt: c.prompt.replace(/^\s+|\s+$/g, ''),
+					image_id: c.image_id.replace(/^\s+|\s+$/g, ''),
+				}))
 			if (this.results.length === 0) {
 				this.results = null
 			}
