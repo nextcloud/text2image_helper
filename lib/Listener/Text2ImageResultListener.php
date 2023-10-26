@@ -51,7 +51,7 @@ class Text2ImageResultListener implements IEventListener {
             //$error = $event->getErrorMessage();
             //$userId = $event->getTask()->getUserId();            
             $this->imageGenerationMapper->setImageGenerationFileName($event->getTask()->getIdentifier(), '');
-            $this->imageGenerationMapper->setImageGenerated($event->getTask()->getIdentifier(), false);
+            $this->imageGenerationMapper->setImageGenerated($event->getTask()->getIdentifier(), true);
 
             //$this->imageGenerationMapper->deleteImageGeneration($event->getTask()->getIdentifier());
         }
