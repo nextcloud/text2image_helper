@@ -192,11 +192,17 @@ class Text2ImageHelperService
             $imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId($imageId);
         } catch (Exception $e) {
             $this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
-            return ['error' => 'Image not found or processing failed'];
+            return ['error' => 'Image not found. It may have been deleted due to not being viewed for a long time.'];
         }
         
         if ($imageGeneration->getIsGenerated() === false) {
-            return ['processing' => 'Image not processed yet'];
+            // The image is being generated.
+            // Return the expected completion time as UTC timestamp
+            $completionExpectedAt = $imageGeneration->getExpGenTime();
+            return ['processing' => $completionExpectedAt];
+        } else if ($imageGeneration->getFileName() === '') {
+            // On TaskFailedEvent the file name is set to an empty string
+            return ['error' => 'Image generation failed'];
         }
         
         $imageDataFolder = $this->getImageDataFolder();
@@ -204,8 +210,6 @@ class Text2ImageHelperService
             $this->logger->debug('Image request error : Could not open image storage folder', ['app' => Application::APP_ID]);
             return ['error' => 'Could not open image storage folder'];
         }
-
-        
 
         // Load image from disk
         try {
@@ -218,13 +222,14 @@ class Text2ImageHelperService
             return ['error' => 'Image file not found'];
         }
 
+        // Prevent the image generation from going stale if it's being viewed
         if ($updateTimestamp) {
             $this->imageGenerationMapper->touchImageGeneration($imageId);
         }
 
         // Return image content and headers
         return [
-            'body' => $imageContent,
+            'image' => $imageContent,
             'headers' => [
                 'Content-Type' => ['image/jpeg'],
             ],

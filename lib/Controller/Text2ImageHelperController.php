@@ -8,6 +8,7 @@ use OCA\Text2ImageHelper\Service\Text2ImageHelperService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http\DataDisplayResponse;
 use OCP\IRequest;
 
 class Text2ImageHelperController extends Controller
@@ -62,13 +63,25 @@ class Text2ImageHelperController extends Controller
 	 * @NoCSRFRequired
 	 *
 	 * @param string $imageId
-	 * @return DataResponse
+	 * @return DataDisplayResponse | DataResponse
 	 */
-	public function getImage(string $imageId): DataResponse
+	public function getImage(string $imageId): DataDisplayResponse | DataResponse
 	{
 
 		$result = $this->text2ImageHelperService->getImage($imageId, true);
 
-		return (isset($result['error']) || $result === null) ? new DataResponse($result, Http::STATUS_BAD_REQUEST) : new DataResponse($result);
+		if (isset($result['error']) || $result === null) {
+			return new DataResponse($result, Http::STATUS_NOT_FOUND);
+		}
+
+		if (isset($result['processing'])) {
+			return new DataResponse($result, Http::STATUS_OK);
+		}
+
+		return new DataDisplayResponse(
+			$result['image'],
+			Http::STATUS_OK,
+			['Content-Type' => $result['headers']['Content-Type'][0] ?? 'image/jpeg']
+		);
 	}
 }

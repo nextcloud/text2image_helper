@@ -25,16 +25,16 @@
 			:aria-label="t('text2image_helper', 'Generated image')"
 			@load="isImageLoading = false"
 			@error="onError">
-		<div v-if="!failed && imageUrl === ''"
+		<div v-if="!failed && imageUrl === '' && timeUntilCompletion !== null"
 			class="processing-notification-container">
 			<div class="processing-notification">
 				<InformationOutlineIcon :size="20" class="icon" />
-				{{ t('text2image_helper', 'Please, note that image generation can take a very long time depending on the provider.\n') }}
+				{{ t('text2image_helper', 'Generation time left (h:m): ' + timeUntilCompletion) + '\n' }}
 				{{ t('text2image_helper', 'The generated image is shown once ready.') }}
 			</div>
 		</div>
-		<span v-if="failed">
-			{{ errorMsg }}
+		<span v-if="failed" class="error_msg">
+			{{ t('text2image_helper', errorMsg) }}
 		</span>
 	</div>
 </template>
@@ -69,29 +69,44 @@ export default {
 	data() {
 		return {
 			isImageLoading: true,
+			timeUntilCompletion: null,
 			failed: false,
 			imageUrl: '',
 			errorMsg: t('text2image_helper', 'Image generation failed'),
+			closed: false,
 		}
 	},
 
 	computed: {
 	},
-
 	mounted() {
 		this.getImage()
 	},
-
+	unmounted() {
+		this.closed = true
+	},
 	methods: {
 		getImage() {
 			let success = false
 			axios.get(this.src, { responseType: 'arraybuffer' })
 				.then(response => {
 					if (response.status === 200) {
-						if (response.data?.body !== undefined) {
-							const blob = new Blob([response.data.body], { type: 'image/jpeg' })
+						// Check the headers, if the response is image/jpeg:
+						if (response.headers['content-type'] === 'image/jpeg') {
+							// Create a blob from the response data
+							const blob = new Blob([response.data], { type: 'image/jpeg' })
+							// Create an object URL from the blob
 							this.imageUrl = URL.createObjectURL(blob)
 							success = true
+						} else {
+							if (response.data?.processing !== undefined) {
+								const completionTimeStamp = response.data.processing
+								// If the completionTimeEst (UTC timestamp) is more than 60 seconds in the future,
+								// display the time to the user
+								if (completionTimeStamp > (Date.now() / 1000) + 60) {
+									this.updateTimeUntilCompletion(completionTimeStamp)
+								}
+							}
 						}
 					} else {
 						console.error(response)
@@ -106,9 +121,27 @@ export default {
 					console.error(error)
 				})
 				// If we didn't succeed in loading the image, try again
-			if (!success && !this.failed) {
-				// TODO: prevent looping if the dialog is closed
+			if (!success && !this.failed && !this.closed) {
 				setTimeout(this.getImage, 3000)
+			}
+		},
+		updateTimeUntilCompletion(completionTimeStamp) {
+			const timeDifference = new Date(completionTimeStamp * 1000) - new Date()
+			if (timeDifference < 60000) {
+				this.timeUntilCompletion = null
+				return
+			}
+
+			const hours = Math.floor(timeDifference / (1000 * 60 * 60))
+			const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / 60000)
+			const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000)
+			this.timeUntilCompletion = `${hours}:${minutes.toString().padStart(2, '0')}`
+
+			// Schedule next update at the next minute change:
+			if (!this.closed) {
+				setTimeout(() => {
+					this.updateTimeUntilCompletion(completionTimeStamp)
+				}, seconds * 1000 + 1000)
 			}
 		},
 		onError(e) {
@@ -124,7 +157,6 @@ export default {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
-	height: 100%;
 
 	.image {
 		max-height: 300px;
@@ -164,6 +196,14 @@ export default {
 			// Add some space between the icon and the text on the same line
 			column-gap: 24px;
 		}
+	}
+
+	.error_msg {
+		color: var(--color-error);
+		font-weight: bold;
+		margin-bottom: 24px;
+		align-self: center;
+
 	}
 }
 

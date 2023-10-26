@@ -82,16 +82,37 @@ class ImageGenerationMapper extends QBMapper
 	}
 
 	/**
-	 * Set image as processed
+	 * Update the file name of an image generation
 	 * @param string $imageId
+	 * @param string $fileName
 	 * @return int
 	 * @throws Exception
 	 */
-	public function setImageGenerated(string $imageId): int
+	public function setImageGenerationFileName(string $imageId, string $fileName): int
 	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
-			->set('is_generated', $qb->createNamedParameter(true, IQueryBuilder::PARAM_BOOL))
+			->set('file_name', $qb->createNamedParameter($fileName, IQueryBuilder::PARAM_STR))
+			->where(
+				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
+			);
+		$count = $qb->executeStatement();
+		$qb->resetQueryParts();
+		return $count;
+	}
+
+	/**
+	 * Set image as processed
+	 * @param string $imageId
+	 * @param bool $isGenerated
+	 * @return int
+	 * @throws Exception
+	 */
+	public function setImageGenerated(string $imageId, bool $isGenerated = true): int
+	{
+		$qb = $this->db->getQueryBuilder();
+		$qb->update($this->getTableName())
+			->set('is_generated', $qb->createNamedParameter($isGenerated, IQueryBuilder::PARAM_BOOL))
 			->where(
 				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
 			);

@@ -34,7 +34,7 @@ class Text2ImageResultListener implements IEventListener {
         if (!$event instanceof AbstractTextToImageEvent || $event->getTask()->getAppId() !== Application::APP_ID) {
             return;
         }
-        $this->logger->warning("OOOOOOOOOOOOOOOOOOOMMMMMMMMMMMMMMMMMMMMMMMMMMMMGGGGGGGGGGGGGGGGGGGGGGGG!");
+        $this->logger->warning("TextToImageEvent received");
 
         if ($event instanceof TaskSuccessfulEvent) {
 
@@ -47,10 +47,13 @@ class Text2ImageResultListener implements IEventListener {
 
         if ($event instanceof TaskFailedEvent) {
             $this->logger->warning('Image generation task failed');
-            $error = $event->getErrorMessage();
-            $userId = $event->getTask()->getUserId();
             //TODO: Notify user of error
-            $this->imageGenerationMapper->deleteImageGeneration($event->getTask()->getIdentifier());
+            //$error = $event->getErrorMessage();
+            //$userId = $event->getTask()->getUserId();            
+            $this->imageGenerationMapper->setImageGenerationFileName($event->getTask()->getIdentifier(), '');
+            $this->imageGenerationMapper->setImageGenerated($event->getTask()->getIdentifier(), false);
+
+            //$this->imageGenerationMapper->deleteImageGeneration($event->getTask()->getIdentifier());
         }
     }
 }

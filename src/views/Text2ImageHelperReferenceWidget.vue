@@ -49,12 +49,14 @@ export default {
 
 <style scoped lang="scss">
 .text2image-helper-reference {
+	display: flex;
+	flex-direction: column;
 	width: 100%;
 	padding: 12px;
-	white-space: normal;
 	.image {
-		max-height: 300px;
-		max-width: 100%;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
 		border-radius: var(--border-radius);
 		margin-top: 8px;
 	}
