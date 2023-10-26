@@ -88,7 +88,7 @@ export default {
 	methods: {
 		getImage() {
 			let success = false
-			axios.get(this.src, { responseType: 'arraybuffer' })
+			axios.get(this.src)
 				.then(response => {
 					if (response.status === 200) {
 						// Check the headers, if the response is image/jpeg:

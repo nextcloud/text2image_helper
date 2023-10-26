@@ -10,6 +10,7 @@ use OCP\AppFramework\Bootstrap\IRegistrationContext;
 use OCA\Text2ImageHelper\Listener\Text2ImageHelperReferenceListener;
 use OCA\Text2ImageHelper\Listener\Text2ImageResultListener;
 use OCA\Text2ImageHelper\Reference\Text2ImageHelperReferenceProvider;
+use OCA\Text2ImageHelper\TextProcessing\Text2ImageHelperProvider;
 use OCP\AppFramework\App;
 use OCP\Collaboration\Reference\RenderReferenceEvent;
 use OCP\TextToImage\Events\TaskSuccessfulEvent;
@@ -35,6 +36,7 @@ class Application extends App implements IBootstrap
 		$context->registerEventListener(RenderReferenceEvent::class, Text2ImageHelperReferenceListener::class);
 		$context->registerEventListener(TaskSuccessfulEvent::class, Text2ImageResultListener::class);
 		$context->registerEventListener(TaskFailedEvent::class, Text2ImageResultListener::class);
+		$context->registerTextToImageProvider(Text2ImageHelperProvider::class);
 	}
 
 	public function boot(IBootContext $context): void

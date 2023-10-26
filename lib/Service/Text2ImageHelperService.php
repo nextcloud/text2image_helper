@@ -74,10 +74,19 @@ class Text2ImageHelperService
         for ($i = 0; $i < $nResults; $i++) {
             $imageId = (string) bin2hex(random_bytes(16));
             $promptTask = new Task($prompt, Application::APP_ID, 1, $this->userId, $imageId);
-            $this->textToImageManager->scheduleTask($promptTask);
-
-            $expCompletionTime = $promptTask->getCompletionExpectedAt();
-            $expCompletionTime = $expCompletionTime ?? new DateTime('now');
+            try {
+                $this->textToImageManager->runOrScheduleTask($promptTask);
+            } catch (Exception $e) {
+                $this->logger->error('Image generation task or task scheduling failed: ' . $e->getMessage());
+                return ['error' => 'Image generation task or task scheduling failed'];
+            }
+            
+            if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
+                $expCompletionTime = 0;    
+            } else {
+                $expCompletionTime = $promptTask->getCompletionExpectedAt();
+                $expCompletionTime = $expCompletionTime ?? new DateTime('now');
+            }
             
             $this->logger->info('Task scheduled. Expected completion time: ' . $expCompletionTime->format('Y-m-d H:i:s'));
             // Store the image id to the db:            
