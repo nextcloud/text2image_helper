@@ -108,17 +108,15 @@ export default {
 								}
 							}
 						}
-					} else {
-						console.error(response)
-						if (response.data?.error !== undefined) {
-							this.errorMsg = response.data.error
-							this.failed = true
-							this.isImageLoading = false
-						}
 					}
 				})
 				.catch(error => {
 					console.error(error)
+					if (error.data?.error !== undefined) {
+						this.errorMsg = error.data.error
+						this.failed = true
+						this.isImageLoading = false
+					}
 				})
 				// If we didn't succeed in loading the image, try again
 			if (!success && !this.failed && !this.closed) {

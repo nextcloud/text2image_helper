@@ -82,7 +82,7 @@ class Text2ImageHelperService
             }
             
             if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
-                $expCompletionTime = 0;    
+                $expCompletionTime = new DateTime('now');    
             } else {
                 $expCompletionTime = $promptTask->getCompletionExpectedAt();
                 $expCompletionTime = $expCompletionTime ?? new DateTime('now');
