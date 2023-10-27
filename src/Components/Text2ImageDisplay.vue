@@ -79,6 +79,7 @@ export default {
 			isOwner: false,
 			errorMsg: t('text2image_helper', 'Image generation failed'),
 			closed: false,
+			success: false,
 		}
 	},
 
@@ -99,13 +100,12 @@ export default {
 			})
 		},
 		getImageGenInfo() {
-			let success = false
 			axios.get(this.src)
 				.then((response) => {
 					if (response.status === 200) {
 						if (response.data?.files !== undefined) {
 							this.isOwner = response.data.is_owner
-							success = true
+							this.success = true
 							this.getImages(response.data.image_gen_id, response.data.files)
 							this.onGenerationReady()
 						} else {
@@ -130,7 +130,7 @@ export default {
 					this.onError(error)
 				})
 				// If we didn't succeed in loading the image, try again
-			if (!success && !this.failed && !this.closed) {
+			if (!this.success && !this.failed && !this.closed) {
 				setTimeout(this.getImageGenInfo, 3000)
 			}
 		},
