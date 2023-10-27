@@ -14,8 +14,11 @@ return [
 	'routes' => [
 		['name' => 'Text2ImageHelper#processPrompt', 'url' => '/process_prompt', 'verb' => 'POST'],			
 		['name' => 'Text2ImageHelper#getPromptHistory', 'url' => '/prompt_history', 'verb' => 'GET'],
-		['name' => 'Text2ImageHelper#getImage', 'url' => '/i/{imageId}', 'verb' => 'GET'],
+		['name' => 'Text2ImageHelper#getGenerationInfo', 'url' => '/i/{imageGenId}', 'verb' => 'GET'],
+		['name' => 'Text2ImageHelper#getImage', 'url' => '/g/{imageGenId}/{fileNameId}', 'verb' => 'GET'],
 		['name' => 'Text2ImageHelper#cancelGeneration', 'url' => '/cancel_generation', 'verb' => 'POST'],
+		['name' => 'Text2ImageHelper#setVisibilityOfImageFiles', 'url' => '/v/{imageGenId}', 'verb' => 'POST'],
+		['name' => 'Text2ImageHelper#notifyWhenReady', 'url' => '/n/{imageGenId}', 'verb' => 'POST'],
 
 		['name' => 'config#setAdminConfig', 'url' => '/admin-config', 'verb' => 'PUT'],
 	],

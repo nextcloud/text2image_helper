@@ -35,7 +35,7 @@ class Text2ImageHelperController extends Controller
 	public function processPrompt(string $prompt, int $nResults = 1, ?bool $displayPrompt = false): DataResponse
 	{
 		$displayPrompt === null ? false : $displayPrompt;
-		$result = $this->text2ImageHelperService->processPrompt($prompt, $nResults, $this->userId, $displayPrompt);
+		$result = $this->text2ImageHelperService->processPrompt($prompt, $nResults, $displayPrompt);
 		
 		if (isset($result['error'])) {
 			return new DataResponse($result, Http::STATUS_BAD_REQUEST);
@@ -65,18 +65,19 @@ class Text2ImageHelperController extends Controller
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 *
-	 * @param string $imageId
+	 * @param string $imageGenId
+	 * @param int $fileNameId
 	 * @return DataDisplayResponse | DataResponse
 	 */
-	public function getImage(string $imageId): DataDisplayResponse | DataResponse
+	public function getImage(string $imageGenId, int $fileNameId): DataDisplayResponse | DataResponse
 	{
 
-		$result = $this->text2ImageHelperService->getImage($imageId, true);
-
-		if (isset($result['error']) || $result === null) {
-			return new DataResponse($result, Http::STATUS_NOT_FOUND);
+		try {
+			$result = $this->text2ImageHelperService->getImage($imageGenId, $fileNameId);
+		} catch (Exception $e) {
+			return new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
 		}
-
+		
 		if (isset($result['processing'])) {
 			return new DataResponse($result, Http::STATUS_OK);
 		}
@@ -89,16 +90,71 @@ class Text2ImageHelperController extends Controller
 	}
 
 	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * 
+	 * @param string $imageGenId
+	 * @return DataResponse
+	 */
+	public function getGenerationInfo(string $imageGenId): DataResponse
+	{
+		try {
+			$result = $this->text2ImageHelperService->getGenerationInfo($imageGenId,true);
+		} catch (Exception $e) {
+			return new DataResponse($e->getMessage(), Http::STATUS_NOT_FOUND);
+		}
+		
+		return new DataResponse($result, Http::STATUS_OK);
+	}	
+
+	/**
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * 
+	 * @param string $imageGenId
+	 * @param string $fileIdVisArray
+	 */
+	public function setVisibilityOfImageFiles(string $imageGenId, string $fileIdVisArray): DataResponse
+	{	
+		$fileIdVisArray = json_decode(trim($fileIdVisArray), true);
+		
+		if (!is_array($fileIdVisArray)) {
+			return new DataResponse('Hidden file name ids could not be decoded to an array', Http::STATUS_BAD_REQUEST);
+		}
+
+		try {
+			$this->text2ImageHelperService->setVisibilityOfImageFiles($imageGenId, $fileIdVisArray);
+		} catch (Exception $e) {
+			return new DataResponse($e->getMessage(), Http::STATUS_NOT_FOUND);
+		}
+		
+		return new DataResponse('success', Http::STATUS_OK);
+	}
+
+	/**
+	 * Notify when image generation is ready
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 */
+	public function notifyWhenReady(string $imageGenId): DataResponse
+	{
+		try {
+			$this->text2ImageHelperService->notifyWhenReady($imageGenId);
+		} catch (Exception $e) {
+			return new DataResponse($e->getMessage(), Http::STATUS_BAD_REQUEST);
+		}
+		return new DataResponse('success', Http::STATUS_OK);
+	}
+	/**
 	 * Cancel image generation
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
-	 * @param string $imageId
+	 * @param string $imageGenId
 	 * @return DataResponse
 	 */
-	public function cancelGeneration(string $imageId): DataResponse
+	public function cancelGeneration(string $imageGenId): DataResponse
 	{
-		// We also supply the userId to prevent users from cancelling other users' image generations
-		$this->text2ImageHelperService->cancelGeneration($imageId, $this->userId);
+		$this->text2ImageHelperService->cancelGeneration($imageGenId);
 		return new DataResponse('success', Http::STATUS_OK);
 	}
 }

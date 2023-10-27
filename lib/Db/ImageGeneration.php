@@ -9,41 +9,48 @@ namespace OCA\Text2ImageHelper\Db;
 use OCP\AppFramework\Db\Entity;
 
 /**
- * @method string getImageId()
- * @method void setImageId(string $imageId)
- * @method string getFileName()
+ * @method string getImageGenId()
+ * @method void setImageGenId(string $imageGenId)
  * @method string getPrompt()
  * @method void setPrompt(string $prompt)
- * @method void setFileName(string $fileName)
+ * @method void setUserId(string $userId)
+ * @method string getUserId()
  * @method void setTimestamp(int $timestamp)
  * @method int getTimestamp()
  * @method void setExpGenTime(int $expGenTime)
  * @method int getExpGenTime()
+ 
  */
 class ImageGeneration extends Entity implements \JsonSerializable
 {
 
 	/** @var string */
-	protected $imageId;
-	/** @var string */
-	protected $fileName;
+	protected $imageGenId;
 	/** @var string */
 	protected $prompt;
+	/** @var string */
+	protected $userId;
 	/** @var int */
 	protected $timestamp;
 	/** @var boolean */
 	protected $isGenerated;
+	/** @var boolean */
+	protected $failed;
+	/** @var boolean */
+	protected $notifyReady;
 	/** @var int */
 	protected $expGenTime;
 
 
 	public function __construct()
 	{
-		$this->addType('image_id', 'string');
-		$this->addType('file_name', 'string');
+		$this->addType('image_gen_id', 'string');
 		$this->addType('prompt', 'string');
+		$this->addType('user_id', 'string');
 		$this->addType('timestamp', 'int');
 		$this->addType('is_generated', 'boolean');
+		$this->addType('failed', 'boolean');
+		$this->addType('notify_ready', 'boolean');
 		$this->addType('exp_gen_time', 'int');
 	}
 
@@ -52,11 +59,13 @@ class ImageGeneration extends Entity implements \JsonSerializable
 	{
 		return [
 			'id' => $this->id,
-			'image_id' => $this->imageId,
-			'file_name' => $this->fileName,
+			'image_gen_id' => $this->imageGenId,
 			'prompt' => $this->prompt,
+			'user_id'=> $this->userId,
 			'timestamp' => $this->timestamp,
 			'is_generated' => $this->isGenerated,
+			'failed' => $this->failed,
+			'notify_ready'=> $this->notifyReady,
 			'exp_gen_time' => $this->expGenTime,
 		];
 	}
@@ -68,5 +77,25 @@ class ImageGeneration extends Entity implements \JsonSerializable
 	public function getIsGenerated(): bool
 	{
 		return $this->isGenerated === true;
+	}
+
+	public function setFailed(?bool $failed)
+	{
+		$this->failed = $failed;
+	}
+
+	public function getFailed(): bool
+	{
+		return $this->failed === true;
+	}
+
+	public function setNotifyReady(?bool $notifyReady)
+	{
+		$this->notifyReady = $notifyReady;
+	}
+
+	public function getNotifyReady(): bool
+	{
+		return $this->notifyReady === true;
 	}
 }

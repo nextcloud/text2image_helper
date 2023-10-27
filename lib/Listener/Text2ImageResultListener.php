@@ -34,24 +34,27 @@ class Text2ImageResultListener implements IEventListener {
         if (!$event instanceof AbstractTextToImageEvent || $event->getTask()->getAppId() !== Application::APP_ID) {
             return;
         }
-        $this->logger->warning("TextToImageEvent received");
+        $this->logger->debug("TextToImageEvent received");
+
+        $imageGenId = $event->getTask()->getIdentifier();
 
         if ($event instanceof TaskSuccessfulEvent) {
-
-            //TODO: For now only support generating/receiving single images
+            $this->logger->debug("TextToImageEvent succeeded");
             /** @var IImage $image */
-            $image = $event->getTask()->getOutputImages()[0];
-            //TODO: Notify user of success
-            $this->text2ImageService->storeImage($image, $event->getTask()->getIdentifier());
+                        
+            $images = $event->getTask()->getOutputImages();
+            
+            $this->text2ImageService->storeImages($images, $event->getTask()->getIdentifier());            
         }
 
         if ($event instanceof TaskFailedEvent) {
-            $this->logger->warning('Image generation task failed: ' . $event->getTask()->getIdentifier());
+            
+
+            $this->logger->warning('Image generation task failed: ' . $imageGenId);
             //TODO: Notify user of error
             //$error = $event->getErrorMessage();
             //$userId = $event->getTask()->getUserId();            
-            $this->imageGenerationMapper->setImageGenerationFileName($event->getTask()->getIdentifier(), '');
-            $this->imageGenerationMapper->setImageGenerated($event->getTask()->getIdentifier(), true);
+            $this->imageGenerationMapper->setFailed($imageGenId, true);
         }
     }
 }

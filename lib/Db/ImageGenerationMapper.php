@@ -18,83 +18,68 @@ use OCP\IDBConnection;
 
 class ImageGenerationMapper extends QBMapper
 {
-	public function __construct(IDBConnection $db)
+	public function __construct(IDBConnection $db, private ImageFileNameMapper $imageFileNameMapper)
 	{
 		parent::__construct($db, 't2ih_generations', ImageGeneration::class);
 	}
 
 	/**
-	 * @param string $imageId
-	 * @return array|Entity
-	 * @throws Exception
-	 */
-	public function getImageGenerationsOfImage(string $imageId): array
-	{
-		$qb = $this->db->getQueryBuilder();
-
-		$qb->select('*')
-			->from($this->getTableName())
-			->where(
-				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
-			);
-
-		return $this->findEntities($qb);
-	}
-
-	/**
-	 * @param string $imageId
+	 * @param string $imageGenId
 	 * @param int $fileNameId
 	 * @return ImageGeneration
 	 * @throws Exception
 	 * @throws DoesNotExistException
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getImageGenerationOfImageId(string $imageId): ImageGeneration
+	public function getImageGenerationOfImageGenId(string $imageGenId): ImageGeneration
 	{
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
 			->from($this->getTableName())
 			->where(
-				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
+				$qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
 			);
 
 		return $this->findEntity($qb);
 	}
 
 	/**
-	 * @param string $imageId
-	 * @param string $fileName
+	 * @param string $imageGenId
 	 * @param string $prompt
+	 * @param string $userId
+	 * @param int|null $expCompletionTime
 	 * @return ImageGeneration
 	 * @throws Exception
 	 */
-	public function createImageGeneration(string $imageId, string $fileName, string $prompt = '',?int $expCompletionTime = null): ImageGeneration
+	public function createImageGeneration(string $imageGenId, string $prompt = '',string $userId = '',?int $expCompletionTime = null): ImageGeneration
 	{
 		$imageGeneration = new ImageGeneration();
-		$imageGeneration->setImageId($imageId);
-		$imageGeneration->setFileName($fileName);
+		$imageGeneration->setImageGenId($imageGenId);
 		$imageGeneration->setTimestamp((new DateTime())->getTimestamp());
 		$imageGeneration->setPrompt($prompt);
+		$imageGeneration->setUserId($userId);
 		$imageGeneration->setIsGenerated(false);
+		$imageGeneration->setFailed(false);
+		$imageGeneration->setNotifyReady(false);
 		$imageGeneration->setExpGenTime($expCompletionTime ?? (new DateTime())->getTimestamp());
 		return $this->insert($imageGeneration);
 	}
 
 	/**
-	 * Update the file name of an image generation
-	 * @param string $imageId
-	 * @param string $fileName
+	 * Set image as processed
+	 * @param string $imageGenId
+	 * @param bool $isGenerated
 	 * @return int
 	 * @throws Exception
 	 */
-	public function setImageGenerationFileName(string $imageId, string $fileName): int
+	public function setImagesGenerated(string $imageGenId, bool $isGenerated = true): int
 	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
-			->set('file_name', $qb->createNamedParameter($fileName, IQueryBuilder::PARAM_STR))
+			->set('is_generated', $qb->createNamedParameter($isGenerated, IQueryBuilder::PARAM_BOOL))
 			->where(
-				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
+				$qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
 			);
 		$count = $qb->executeStatement();
 		$qb->resetQueryParts();
@@ -102,19 +87,19 @@ class ImageGenerationMapper extends QBMapper
 	}
 
 	/**
-	 * Set image as processed
-	 * @param string $imageId
-	 * @param bool $isGenerated
+	 * Set failed flag
+	 * @param string $imageGenId
+	 * @param bool $isFailed
 	 * @return int
 	 * @throws Exception
 	 */
-	public function setImageGenerated(string $imageId, bool $isGenerated = true): int
+	public function setFailed(string $imageGenId, bool $isFailed = true): int
 	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
-			->set('is_generated', $qb->createNamedParameter($isGenerated, IQueryBuilder::PARAM_BOOL))
+			->set('failed', $qb->createNamedParameter($isFailed, IQueryBuilder::PARAM_BOOL))
 			->where(
-				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
+				$qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
 			);
 		$count = $qb->executeStatement();
 		$qb->resetQueryParts();
@@ -123,17 +108,17 @@ class ImageGenerationMapper extends QBMapper
 
 	/**
 	 * Touch timestamp of image generation
-	 * @param string $imageId
+	 * @param string $imageGenId
 	 * @return int
 	 * @throws Exception
 	 */
-	public function touchImageGeneration(string $imageId): int
+	public function touchImageGeneration(string $imageGenId): int
 	{
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
 			->set('timestamp', $qb->createNamedParameter((new DateTime())->getTimestamp(), IQueryBuilder::PARAM_INT))
 			->where(
-				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
+				$qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
 			);
 		$count = $qb->executeStatement();
 		$qb->resetQueryParts();
@@ -141,20 +126,51 @@ class ImageGenerationMapper extends QBMapper
 	}
 
 	/**
-	 * @param string $imageId
+	 * Delete image generation and associated file name entries
+	 * @param string $imageGenId
 	 * @return void
 	 * @throws Exception
 	 */
-	public function deleteImageGeneration(string $imageId): void
+	public function deleteImageGeneration(string $imageGenId): void
 	{
+		// Also delete associated file names, so first get the id for imageGenId:
+		try {
+			$rowId = $this->getImageGenerationOfImageGenId($imageGenId)->getId();
+		} catch (Exception|DoesNotExistException|MultipleObjectsReturnedException $e) {
+			return;
+		}		
+				
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete($this->getTableName())
 			->where(
-				$qb->expr()->eq('image_id', $qb->createNamedParameter($imageId, IQueryBuilder::PARAM_STR))
+				$qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
 			);
 		$qb->executeStatement();
 		$qb->resetQueryParts();
+
+		// If the  previous query was successful, delete associated file names:
+		$this->imageFileNameMapper->deleteImageFileNamesOfGenerationId($rowId);
 	}
+
+	/**
+	 * Set notifyReady flag
+	 * @param string $imageGenId
+	 * @param bool $notifyReady
+	 * @return int
+	 * @throws Exception
+	 */
+	 public function setNotifyReady(string $imageGenId, bool $notifyReady): int
+	 {
+		 $qb = $this->db->getQueryBuilder();
+		 $qb->update($this->getTableName())
+			 ->set('notify_ready', $qb->createNamedParameter($notifyReady, IQueryBuilder::PARAM_BOOL))
+			 ->where(
+				 $qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
+			 );
+		 $count = $qb->executeStatement();
+		 $qb->resetQueryParts();
+		 return $count;
+	 }
 
 	/**
 	 * @param int $maxAge
@@ -168,25 +184,40 @@ class ImageGenerationMapper extends QBMapper
 
 		$qb = $this->db->getQueryBuilder();
 
-		$qb->select('id')
+		// get generations that will be deleted
+		$qb->select('*')
 			->from($this->getTableName())
 			->where(
-				$qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
+				$qb->expr()->lt('last_used_timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
 			);
 
-		$fileNames = $this->findEntities($qb);
-		$fileNames = array_map(function ($fileName) {
-			return $fileName->getFileName();
-		}, $fileNames);
-
-		# Delete the database entries
+		/** @var ImageGeneration[] $generations */
+		$generations = $this->findEntities($qb);
 		$qb->resetQueryParts();
+
+		/** @var array[] $fileNames */
+		$fileNames = [];
+		$imageGenIds = [];
+		foreach ($generations as $generation) {
+			$generationFiles = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($generation->getId());
+			array_map(function ($generationFile) use (&$fileNames) {
+				$fileNames[] = $generationFile->getFileName();
+			}, $generationFiles);
+			$generationIds[] = $generation->getId();
+		}
+
+		// Only now delete associated file names if we encountered no errors:
+		foreach ($generationIds as $genId) {
+			$this->imageFileNameMapper->deleteImageFileNamesOfGenerationId($genId);
+		}
+
+		// Delete generations
 		$qb->delete($this->getTableName())
 			->where(
-				$qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
+				$qb->expr()->lt('last_used_timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
 			);
+
 		$countDelGens = $qb->executeStatement();
-		$qb->resetQueryParts();
 
 		return [
 			'deleted_generations' => $countDelGens,

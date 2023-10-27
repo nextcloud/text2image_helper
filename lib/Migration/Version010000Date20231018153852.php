@@ -10,7 +10,7 @@ use OCP\DB\Types;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
-class Version010000Date20231018153849 extends SimpleMigrationStep {
+class Version010000Date20231018153852 extends SimpleMigrationStep {
 
 	/**
 	 * @param IOutput $output
@@ -53,9 +53,10 @@ class Version010000Date20231018153849 extends SimpleMigrationStep {
 
 		// Drop 't2ih_generations'
 		if ($schema->hasTable('t2ih_generations')) {
+			// Drop the index and table
 			$table = $schema->getTable('t2ih_generations');
-			$table->dropIndex('t2ih_gen_image_id');
-			$schema->dropTable('t2ih_generations');
+			$table->dropIndex('t2ih_image_gen_id');
+			$schema->dropTable('t2ih_generations');	
 		}
 
 		// Create 't2ih_generations'
@@ -65,16 +66,22 @@ class Version010000Date20231018153849 extends SimpleMigrationStep {
 				'autoincrement' => true,
 				'notnull' => true,
 			]);
-			$table->addColumn('image_id', Types::STRING, [
-				'notnull' => true,
-			]);
-			$table->addColumn('file_name', Types::STRING, [
+			$table->addColumn('image_gen_id', Types::STRING, [
 				'notnull' => true,
 			]);
 			$table->addColumn('is_generated', Types::BOOLEAN, [
 				'notnull' => false, 'default' => false,
 			]);
+			$table->addColumn('failed', Types::BOOLEAN, [
+				'notnull' => false, 'default' => false,
+			]);
+			$table->addColumn('notify_ready', Types::BOOLEAN, [
+				'notnull' => false, 'default' => false,
+			]);
 			$table->addColumn('prompt', Types::STRING, [
+				'notnull' => true,
+			]);
+			$table->addColumn('user_id', Types::STRING, [
 				'notnull' => true,
 			]);
 			$table->addColumn('timestamp', Types::INTEGER, [
@@ -84,7 +91,34 @@ class Version010000Date20231018153849 extends SimpleMigrationStep {
 				'notnull' => true,
 			]);
 			$table->setPrimaryKey(['id']);
-			$table->addIndex(['image_id'], 't2ih_gen_image_id');
+			$table->addIndex(['image_gen_id'], 't2ih_image_gen_id');
+		}
+
+		// Drop 't2ih_i_files'
+		if ($schema->hasTable('t2ih_i_files')) {
+			// Drop the index and table
+			$table = $schema->getTable('t2ih_i_files');
+			$table->dropIndex('t2ih_gen_id');
+			$schema->dropTable('t2ih_i_files');	
+		}
+
+		if (!$schema->hasTable('t2ih_i_files')) {
+			$table = $schema->createTable('t2ih_i_files');
+			$table->addColumn('id', Types::BIGINT, [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('generation_id', Types::INTEGER, [
+				'notnull' => true,
+			]);
+			$table->addColumn('file_name', Types::STRING, [
+				'notnull' => true,
+			]);
+			$table->addColumn('hidden', Types::BOOLEAN, [
+				'notnull' => false, 'default' => false,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addIndex(['generation_id'], 't2ih_gen_id');
 		}
 
 		return $schema;

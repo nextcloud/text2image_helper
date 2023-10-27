@@ -4,7 +4,7 @@
 
 namespace OCA\Text2ImageHelper\Service;
 
-use Exception;
+use Exception as BaseException;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
@@ -15,135 +15,184 @@ use OCP\Files\SimpleFS\ISimpleFolder;
 use OCP\Files\IAppData;
 use OCP\IURLGenerator;
 use DateTime;
-
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Db\PromptMapper;
+use OCP\Notification\IManager as INotificationManager;
 use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
-
+use OCA\Text2ImageHelper\Db\ImageFileNameMapper;
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
+use OCP\Db\Exception;
+use OCP\Files\NotPermittedException;
 
 class Text2ImageHelperService
 {
-    /**
-     * @var ISimpleFolder|null
-     */
-    private ?ISimpleFolder $imageDataFolder = null;
+	/**
+	 * @var ISimpleFolder|null
+	 */
+	private ?ISimpleFolder $imageDataFolder = null;
 
-    /**
-     * @param IConfig $config
-     * @param LoggerInterface $logger
-     * @param IManager $textToImageManager
-     * @param string|null $userId
-     * @param PromptMapper $promptMapper
-     * @param ImageGenerationMapper $imageGenerationMapper
-     * @param IAppData $appData
-     * @param IURLGenerator $urlGenerator
-     */
-    public function __construct(
-        private IConfig $config,
-        private LoggerInterface $logger,
-        private IManager $textToImageManager,
-        private ?string $userId,
-        private PromptMapper $promptMapper,
-        private ImageGenerationMapper $imageGenerationMapper,
-        private IAppData $appData,
-        private IURLGenerator $urlGenerator
-    ) {
-    }
-    
-    /**
-     * Process a prompt using ImageProcessingProvider and return a link to the generated image(s)
-     * 
-     * @param string $prompt
-     * @param int $nResults
-     * @param string $userId
-     * @param bool $storePrompt
-     * @return array
-     * @throws Exception
-     */
-    public function processPrompt(string $prompt, int $nResults, string $userId, bool $displayPrompt): array
-    {
-        
-        if (!$this->textToImageManager->hasProviders()) {
-            $this->logger->error('No text to image processing provider available');
-            throw new Exception('No text to image processing provider available');
-        }
-        
-        // Generate nResults prompts
-        $imageId = (string) bin2hex(random_bytes(16));
-        $promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageId);
-        
-        $this->textToImageManager->scheduleTask($promptTask);        
-        
-        if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
-            $expCompletionTime = new DateTime('now');    
-        } else {
-            $expCompletionTime = $promptTask->getCompletionExpectedAt();
-            $expCompletionTime = $expCompletionTime ?? new DateTime('now');
-            $this->logger->info('Task scheduled. Expected completion time: ' . $expCompletionTime->format('Y-m-d H:i:s'));
-        }
-        
-        // Store the image id to the db:            
-        $this->imageGenerationMapper->createImageGeneration($imageId, '', $displayPrompt ? $prompt : '',$expCompletionTime->getTimestamp());
+	/**
+	 * @param IConfig $config
+	 * @param LoggerInterface $logger
+	 * @param IManager $textToImageManager
+	 * @param string|null $userId
+	 * @param PromptMapper $promptMapper
+	 * @param ImageGenerationMapper $imageGenerationMapper
+	 * @param ImageFileNameMapper $imageFileNameMapper
+	 * @param IAppData $appData
+	 * @param IURLGenerator $urlGenerator
+	 * @param INotificationManager $notificationManager
+	 */
+	public function __construct(
+		private IConfig $config,
+		private LoggerInterface $logger,
+		private IManager $textToImageManager,
+		private ?string $userId,
+		private PromptMapper $promptMapper,
+		private ImageGenerationMapper $imageGenerationMapper,
+		private ImageFileNameMapper $imageFileNameMapper,
+		private IAppData $appData,
+		private IURLGenerator $urlGenerator,
+		private INotificationManager $notificationManager
+	) {
+	}
 
-        $imageUrl = $this->urlGenerator->linkToRouteAbsolute(
-            Application::APP_ID . '.Text2ImageHelper.getImage',
-            [
-                'imageId' => $imageId,		
-            ]
-        );
+	/**
+	 * Process a prompt using ImageProcessingProvider and return a link to the generated image(s)
+	 * 
+	 * @param string $prompt
+	 * @param int $nResults
+	 * @param bool $storePrompt
+	 * @return array
+	 * @throws Exception
+	 */
+	public function processPrompt(string $prompt, int $nResults, bool $displayPrompt): array
+	{
+		if (!$this->textToImageManager->hasProviders()) {
+			$this->logger->error('No text to image processing provider available');
+			throw new Exception('No text to image processing provider available');
+		}
 
-        // Save the prompt to database
-        $this->promptMapper->createPrompt($userId, $prompt);
+		// Generate nResults prompts
+		$imageGenId = (string) bin2hex(random_bytes(16));
+		$promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageGenId);
 
-        return ['url' => $imageUrl, 'imageId' => $imageId, 'prompt' => $prompt];
-    }
+		$this->textToImageManager->scheduleTask($promptTask);
 
-    /**
+		if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL | Task::STATUS_FAILED) {
+			$expCompletionTime = new DateTime('now');
+		} else {
+			$expCompletionTime = $promptTask->getCompletionExpectedAt();
+			$expCompletionTime = $expCompletionTime ?? new DateTime('now');
+			$this->logger->info('Task scheduled. Expected completion time: ' . $expCompletionTime->format('Y-m-d H:i:s'));
+		}
+
+		// Store the image id to the db:            
+		$this->imageGenerationMapper->createImageGeneration($imageGenId, $displayPrompt ? $prompt : '', $this->userId, $expCompletionTime->getTimestamp());
+
+		$imageUrl = $this->urlGenerator->linkToRouteAbsolute(
+			Application::APP_ID . '.Text2ImageHelper.getGenerationInfo',
+			[
+				'imageGenId' => $imageGenId,
+			]
+		);
+
+		// Save the prompt to database
+		$this->promptMapper->createPrompt($this->userId, $prompt);
+
+		return ['url' => $imageUrl, 'image_gen_id' => $imageGenId, 'prompt' => $prompt];
+	}
+
+	/**
 	 * @param string $userId
 	 * @return array
 	 * @throws \OCP\DB\Exception
 	 */
-	public function getPromptHistory(string $userId): array {
+	public function getPromptHistory(string $userId): array
+	{
 		return $this->promptMapper->getPromptsOfUser($userId);
 	}
 
-    /**
+	/**
 	 * Save image locally as jpg (to save space)
-	 * @param IImage $iImage
-     * @param string $imageId
-     * @return void
+	 * @param array<IImage> $iImages
+	 * @param string $imageGenId
+	 * @return void
 	 */
-	public function storeImage(IImage $iImage,string $imageId): void
+	public function storeImages(array $iImages, string $imageGenId): void
 	{
-		$image = $iImage->resource();
 		$imageDataFolder = $this->getImageDataFolder();
 
-		if ($imageDataFolder === null || $image === false) {
-            $this->logger->error('Image save error: could not retrieve folder or image resource');
-			return;
-		}
-
-		// Generate the jpg image
-		$quality = 90;
-		ob_start();
-		imagejpeg($image, null, $quality);
-		$jpegData = ob_get_clean();
-		unset($image); // Doesn't immediately destroy the image resource in php <8.0
-
-		if($jpegData === false) {
+		if ($imageDataFolder === null) {
+			$this->logger->error('Image save error: could not retrieve folder');
 			return;
 		}
 
 		try {
-			$newFile = $imageDataFolder->newFile($imageId . '.jpg');
-			$newFile->putContent($jpegData);
-		} catch (Exception $e) {
-			$this->logger->debug('Image save error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
+		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+			$this->logger->error('Image save error: image generation not found in db');
 			return;
 		}
 
-        $this->imageGenerationMapper->setImageGenerated($imageId);
+
+		$quality = 90;
+		$n = 0;
+
+		foreach ($iImages as $iImage) {
+			$image = $iImage->resource();
+
+			if ($image === false) {
+				$this->logger->warning('Image save error: could not retrieve image resource');
+				continue;
+			}
+
+			ob_start();
+			imagejpeg($image, null, $quality);
+			$jpegData = ob_get_clean();
+			unset($image);
+
+			if ($jpegData === false) {
+				continue;
+			}
+
+			$fileName = strval($imageGenId) . '_' . strval($n++) . '.jpg';
+
+			try {
+				$newFile = $imageDataFolder->newFile($fileName);
+				$newFile->putContent($jpegData);
+			} catch (NotPermittedException | NotFoundException $e) {
+				$this->logger->warning('Image save error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+				continue;
+			}
+
+			try {
+				$this->imageFileNameMapper->createImageFileName($imageGeneration->getId(), $fileName);
+			} catch (Exception $e) {
+				$this->logger->warning('Image save error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+				continue;
+			}
+
+		}
+		$this->imageGenerationMapper->setImagesGenerated($imageGenId, true);
+
+		// If the notifications were enabled for this generation, send them now:
+		if ($imageGeneration->getNotifyReady()) {
+			$this->notifyUser($imageGenId);
+		}
+		
 	}
+
+	/**
+	 * Notify user of generation being ready
+	 * @param string $imageGenId
+	 * @return void
+	 */
+	 public function notifyUser(string $imageGenId): void {
+		//TODO:
+		return;
+	 }
 
 	/**
 	 * Get imageDataFolder
@@ -167,7 +216,7 @@ class Text2ImageHelperService
 
 			if ($this->imageDataFolder === null) {
 				try {
-					$imageDataFolder = $this->appData->newFolder(Application::IMAGE_FOLDER);
+					$this->imageDataFolder = $this->appData->newFolder(Application::IMAGE_FOLDER);
 				} catch (Exception $e) {
 					$this->logger->debug('Image data folder could not be created: '
 						. $e->getMessage(), ['app' => Application::APP_ID]);
@@ -177,111 +226,243 @@ class Text2ImageHelperService
 		}
 		return $this->imageDataFolder;
 	}
-    /**
-     * Get image based on imageId
-     * @param string $imageId
-     * @param bool $updateTimestamp
-     * @return array|null
-     */
-    public function getImage(string $imageId, bool $updateTimestamp = false): ?array
-    {
-        // Check whether the task has completed:
-        try {
-            $imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId($imageId);
-        } catch (Exception $e) {
-            $this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
-            return ['error' => 'Image not found. It may have been deleted due to not being viewed for a long time.'];
-        }
-        
-        if ($imageGeneration->getIsGenerated() === false) {
-            // The image is being generated.
-            // Return the expected completion time as UTC timestamp
-            $completionExpectedAt = $imageGeneration->getExpGenTime();
-            return ['processing' => $completionExpectedAt];
-        } else if ($imageGeneration->getFileName() === '') {
-            // On TaskFailedEvent the file name is set to an empty string
-            return ['error' => 'Image generation failed'];
-        }
-        
-        $imageDataFolder = $this->getImageDataFolder();
-        if ($imageDataFolder === null) {
-            $this->logger->debug('Image request error : Could not open image storage folder', ['app' => Application::APP_ID]);
-            return ['error' => 'Could not open image storage folder'];
-        }
 
-        // Load image from disk
-        try {
-            $imageFile = $imageDataFolder->getFile($imageGeneration->getFileName());
-            $imageContent = $imageFile->getContent();
+	/**
+	 * Get image generation info. 
+	 * @param string $imageGenId
+	 * @param bool $updateTimestamp
+	 * @param string|null $userId
+	 * @return array
+	 * @throws BaseException
+	 */
+	public function getGenerationInfo(string $imageGenId, bool $updateTimestamp = true): array
+	{
+		// Check whether the task has completed:
+		try {
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
+		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			throw new BaseException('Image generation not found. It may have been deleted due to not being viewed for a long time.');
+		}
+		
+		$isOwner = ($imageGeneration->getUserId() === $this->userId);
 
-        } catch (NotFoundException $e) {
-            $this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
-                
-            return ['error' => 'Image file not found'];
-        }
+		if ($imageGeneration->getFailed() === true) {
+			throw new BaseException('Image generation failed');
+		}
 
-        // Prevent the image generation from going stale if it's being viewed
-        if ($updateTimestamp) {
-            $this->imageGenerationMapper->touchImageGeneration($imageId);
-        }
+		if ($imageGeneration->getIsGenerated() === false) {
+			// The image is being generated.
+			// Return the expected completion time as UTC timestamp
+			$completionExpectedAt = $imageGeneration->getExpGenTime();
+			return ['processing' => $completionExpectedAt];
+		}
 
-        // Return image content and headers
-        return [
-            'image' => $imageContent,
-            'headers' => [
-                'Content-Type' => ['image/jpeg'],
-            ],
-        ];
-    }
+		// Prevent the image generation from going stale if it's being viewed
+		if ($updateTimestamp) {
+			try {
+				$this->imageGenerationMapper->touchImageGeneration($imageGenId);
+			} catch (Exception $e) {
+				$this->logger->warning('Image generation timestamp update failed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			}
+		}
 
-    /**
-     * Cancel image generation
-     * @param string $imageId
-     * @param string $userId
-     * @return void
-     */
-    public function cancelGeneration(string $imageId, string $userId): void 
-    {
-        // Get the task if it exists
-        try {
-            $task = $this->textToImageManager->getUserTasksByApp($userId, Application::APP_ID, $imageId);
-        } catch (Exception $e) {
-            $this->logger->debug('Task cancellation failed or it does not exist: ' . $e->getMessage(), ['app' => Application::APP_ID]);
-            $task = [];
-        }
+		try {
+			if ($isOwner) {
+				$fileNameEntities = $this->imageFileNameMapper->getVisibleImageFileNamesOfGenerationId($imageGeneration->getId());
+			} else {				
+				$fileNameEntities = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($imageGeneration->getId());
+			}
+		} catch (Exception $e) {
+			$this->logger->warning('Fetching image filenames from db failed: ' . $e->getMessage());
+			throw new BaseException('Image file names could not be fetched from database');
+		}
 
-        if (count($task) > 0) {
-            // Cancel the task
-            $this->textToImageManager->deleteTask($task[0]);
-        }
-        
-        // If the generation completed, delete the image file:
-        try {
-            $imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId($imageId);
-        } catch (Exception $e) {
-            $this->logger->debug('Image generation not in db: ' . $e->getMessage(), ['app' => Application::APP_ID]);
-            $imageGeneration = null;
-        }
-        if ($imageGeneration) {
-            if ($imageGeneration->getIsGenerated()) {
-                $imageDataFolder = $this->getImageDataFolder();
-                if ($imageDataFolder !== null) {
-                    try {
-                        $imageFile = $imageDataFolder->getFile($imageGeneration->getFileName());
-                        $imageFile->delete();
-                    } catch (NotFoundException $e) {
-                        $this->logger->debug('Image deletion error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
-                    }
-                }
-            }
-        }
+		$fileIds = [];
+		foreach ($fileNameEntities as $fileNameEntity) {
+			
+			if ($isOwner) {
+				$fileIds[] = ['id' => $fileNameEntity->getId(), 'hidden' => $fileNameEntity->getHidden()];
+			} else {
+				$fileIds[] = ['id' =>$fileNameEntity->getId()];
+			}
+		}
 
-        // Delete the image generation from db
-        try {
-            $this->imageGenerationMapper->deleteImageGeneration($imageId);
-        } catch (Exception $e) {
-            $this->logger->debug('Image generation db entry deletion error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
-        }
-    }
+		return ['files' => $fileIds, 'prompt' => $imageGeneration->getPrompt(), 'image_gen_id' => $imageGenId, 'is_owner' => $isOwner];
+	}
 
+	/**
+	 * Get extended generation info
+	 * @param string $imageGenId
+	 * 
+	 * 
+	 */
+
+
+	/**
+	 * Get image based on imageFileNameId (imageGenId is used to prevent guessing image ids)
+	 * @param string $imageGenId
+	 * @param int $imageFileNameId
+	 * @return array|null
+	 * @throws BaseException
+	 */
+	public function getImage(string $imageGenId, int $imageFileNameId): ?array
+	{
+		try {
+			$generationId = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId)->getId();
+			$imageFileName = $this->imageFileNameMapper->getImageFileNameOfGenerationId($generationId, $imageFileNameId);
+		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			throw new BaseException('Image request error');
+		}
+
+		if ($imageFileName === null) {
+			throw new BaseException('Image file not found in database');
+		}
+
+		$imageDataFolder = $this->getImageDataFolder();
+		if ($imageDataFolder === null) {
+			$this->logger->debug('Image request error : Could not open image storage folder', ['app' => Application::APP_ID]);
+			throw new BaseException('Could not open image storage folder');
+		}
+
+		// Load image from disk
+		try {
+			$imageFile = $imageDataFolder->getFile($imageFileName->getFileName());
+			$imageContent = $imageFile->getContent();
+
+		} catch (NotFoundException $e) {
+			$this->logger->debug('Image file reading failed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+
+			throw new BaseException('Image file not found');
+		}
+
+		// Return image content and headers
+		return [
+			'image' => $imageContent,
+			'headers' => [
+				'Content-Type' => ['image/jpeg'],
+			],
+		];
+	}
+
+	/**
+	 * Cancel image generation
+	 * @param string $imageGenId
+
+	 * @return void
+	 */
+	public function cancelGeneration(string $imageGenId): void
+	{
+		// Get the task if it exists
+		try {
+			$task = $this->textToImageManager->getUserTasksByApp($this->userId, Application::APP_ID, $imageGenId);
+		} catch (Exception $e) {
+			$this->logger->debug('Task cancellation failed or it does not exist: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			$task = [];
+		}
+
+		if (count($task) > 0) {
+			// Cancel the task
+			$this->textToImageManager->deleteTask($task[0]);
+		}
+
+		// If the generation completed, delete the image file:
+		try {
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
+		} catch (Exception $e) {
+			$this->logger->debug('Image generation not in db: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			$imageGeneration = null;
+		}
+
+		if ($imageGeneration) {
+			// Make sure the user is associated with the image generation
+			if ($imageGeneration->getUserId() !== $this->userId) {
+				$this->logger->warning('User attempted deleting another user\'s image generation!', ['app' => Application::APP_ID]);
+				return;
+			}
+
+			if ($imageGeneration->getIsGenerated()) {
+				$imageDataFolder = $this->getImageDataFolder();
+				if ($imageDataFolder !== null) {
+					try {
+						$fileNames = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($imageGeneration->getId());
+					} catch (Exception $e) {
+						$this->logger->debug('No files to delete' . $e->getMessage());
+					}
+
+					foreach ($fileNames as $fileName) {
+						try {
+							$imageFile = $imageDataFolder->getFile($fileName->getFileName());
+							$imageFile->delete();
+						} catch (NotFoundException $e) {
+							$this->logger->debug('Image deletion error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+						}
+					}
+				}
+			}
+		}
+
+		// Delete the image generation from db
+		try {
+			$this->imageGenerationMapper->deleteImageGeneration($imageGenId);
+		} catch (Exception $e) {
+			$this->logger->debug('Image generation db entry deletion error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+		}
+	}
+
+	/**
+	 * Hide/show image files of a generation. UserId must match the assigned user of the image generation.
+	 * @param string $imageGenId
+	 * @param array $fileIdVisArray
+	 * @return void
+	 */
+	public function setVisibilityOfImageFiles(string $imageGenId, array $fileIdVisArray): void {
+		try {
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
+		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			throw new BaseException('Image generation not found; it may have been cleaned up due to not being viewed for a long time.');
+		}
+
+		if ($imageGeneration->getUserId() !== $this->userId) {
+			$this->logger->warning('User attempted deleting another user\'s image generation!', ['app' => Application::APP_ID]);
+			throw new BaseException('Unauthorized.');
+		}
+
+		foreach ($fileIdVisArray as $fileNameId => $fileVisibility) {
+			try {
+				$this->imageFileNameMapper->setFileNameHidden($fileNameId, (bool) $fileVisibility);
+			} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+				$this->logger->error('Error setting image file visibility: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+				throw new BaseException('Image file or files not found in database');
+			}
+		}
+	}
+
+	/**
+	 * Notify when image generation is ready
+	 * @param string $imageGenId
+	 */
+	public function notifyWhenReady(string $imageGenId): void
+	{
+		try {
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
+		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			throw new BaseException('Image generation not found; it may have been cleaned up due to not being viewed for a long time.');
+		}
+
+		if ($imageGeneration->getUserId() !== $this->userId) {
+			$this->logger->warning('User attempted enabling notifications of another user\'s image generation!', ['app' => Application::APP_ID]);
+			throw new BaseException('Unauthorized.');
+		}
+
+		$this->imageGenerationMapper->setNotifyReady($imageGenId, true);
+
+		// Just in case the image generation is already ready, notify the user immediately so that the result is not lost:
+		if ($imageGeneration->getIsGenerated()) {
+			$this->notifyUser($imageGenId);
+		}
+	}
 }

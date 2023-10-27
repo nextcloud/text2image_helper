@@ -62,7 +62,7 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 	 * @inheritDoc
 	 */
 	public function matchReference(string $referenceText): bool {
-		return $this->getImageId($referenceText) !== null;		
+		return $this->getImageGenId($referenceText) !== null;		
 	}
 
 	/**
@@ -70,13 +70,13 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 	 */
 	public function resolveReference(string $referenceText): ?IReference
 	{
-		$imageId = $this->getImageId($referenceText);
-		if ($imageId === null) {
+		$imageGenId = $this->getImageGenId($referenceText);
+		if ($imageGenId === null) {
 			return null;
 		}
 
 		try {
-			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageId($imageId);
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (Exception $e) {
 			$imageGeneration = null;
 		}
@@ -89,9 +89,9 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 
 		$reference = new Reference($referenceText);
 		$imageUrl = $this->urlGenerator->linkToRouteAbsolute(
-			Application::APP_ID . '.Text2ImageHelper.getImage',
+			Application::APP_ID . '.Text2ImageHelper.getGenerationInfo',
 			[
-				'imageId' => $imageId,				
+				'imageGenId' => $imageGenId,				
 			]
 		);
 
@@ -110,7 +110,7 @@ class Text2ImageHelperReferenceProvider extends ADiscoverableReferenceProvider
 	 * @param string $url
 	 * @return string|null
 	 */
-	private function getImageId(string $url): ?string {
+	private function getImageGenId(string $url): ?string {
 		$start = $this->urlGenerator->getAbsoluteURL('/apps/' . Application::APP_ID);
 		$startIndex = $this->urlGenerator->getAbsoluteURL('/index.php/apps/' . Application::APP_ID);
 		

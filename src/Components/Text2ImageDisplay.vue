@@ -18,14 +18,17 @@
 				:size="44"
 				:title="t('text2image_helper', 'Loading image')" />
 		</div>
-		<img v-if="imageUrl !== ''"
-			v-show="!isImageLoading && !failed"
-			class="image"
-			:src="imageUrl"
-			:aria-label="t('text2image_helper', 'Generated image')"
-			@load="isImageLoading = false"
-			@error="onError">
-		<div v-if="!failed && imageUrl === '' && timeUntilCompletion !== null"
+		<div v-if="imageUrls.length > 0" class="image_container">
+			<img v-for="(imageUrl,index) in imageUrls"
+				:key="index"
+				:v-show="!isImageLoading && !failed"
+				class="image"
+				:src="imageUrl"
+				:aria-label="t('text2image_helper', 'Generated image')"
+				@load="isImageLoading = false"
+				@error="onError">
+		</div>
+		<div v-if="!failed && imageUrls.length === 0 && timeUntilCompletion !== null"
 			class="processing-notification-container">
 			<div class="processing-notification">
 				<InformationOutlineIcon :size="20" class="icon" />
@@ -44,6 +47,7 @@ import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
 import InformationOutlineIcon from 'vue-material-design-icons/InformationOutline.vue'
 import axios from '@nextcloud/axios'
 import Text2ImageHelperIcon from '../Icons/Text2ImageHelperIcon.vue'
+import { generateUrl } from '@nextcloud/router'
 
 export default {
 	name: 'Text2ImageDisplay',
@@ -71,7 +75,8 @@ export default {
 			isImageLoading: true,
 			timeUntilCompletion: null,
 			failed: false,
-			imageUrl: '',
+			imageUrls: [],
+			isOwner: false,
 			errorMsg: t('text2image_helper', 'Image generation failed'),
 			closed: false,
 		}
@@ -80,24 +85,29 @@ export default {
 	computed: {
 	},
 	mounted() {
-		this.getImage()
+		this.getImageGenInfo()
 	},
 	unmounted() {
 		this.closed = true
 	},
 	methods: {
-		getImage() {
+		getImages(imageGenId, fileIds) {
+			this.imageUrls = []
+			// Loop through all the fileIds and get the images:
+			fileIds.forEach((fileId) => {
+				this.imageUrls.push(generateUrl('/apps/text2image_helper/g/' + imageGenId + '/' + fileId.id))
+			})
+		},
+		getImageGenInfo() {
 			let success = false
 			axios.get(this.src)
 				.then((response) => {
 					if (response.status === 200) {
-						// Check the headers, if the response is image/jpeg:
-						if (response.headers['content-type'] === 'image/jpeg') {
-							// Create a blob from the response data
-							const blob = new Blob([response.data], { type: 'image/jpeg' })
-							// Create an object URL from the blob
-							this.imageUrl = URL.createObjectURL(blob)
+						if (response.data?.files !== undefined) {
+							this.isOwner = response.data.is_owner
 							success = true
+							this.getImages(response.data.image_gen_id, response.data.files)
+							this.onGenerationReady()
 						} else {
 							if (response.data?.processing !== undefined) {
 								const completionTimeStamp = response.data.processing
@@ -110,21 +120,18 @@ export default {
 						}
 					} else {
 						console.error('Unexpected response status: ' + response.status)
+						this.errorMsg = t('text2image_helper', 'Unexpected server response')
+						this.failed = true
+						this.isImageLoading = false
 					}
 				})
 				.catch((error) => {
-					if (error.response?.data?.error !== undefined) {
-						this.errorMsg = error.response.data.error
-						this.failed = true
-						this.isImageLoading = false
-					} else {
-						console.error('Could not handle response error: ' + error)
-					}
-
+					console.error('WTF, how we got here?')
+					this.onError(error)
 				})
 				// If we didn't succeed in loading the image, try again
 			if (!success && !this.failed && !this.closed) {
-				setTimeout(this.getImage, 3000)
+				setTimeout(this.getImageGenInfo, 3000)
 			}
 		},
 		updateTimeUntilCompletion(completionTimeStamp) {
@@ -146,9 +153,22 @@ export default {
 				}, seconds * 1000 + 1000)
 			}
 		},
-		onError(e) {
-			this.isImageLoading = false
-			this.failed = true
+		onError(error) {
+			if (error.response?.data !== undefined) {
+				this.errorMsg = error.response.data
+				this.failed = true
+				this.isImageLoading = false
+			} else {
+				console.error('Could not handle response error: ' + error)
+				this.errorMsg = t('text2image_helper', 'Unknown server query error')
+				this.failed = true
+				this.isImageLoading = false
+			}
+			this.$emit('failed')
+
+		},
+		onGenerationReady() {
+			this.$emit('ready')
 		},
 	},
 }
@@ -160,10 +180,15 @@ export default {
 	flex-direction: column;
 	width: 100%;
 
-	.image {
-		max-height: 300px;
-		max-width: 100%;
-		border-radius: var(--border-radius-large);
+	.image_container {
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		justify-content: center;
+		.image {
+			max-height: 300px;
+			border-radius: var(--border-radius-large);
+		}
 	}
 
 	.title {

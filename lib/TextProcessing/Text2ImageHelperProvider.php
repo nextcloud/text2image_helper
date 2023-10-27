@@ -36,7 +36,7 @@ class Text2ImageHelperProvider implements IProvider {
     }
 
 	public function generate(string $prompt, array $resources): void {
-        throw new \Exception('Not implemented');
+        //throw new \Exception('Not implemented');
 		foreach ($resources as $resource) {
 			$read = fopen(__DIR__ . '/../../img/logo.png', 'r');
 			stream_copy_to_stream($read, $resource);
