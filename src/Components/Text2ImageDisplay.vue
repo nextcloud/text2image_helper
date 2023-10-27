@@ -188,12 +188,12 @@ export default {
 		.image {
 			max-height: 300px;
 			border-radius: var(--border-radius-large);
+			margin-top: 24px;
 		}
 	}
 
 	.title {
 		margin-top: 0;
-		margin-bottom: 24px;
 		.icon {
 			display: inline;
 			position: relative;
@@ -207,6 +207,7 @@ export default {
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
+		margin-top: 24px;
 		.processing-notification {
 			display: flex;
 			flex-direction: row;
