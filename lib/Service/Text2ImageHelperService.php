@@ -78,7 +78,7 @@ class Text2ImageHelperService
 		$imageGenId = (string) bin2hex(random_bytes(16));
 		$promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageGenId);
 
-		$this->textToImageManager->runOrScheduleTask($promptTask);
+		$this->textToImageManager->scheduleTask($promptTask);
 		
 		$taskExecuted = false;
 

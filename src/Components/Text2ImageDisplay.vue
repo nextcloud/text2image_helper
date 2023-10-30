@@ -5,7 +5,12 @@
 	<div class="display-container">
 		<div class="title">
 			<div class="icon-and-text">
-				<Text2ImageHelperIcon :size="20" class="icon" :title="t('text2image_helper', 'Edit visible images')" />
+				<div v-if="isLoaded.length === 0 && ((success && hasVisibleImages)||!success === false) && !failed">
+					<NcLoadingIcon :size="20" class="icon" />
+				</div>
+				<div v-else>
+					<Text2ImageHelperIcon :size="20" class="icon" />
+				</div>
 				<strong class="app-name">
 					{{ t('text2image_helper', 'Image generation') + ':' }}
 				</strong>
@@ -17,11 +22,6 @@
 				:title="t('text2image_helper', 'Edit visible images')"
 				@click="toggleEditMode">
 				<Cog :size="30" class="icon" />
-			</div>
-		</div>
-		<div v-if="isLoaded.length === 0 && !failed && hasVisibleImages" class="loading-icon-container">
-			<div class="loading-icon">
-				<NcLoadingIcon :size="44" :title="t('text2image_helper', 'Loading image')" />
 			</div>
 		</div>
 		<div v-if="editModeEnabled && isOwner">
@@ -369,9 +369,9 @@ export default {
 
 	.loading-icon {
 		position: absolute;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
+		top: 5;
+		z-index: 1;
+
 	}
 
 	.processing-notification-container {

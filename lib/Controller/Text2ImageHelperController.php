@@ -177,7 +177,7 @@ class Text2ImageHelperController extends Controller
 			return new TemplateResponse(Application::APP_ID, 'generationPage', ['imageGenId' => '']);
 		}
 	
-		$this->initialStateService->provideInitialState('generation-page-inputs', ['image_gen_id' => $imageGenId, 'forceEditMode' => $forceEditMode]);
+		$this->initialStateService->provideInitialState('generation-page-inputs', ['image_gen_id' => $imageGenId, 'force_edit_mode' => $forceEditMode]);
 	
 		return new TemplateResponse(Application::APP_ID, 'generationPage');
 	}
