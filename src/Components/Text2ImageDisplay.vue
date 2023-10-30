@@ -5,7 +5,7 @@
 	<div class="display-container">
 		<div class="title">
 			<div class="icon-and-text">
-				<div v-if="isLoaded.length === 0 && ((success && hasVisibleImages)||!success === false) && !failed">
+				<div v-if="isLoaded.length === 0 && ((success && hasVisibleImages)||!success) && !failed">
 					<NcLoadingIcon :size="20" class="icon" />
 				</div>
 				<div v-else>
@@ -21,7 +21,7 @@
 				:class="{ 'active': editModeEnabled}"
 				:title="t('text2image_helper', 'Edit visible images')"
 				@click="toggleEditMode">
-				<Cog :size="30" class="icon" />
+				<Cog :size="30" />
 			</div>
 		</div>
 		<div v-if="editModeEnabled && isOwner">
@@ -276,6 +276,7 @@ export default {
 
 	.edit-icon.active {
 		opacity: 1;
+		cursor: pointer;
 	}
 
 	.image-list {
@@ -365,13 +366,6 @@ export default {
 			position: relative;
 			top: 4px;
 		}
-	}
-
-	.loading-icon {
-		position: absolute;
-		top: 5;
-		z-index: 1;
-
 	}
 
 	.processing-notification-container {
