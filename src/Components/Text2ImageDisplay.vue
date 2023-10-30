@@ -16,13 +16,11 @@
 				</strong>
 				{{ prompt }}
 			</div>
-			<div v-if="isOwner && !forceEditMode"
+			<Cog :size="30"
 				class="edit-icon"
 				:class="{ 'active': editModeEnabled}"
 				:title="t('text2image_helper', 'Edit visible images')"
-				@click="toggleEditMode">
-				<Cog :size="30" />
-			</div>
+				@click="toggleEditMode" />
 		</div>
 		<div v-if="editModeEnabled && isOwner">
 			<div v-if="imageUrls.length > 0 && !failed" class="image-list">
@@ -268,7 +266,6 @@ export default {
 	justify-content: center;
 	.edit-icon {
 		position: static;
-		z-index: 1;
 		opacity: 0.2;
 		transition: opacity 0.2s ease-in-out;
 		cursor: pointer;
