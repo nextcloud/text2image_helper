@@ -290,7 +290,7 @@ export default {
 		flex-direction: column;
 		position: relative;
 		justify-content: center;
-		max-width: 90%;		
+		max-width: 90%;
 	}
 
 	.checkbox-container {
@@ -341,6 +341,7 @@ export default {
 
 	.title {
 		max-width: 600px;
+		width: 100%;
 		display: flex;
 		flex-direction: row;
 		margin-top: 0;

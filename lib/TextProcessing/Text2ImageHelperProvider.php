@@ -28,16 +28,16 @@ use OCP\TextToImage\IProvider;
 class Text2ImageHelperProvider implements IProvider {
 
 	public function getName(): string {
-		return 'Fake Text2Image provider';
+		return 'Fake Text2Image provider 2';
 	}
 
     public function getId(): string {
-        return 'fake';
+        return 'fake_prov';
     }
 
 	public function generate(string $prompt, array $resources): void {
-        //throw new \Exception('Not implemented');
-		sleep(10);
+        // throw new \Exception('Not implemented');
+		
 		foreach ($resources as $resource) {
 			$read = fopen(__DIR__ . '/../../img/logo.png', 'r');
 			stream_copy_to_stream($read, $resource);
