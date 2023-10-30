@@ -348,7 +348,7 @@ export default {
 			width: 100%;
 			display: flex;
 			flex-direction: row;
-			align-items: center;
+			align-items: top;
 			justify-content: start;
 			margin-right: 8px;
 
