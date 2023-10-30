@@ -78,10 +78,15 @@ class Text2ImageHelperService
 		$imageGenId = (string) bin2hex(random_bytes(16));
 		$promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageGenId);
 
-		$this->textToImageManager->scheduleTask($promptTask);
+		$this->textToImageManager->runOrScheduleTask($promptTask);
+		
+		$taskExecuted = false;
 
-		if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL | Task::STATUS_FAILED) {
+		if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
 			$expCompletionTime = new DateTime('now');
+			$taskExecuted = true;
+			            
+            $images = $promptTask->getOutputImages();   
 		} else {
 			$expCompletionTime = $promptTask->getCompletionExpectedAt();
 			$expCompletionTime = $expCompletionTime ?? new DateTime('now');
@@ -91,8 +96,19 @@ class Text2ImageHelperService
 		// Store the image id to the db:            
 		$this->imageGenerationMapper->createImageGeneration($imageGenId, $displayPrompt ? $prompt : '', $this->userId, $expCompletionTime->getTimestamp());
 
-		$imageUrl = $this->urlGenerator->linkToRouteAbsolute(
+		if ($taskExecuted) {
+			$this->storeImages($images, $imageGenId);
+		}
+
+		$infoUrl = $this->urlGenerator->linkToRouteAbsolute(
 			Application::APP_ID . '.Text2ImageHelper.getGenerationInfo',
+			[
+				'imageGenId' => $imageGenId,
+			]
+		);
+
+		$referenceUrl = $this->urlGenerator->linkToRouteAbsolute(
+			Application::APP_ID . '.Text2ImageHelper.showGenerationPage',
 			[
 				'imageGenId' => $imageGenId,
 			]
@@ -101,7 +117,7 @@ class Text2ImageHelperService
 		// Save the prompt to database
 		$this->promptMapper->createPrompt($this->userId, $prompt);
 
-		return ['url' => $imageUrl, 'image_gen_id' => $imageGenId, 'prompt' => $prompt];
+		return ['url' => $infoUrl, 'reference_url' => $referenceUrl, 'image_gen_id' => $imageGenId, 'prompt' => $prompt];
 	}
 
 	/**
@@ -190,7 +206,37 @@ class Text2ImageHelperService
 	 * @return void
 	 */
 	 public function notifyUser(string $imageGenId): void {
-		//TODO:
+		
+		try {
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
+		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+			$this->logger->warning('Generation notification error: image generation not found in db');
+			return;
+		}
+
+		$this->logger->warning($imageGenId);
+
+		$notification = $this->notificationManager->createNotification();
+
+		$viewAction = $notification->createAction();
+		$viewAction->setLabel('view')
+			->setLink(Application::APP_ID, 'WEB');
+
+		$deleteAction = $notification->createAction();
+		$deleteAction->setLabel('delete')
+				->setLink(Application::APP_ID, 'POST');		
+		
+		$notification->setApp(Application::APP_ID)
+			->setUser($imageGeneration->getUserId())
+			->setDateTime(new DateTime('now'))
+			->setObject('text2image', $imageGenId)
+			->setSubject('text2image_helper')
+			->setMessage('text2image_helper', ['imageGenId' => $imageGenId, 'prompt' => $imageGeneration->getPrompt()])
+			->addAction($deleteAction)
+			->addAction($viewAction);
+			
+		$this->notificationManager->notify($notification);
+	 
 		return;
 	 }
 
@@ -282,7 +328,7 @@ class Text2ImageHelperService
 		foreach ($fileNameEntities as $fileNameEntity) {
 			
 			if ($isOwner) {
-				$fileIds[] = ['id' => $fileNameEntity->getId(), 'hidden' => $fileNameEntity->getHidden()];
+				$fileIds[] = ['id' => $fileNameEntity->getId(), 'visible' => !$fileNameEntity->getHidden()];
 			} else {
 				$fileIds[] = ['id' =>$fileNameEntity->getId()];
 			}
@@ -382,6 +428,14 @@ class Text2ImageHelperService
 				return;
 			}
 
+			// See if there is a notification associated with this generation:
+			$notification = $this->notificationManager->createNotification();
+			$notification->setApp(Application::APP_ID)
+				->setUser($imageGeneration->getUserId())
+				->setObject('text2image', $imageGenId);
+
+			$this->notificationManager->markProcessed($notification);
+
 			if ($imageGeneration->getIsGenerated()) {
 				$imageDataFolder = $this->getImageDataFolder();
 				if ($imageDataFolder !== null) {
@@ -414,10 +468,10 @@ class Text2ImageHelperService
 	/**
 	 * Hide/show image files of a generation. UserId must match the assigned user of the image generation.
 	 * @param string $imageGenId
-	 * @param array $fileIdVisArray
+	 * @param array $fileVisSatusArray
 	 * @return void
 	 */
-	public function setVisibilityOfImageFiles(string $imageGenId, array $fileIdVisArray): void {
+	public function setVisibilityOfImageFiles(string $imageGenId, array $fileVisSatusArray): void {
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
@@ -430,9 +484,9 @@ class Text2ImageHelperService
 			throw new BaseException('Unauthorized.');
 		}
 
-		foreach ($fileIdVisArray as $fileNameId => $fileVisibility) {
+		foreach ($fileVisSatusArray as $fileVisStatus) {
 			try {
-				$this->imageFileNameMapper->setFileNameHidden($fileNameId, (bool) $fileVisibility);
+				$this->imageFileNameMapper->setFileNameHidden($fileVisStatus['id'], !((bool) $fileVisStatus['visible']));
 			} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
 				$this->logger->error('Error setting image file visibility: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 				throw new BaseException('Image file or files not found in database');
@@ -464,5 +518,41 @@ class Text2ImageHelperService
 		if ($imageGeneration->getIsGenerated()) {
 			$this->notifyUser($imageGenId);
 		}
+	}
+
+	/**
+	 * Get raw image page
+	 * @param string $imageGenId
+	 * @return array
+	 */
+	public function getRawImagePage(string $imageGenId): array
+	{
+		$generationInfo = $this->getGenerationInfo($imageGenId, true);
+
+		$imageFiles = $generationInfo['files'];
+
+		// Generate a HTML link to each image
+		$links = [];
+		foreach ($imageFiles as $imageFile) {
+			$links[] = $this->urlGenerator->linkToRouteAbsolute(
+				Application::APP_ID . '.Text2ImageHelper.getImage',
+				[
+					'imageGenId' => $imageGenId,
+					'fileNameId' => $imageFile['id'],
+				]
+			);
+		}
+
+		// Create a simple http page in the response:
+		$body = '<html><body>';
+		foreach ($links as $link) {
+			$body .= '<img src="' . $link . '" alt="image">';
+			$body .= '<br>';
+		}
+		$body .= '</body></html>';
+		return ['body' => $body,
+				'headers' => [
+					'Content-Type' => ['text/html'],
+				],];
 	}
 }

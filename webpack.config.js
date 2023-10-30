@@ -20,6 +20,7 @@ const appId = 'text2image_helper'
 webpackConfig.entry = {
 	reference: { import: path.join(__dirname, 'src', 'reference.js'), filename: appId + '-reference.js' },
 	adminSettings: { import: path.join(__dirname, 'src', 'adminSettings.js'), filename: appId + '-adminSettings.js' },
+	generationPage: { import: path.join(__dirname, 'src', 'generationPage.js'), filename: appId + '-generationPage.js' },
 }
 
 // this enables eslint and stylelint during compilation

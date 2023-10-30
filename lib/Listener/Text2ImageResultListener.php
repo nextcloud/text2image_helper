@@ -53,7 +53,7 @@ class Text2ImageResultListener implements IEventListener {
             $this->logger->warning('Image generation task failed: ' . $imageGenId);
             //TODO: Notify user of error
             //$error = $event->getErrorMessage();
-            //$userId = $event->getTask()->getUserId();            
+            //$userId = $event->getTask()->getUserId();        
             $this->imageGenerationMapper->setFailed($imageGenId, true);
         }
     }

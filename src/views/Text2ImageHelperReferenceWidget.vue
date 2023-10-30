@@ -2,7 +2,7 @@
 <!-- SPDX-License-Identifier: AGPL-3.0-or-later -->
 <template>
 	<div class="text2image-helper-reference">
-		<div class="image">
+		<div class="result">
 			<Text2ImageDisplay :src="richObject.proxied_url" :prompt="richObject.prompt" />
 		</div>
 	</div>
@@ -53,7 +53,7 @@ export default {
 	flex-direction: column;
 	width: 100%;
 	padding: 12px;
-	.image {
+	.result {
 		display: flex;
 		flex-direction: column;
 		width: 100%;

@@ -3,30 +3,72 @@
 
 <template>
 	<div class="display-container">
-		<span class="title">
-			<Text2ImageHelperIcon :size="20" class="icon" />
-			<strong>
-				{{ t('text2image_helper', 'Image generation') + ':' }}
-			</strong>
-			&nbsp;
-			<span>
+		<div class="title">
+			<div class="icon-and-text">
+				<Text2ImageHelperIcon :size="20" class="icon" :title="t('text2image_helper', 'Edit visible images')" />
+				<strong class="app-name">
+					{{ t('text2image_helper', 'Image generation') + ':' }}
+				</strong>
 				{{ prompt }}
-			</span>
-		</span>
-		<div v-if="isImageLoading" class="loading-icon">
-			<NcLoadingIcon
-				:size="44"
-				:title="t('text2image_helper', 'Loading image')" />
+			</div>
+			<div v-if="isOwner && !forceEditMode"
+				class="edit-icon"
+				:class="{ 'active': editModeEnabled}"
+				:title="t('text2image_helper', 'Edit visible images')"
+				@click="toggleEditMode">
+				<Cog :size="30" class="icon" />
+			</div>
 		</div>
-		<div v-if="imageUrls.length > 0" class="image_container">
-			<img v-for="(imageUrl,index) in imageUrls"
-				:key="index"
-				:v-show="!isImageLoading && !failed"
-				class="image"
-				:src="imageUrl"
-				:aria-label="t('text2image_helper', 'Generated image')"
-				@load="isImageLoading = false"
-				@error="onError">
+		<div v-if="isLoaded.length === 0 && !failed && hasVisibleImages" class="loading-icon-container">
+			<div class="loading-icon">
+				<NcLoadingIcon :size="44" :title="t('text2image_helper', 'Loading image')" />
+			</div>
+		</div>
+		<div v-if="editModeEnabled && isOwner">
+			<div v-if="imageUrls.length > 0 && !failed" class="image-list">
+				<div v-for="(imageUrl, index) in imageUrls"
+					:key="index"
+					class="image-container"
+					@mouseover="hoveredIndex = index"
+					@mouseout="hoveredIndex = -1">
+					<div class="checkbox-container" :class="{ 'hovering': hoveredIndex === index }">
+						<input v-model="fileVisStatusArray[index].visible"
+							:v-show="!isLoaded[index]"
+							type="checkbox"
+							:title="t('text2image_helper', 'Click to toggle generation visibility')"
+							@change="onCheckboxChange()">
+					</div>
+					<div class="image-wrapper" :class="{ 'deselected': !fileVisStatusArray[index].visible }">
+						<img
+							class="image-editable"
+							:src="imageUrl"
+							:title="t('text2image_helper', 'Click to toggle generation visibility')"
+							@load="isLoaded[index] = true"
+							@click="toggleCheckbox(index)"
+							@error="onError">
+					</div>
+				</div>
+			</div>
+		</div>
+		<div v-else>
+			<div v-if="imageUrls.length > 0 && !failed"
+				class="image-list">
+				<div v-for="(imageUrl, index) in imageUrls"
+					:key="index"
+					class="image-container">
+					<div v-if="!isOwner || fileVisStatusArray[index].visible" class="image-wrapper">
+						<img
+							class="image-non-editable"
+							:src="imageUrl"
+							:title="t('text2image_helper', 'Generated image')"
+							@load="isLoaded[index] = true"
+							@error="onError">
+					</div>
+					<div v-if="!hasVisibleImages" class="error_msg">
+						{{ t('text2image_helper', 'This generation has no visible images') }}
+					</div>
+				</div>
+			</div>
 		</div>
 		<div v-if="!failed && imageUrls.length === 0 && timeUntilCompletion !== null"
 			class="processing-notification-container">
@@ -44,6 +86,7 @@
 
 <script>
 import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
+import Cog from 'vue-material-design-icons/Cog.vue'
 import InformationOutlineIcon from 'vue-material-design-icons/InformationOutline.vue'
 import axios from '@nextcloud/axios'
 import Text2ImageHelperIcon from '../Icons/Text2ImageHelperIcon.vue'
@@ -56,6 +99,7 @@ export default {
 		NcLoadingIcon,
 		InformationOutlineIcon,
 		Text2ImageHelperIcon,
+		Cog,
 	},
 
 	props: {
@@ -63,16 +107,16 @@ export default {
 			type: String,
 			required: true,
 		},
-		prompt: {
-			type: String,
-			required: false,
-			default: '',
+		forceEditMode: {
+			type: Boolean,
+			default: false,
 		},
 	},
 
 	data() {
 		return {
-			isImageLoading: true,
+			prompt: '',
+			isLoaded: [],
 			timeUntilCompletion: null,
 			failed: false,
 			imageUrls: [],
@@ -80,13 +124,21 @@ export default {
 			errorMsg: t('text2image_helper', 'Image generation failed'),
 			closed: false,
 			success: false,
+			fileVisStatusArray: [],
+			hoveredIndex: -1,
+			hovered: false,
+			editModeEnabled: false,
 		}
 	},
 
 	computed: {
+		hasVisibleImages() {
+			return this.fileVisStatusArray.some(status => status.visible)
+		},
 	},
 	mounted() {
 		this.getImageGenInfo()
+		this.editModeEnabled = this.forceEditMode
 	},
 	unmounted() {
 		this.closed = true
@@ -94,6 +146,7 @@ export default {
 	methods: {
 		getImages(imageGenId, fileIds) {
 			this.imageUrls = []
+			this.fileVisStatusArray = fileIds
 			// Loop through all the fileIds and get the images:
 			fileIds.forEach((fileId) => {
 				this.imageUrls.push(generateUrl('/apps/text2image_helper/g/' + imageGenId + '/' + fileId.id))
@@ -104,10 +157,18 @@ export default {
 				.then((response) => {
 					if (response.status === 200) {
 						if (response.data?.files !== undefined) {
-							this.isOwner = response.data.is_owner
-							this.success = true
-							this.getImages(response.data.image_gen_id, response.data.files)
-							this.onGenerationReady()
+
+							if (response.data.files.length === 0) {
+								this.errorMsg = t('text2image_helper', 'This generation has no visible images')
+								this.failed = true
+								this.isLoaded = []
+							} else {
+								this.prompt = response.data.prompt
+								this.isOwner = response.data.is_owner
+								this.success = true
+								this.getImages(response.data.image_gen_id, response.data.files)
+								this.onGenerationReady()
+							}
 						} else {
 							if (response.data?.processing !== undefined) {
 								const completionTimeStamp = response.data.processing
@@ -122,14 +183,14 @@ export default {
 						console.error('Unexpected response status: ' + response.status)
 						this.errorMsg = t('text2image_helper', 'Unexpected server response')
 						this.failed = true
-						this.isImageLoading = false
+						this.isLoaded = []
 					}
 				})
 				.catch((error) => {
-					console.error('WTF, how we got here?')
+					console.error('Could not get image generation info: ' + error)
 					this.onError(error)
 				})
-				// If we didn't succeed in loading the image, try again
+			// If we didn't succeed in loading the image, try again
 			if (!this.success && !this.failed && !this.closed) {
 				setTimeout(this.getImageGenInfo, 3000)
 			}
@@ -157,18 +218,42 @@ export default {
 			if (error.response?.data !== undefined) {
 				this.errorMsg = error.response.data
 				this.failed = true
-				this.isImageLoading = false
+				this.isLoaded = []
 			} else {
 				console.error('Could not handle response error: ' + error)
 				this.errorMsg = t('text2image_helper', 'Unknown server query error')
 				this.failed = true
-				this.isImageLoading = false
+				this.isLoaded = []
 			}
 			this.$emit('failed')
 
 		},
 		onGenerationReady() {
 			this.$emit('ready')
+		},
+		onCheckboxChange() {
+			const url = generateUrl('/apps/text2image_helper/v/' + this.src.split('/').pop())
+
+			axios.post(url, {
+				fileVisStatusArray: this.fileVisStatusArray,
+			})
+				.then((response) => {
+					if (response.status === 200) {
+						// console.log('Successfully updated visible images')
+					} else {
+						console.error('Unexpected response status: ' + response.status)
+					}
+				})
+				.catch((error) => {
+					console.error('Could not update visible images: ' + error)
+				})
+		},
+		toggleCheckbox(index) {
+			this.fileVisStatusArray[index].visible = !this.fileVisStatusArray[index].visible
+			this.onCheckboxChange()
+		},
+		toggleEditMode() {
+			this.editModeEnabled = !this.editModeEnabled
 		},
 	},
 }
@@ -179,26 +264,113 @@ export default {
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+	align-items: center;
+	justify-content: center;
+	.edit-icon {
+		position: static;
+		z-index: 1;
+		opacity: 0.2;
+		transition: opacity 0.2s ease-in-out;
+		cursor: pointer;
+	}
 
-	.image_container {
+	.edit-icon.active {
+		opacity: 1;
+	}
+
+	.image-list {
 		display: flex;
 		flex-direction: column;
-		width: 100%;
+		flex-wrap: wrap;
 		justify-content: center;
-		.image {
-			max-height: 300px;
-			border-radius: var(--border-radius-large);
-			margin-top: 24px;
-		}
+	}
+
+	.image-container {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		justify-content: center;
+		max-width: 90%;		
+	}
+
+	.checkbox-container {
+		position: absolute;
+		top: 5%;
+		left: 95%;
+		z-index: 1;
+		opacity: 0.2;
+		transition: opacity 0.2s ease-in-out;
+	}
+
+	.checkbox-container.hovering {
+		opacity: 1;
+	}
+
+	.image-wrapper {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		max-width: 100%;
+		height: 100%;
+		margin-top: 12px;
+		filter: grayscale(100%);
+		transition: filter 0.2s ease-in-out;
+	}
+
+	.image-wrapper.deselected {
+		filter: grayscale(100%) brightness(50%);
+	}
+
+	.image-editable {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		min-width: 400px;
+		object-fit:contain;
+		cursor: pointer;
+		border-radius: var(--border-radius);
+	}
+
+	.image-non-editable {
+		display: flex;
+		width: 100%;
+		height: 100%;
+		min-width: 400px;
+		object-fit:contain;
 	}
 
 	.title {
+		max-width: 600px;
+		display: flex;
+		flex-direction: row;
 		margin-top: 0;
+
+		.icon-and-text {
+			width: 100%;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: start;
+			margin-right: 8px;
+
+			.app-name {
+				margin-right: 8px;
+				white-space: nowrap;
+			}
+		}
+
 		.icon {
 			display: inline;
 			position: relative;
 			top: 4px;
 		}
+	}
+
+	.loading-icon {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
 	}
 
 	.processing-notification-container {
@@ -208,6 +380,7 @@ export default {
 		align-items: center;
 		justify-content: center;
 		margin-top: 24px;
+
 		.processing-notification {
 			display: flex;
 			flex-direction: row;
@@ -234,5 +407,4 @@ export default {
 
 	}
 }
-
 </style>
