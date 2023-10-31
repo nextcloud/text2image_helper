@@ -5,6 +5,7 @@
 namespace OCA\Text2ImageHelper\Service;
 
 use Exception as BaseException;
+use RuntimeException;
 use OCP\Files\NotFoundException;
 use OCP\IConfig;
 use Psr\Log\LoggerInterface;
@@ -65,13 +66,13 @@ class Text2ImageHelperService
 	 * @param int $nResults
 	 * @param bool $storePrompt
 	 * @return array
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function processPrompt(string $prompt, int $nResults, bool $displayPrompt): array
 	{
 		if (!$this->textToImageManager->hasProviders()) {
 			$this->logger->error('No text to image processing provider available');
-			throw new Exception('No text to image processing provider available');
+			throw new BaseException('No text to image processing provider available');
 		}
 
 		// Generate nResults prompts
@@ -243,30 +244,26 @@ class Text2ImageHelperService
 	/**
 	 * Get imageDataFolder
 	 * @return ISimpleFolder
+	 * @throws \Exception
 	 */
-	private function getImageDataFolder(): ?ISimpleFolder
+	private function getImageDataFolder(): ISimpleFolder
 	{
 		if ($this->imageDataFolder === null) {
+			/** @var ISimpleFolder $imageFataFolder */
 			try {
-				$directoryList = $this->appData->getDirectoryListing();
-			} catch (Exception $e) {
-				$this->logger->debug('Image data folder could not be listed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
-			}
-
-			foreach ($directoryList as $directory) {
-				if ($directory->getName() === Application::IMAGE_FOLDER) {
-					$this->imageDataFolder = $directory;
-					break;
-				}
+				$this->imageDataFolder = $this->appData->getFolder(Application::IMAGE_FOLDER);
+			} catch (NotFoundException | RuntimeException $e) {
+				$this->logger->debug('Image data folder could not be accessed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+				throw new Exception('Image data folder could not be accessed: ' . $e->getMessage());
 			}
 
 			if ($this->imageDataFolder === null) {
 				try {
 					$this->imageDataFolder = $this->appData->newFolder(Application::IMAGE_FOLDER);
-				} catch (Exception $e) {
+				} catch (NotPermittedException | RuntimeException $e) {
 					$this->logger->debug('Image data folder could not be created: '
 						. $e->getMessage(), ['app' => Application::APP_ID]);
-					return null;
+					throw new Exception('Image data folder could not be created: ' . $e->getMessage());
 				}
 			}
 		}
@@ -279,7 +276,7 @@ class Text2ImageHelperService
 	 * @param bool $updateTimestamp
 	 * @param string|null $userId
 	 * @return array
-	 * @throws BaseException
+	 * @throws \Exception
 	 */
 	public function getGenerationInfo(string $imageGenId, bool $updateTimestamp = true): array
 	{

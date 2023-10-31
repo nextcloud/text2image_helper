@@ -8,6 +8,7 @@ use Exception;
 use RuntimeException;
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
+use OCA\Text2ImageHelper\Service\Text2ImageHelperService;
 use OCP\Files\IAppData;
 use OCP\Files\SimpleFS\ISimpleFolder;
 use OCP\Files\NotFoundException;
@@ -24,6 +25,7 @@ class CleanUpService
     public function __construct(
         private LoggerInterface $logger,
         private ImageGenerationMapper $imageGenerationMapper,
+        private Text2ImageHelperService $text2ImageHelperService,
         private IAppData $appData,
         private IConfig $config
     ) {
@@ -55,19 +57,13 @@ class CleanUpService
         /** @var ISimpleFolder $imageFataFolder */
         $imageDataFolder = null;
         try {
-            $imageDataFolder = $this->appData->getFolder(Application::IMAGE_FOLDER);
+            $imageDataFolder = $this->text2ImageHelperService->getImageDataFolder();
         } catch (NotFoundException | RuntimeException $e) {
             $this->logger->debug('Image data folder could not be accessed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
             throw new Exception('Image data folder could not be accessed');
         }        
 
-        if ($imageDataFolder === null) {
-            $e_msg = 'Deleted ' . $cleanedUp['deleted_generations'] . ' idle generations, but could not delete 
-            idle generation associated files: image data folder could not be accessed';
-            $this->logger->warning($e_msg);
-            throw new Exception($e_msg);
-        }
-
+        
         $deletedFiles = 0;
         $deletionErrors = 0;
         foreach ($cleanedUp['file_names'] as $fileName) {
