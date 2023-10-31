@@ -139,10 +139,10 @@ class Text2ImageHelperService
 	 */
 	public function storeImages(array $iImages, string $imageGenId): void
 	{
-		$imageDataFolder = $this->getImageDataFolder();
-
-		if ($imageDataFolder === null) {
-			$this->logger->error('Image save error: could not retrieve folder');
+		try {
+			$imageDataFolder = $this->getImageDataFolder();
+		} catch (BaseException $e) {
+			$this->logger->error('Image save error: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			return;
 		}
 
@@ -363,12 +363,9 @@ class Text2ImageHelperService
 			throw new BaseException('Image file not found in database');
 		}
 
+		// No need to catch here, since we'd be throwing BaseException anyways:
 		$imageDataFolder = $this->getImageDataFolder();
-		if ($imageDataFolder === null) {
-			$this->logger->debug('Image request error : Could not open image storage folder', ['app' => Application::APP_ID]);
-			throw new BaseException('Could not open image storage folder');
-		}
-
+		
 		// Load image from disk
 		try {
 			$imageFile = $imageDataFolder->getFile($imageFileName->getFileName());
@@ -434,12 +431,17 @@ class Text2ImageHelperService
 			$this->notificationManager->markProcessed($notification);
 
 			if ($imageGeneration->getIsGenerated()) {
-				$imageDataFolder = $this->getImageDataFolder();
+				$imageDataFolder = null;
+				try {
+					$imageDataFolder = $this->getImageDataFolder();
+				} catch (BaseException $e) {
+					$this->logger->debug('Error deleting image files associated with a generation: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+				}
 				if ($imageDataFolder !== null) {
 					try {
 						$fileNames = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($imageGeneration->getId());
-					} catch (Exception $e) {
-						$this->logger->debug('No files to delete' . $e->getMessage());
+					} catch (BaseException $e) {
+						$this->logger->debug('No files to delete could be retrieved: ' . $e->getMessage());
 					}
 
 					foreach ($fileNames as $fileName) {
