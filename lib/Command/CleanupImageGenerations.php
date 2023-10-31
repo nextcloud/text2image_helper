@@ -4,6 +4,7 @@
 
 namespace OCA\Text2ImageHelper\Command;
 
+use Exception;
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Service\CleanUpService;
 use Symfony\Component\Console\Command\Command;
@@ -44,11 +45,13 @@ class CleanupImageGenerations extends Command
 	{
 		$maxAge = $input->getArgument('max_age');
 		$output->writeln('Cleanning up image generation data older than ' . $maxAge . ' seconds.');
-		$cleanedUp = $this->cleanUpService->cleanupGenerationsAndFiles((int) $maxAge);
-		if (isset($cleanedUp['error'])) {
-			$output->writeln($cleanedUp['error']);
+		try {
+			$cleanedUp = $this->cleanUpService->cleanupGenerationsAndFiles((int) $maxAge);
+		} catch (Exception $e) {
+			$output->writeln('Error: ' . $e->getMessage());
 			return 1;
 		}
+		
 		$output->writeln('Deleted ' . $cleanedUp['deleted_generations'] .
 			' idle generations and ' . $cleanedUp['deleted_files'] . ' files.');
 		if ($cleanedUp['file_deletion_errors']) {

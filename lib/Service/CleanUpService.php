@@ -5,10 +5,12 @@
 namespace OCA\Text2ImageHelper\Service;
 
 use Exception;
+use RuntimeException;
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
 use OCP\Files\IAppData;
 use OCP\Files\SimpleFS\ISimpleFolder;
+use OCP\Files\NotFoundException;
 use Psr\Log\LoggerInterface;
 use OCP\IConfig;
 
@@ -32,6 +34,7 @@ class CleanUpService
     /**
      * @param int|null $maxAge
      * @return array
+     * @throws Exception
      */
     public function cleanupGenerationsAndFiles(?int $maxAge = null): array
     {
@@ -46,29 +49,23 @@ class CleanUpService
 
         if ($cleanedUp['deleted_generations'] === 0) {
             $this->logger->debug('No idle generations to delete');
-            return ['error' => 'No idle generations to delete.'];
+            throw new Exception('No idle generations to delete');            
         }
 
-        try {
-            $directoryList = $this->appData->getDirectoryListing();
-        } catch (Exception $e) {
-            $this->logger->debug('Image data folder could not be listed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
-            return ['error' => 'Image data folder could not be listed.'];
-        }
         /** @var ISimpleFolder $imageFataFolder */
         $imageDataFolder = null;
-        foreach ($directoryList as $directory) {
-            if ($directory->getName() === Application::IMAGE_FOLDER) {
-                $imageDataFolder = $directory;
-                break;
-            }
-        }
+        try {
+            $imageDataFolder = $this->appData->getFolder(Application::IMAGE_FOLDER);
+        } catch (NotFoundException | RuntimeException $e) {
+            $this->logger->debug('Image data folder could not be accessed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+            throw new Exception('Image data folder could not be accessed');
+        }        
 
         if ($imageDataFolder === null) {
             $e_msg = 'Deleted ' . $cleanedUp['deleted_generations'] . ' idle generations, but could not delete 
             idle generation associated files: image data folder could not be accessed';
             $this->logger->warning($e_msg);
-            return ['error' => $e_msg];
+            throw new Exception($e_msg);
         }
 
         $deletedFiles = 0;
