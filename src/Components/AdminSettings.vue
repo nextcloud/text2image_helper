@@ -1,26 +1,28 @@
 <template>
-	<div id="text2image_prefs" class="section">
-		<h2>
-			<Text2ImageHelperIcon class="icon" />
-			{{ t('text2image_helper', 'Text2Image Helper') }}
-		</h2>
-		<div class="line">
-			<!--An input for specifying max generation idle time-->
-			<label for="text2image-api-max-gen-idle">
-				<mdiCalendarClock :size="20" class="icon" />
-				{{ t('text2image_helper', 'Max image generation idle time (days)') }}
-			</label>
-			<input id="text2image-api-max-gen-idle"
-				v-model="maxGenIdleTime"
-				:title="t('text2image_helper', 'Maximum number of days an image can be idle (not viewed) before it is deleted')"
-				type="number">
-		</div>
+	<div>
+		<NcSettingsSection :name="t('text2image_helper', 'Image generation - Text2Image Helper')"
+			:title="t('text2image_helper', 'Image generation - Text2Image Helper')"
+			:description="t('text2image_helper','Here you can define the settings for the Text2Image helper smart picker.')">
+			<div class="line">
+				<!--An input for specifying max generation idle time-->
+				<label for="text2image-api-max-gen-idle">
+					<mdiCalendarClock :size="20" class="icon" />
+					{{ t('text2image_helper', 'Max generation idle time (days): ') }}
+				</label>
+				<NcTextField id="text2image-api-max-gen-idle"
+					class="input-field"
+					:value.sync="maxGenIdleTime"
+					:title="t('text2image_helper', 'Maximum number of days an image can be idle (not viewed) before it is deleted')"
+					type="number" />
+			</div>
+		</NcSettingsSection>
 	</div>
 </template>
 
 <script>
 import mdiCalendarClock from 'vue-material-design-icons/CalendarClock.vue'
-import Text2ImageHelperIcon from '../Icons/Text2ImageHelperIcon.vue'
+import NcSettingsSection from '@nextcloud/vue/dist/Components/NcSettingsSection.js'
+import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
 
 import { loadState } from '@nextcloud/initial-state'
 import { generateUrl } from '@nextcloud/router'
@@ -32,8 +34,9 @@ export default {
 	name: 'AdminSettings',
 
 	components: {
-		Text2ImageHelperIcon,
 		mdiCalendarClock,
+		NcSettingsSection,
+		NcTextField,
 	},
 
 	props: [],
@@ -109,7 +112,7 @@ export default {
 				.catch((error) => {
 					showError(
 						t('text2image_helper', 'Failed to save Text2Image Helper admin options')
-						+ ': ' + error.response?.message,
+						+ ': ' + error.response?.data?.message,
 					)
 				})
 		},
@@ -118,59 +121,26 @@ export default {
 </script>
 
 <style scoped lang="scss">
-#text2image_prefs {
-	#text2image-content {
-		margin-left: 40px;
-	}
-	h2,
-	.line,
-	.settings-hint {
-		display: flex;
-		align-items: center;
-		margin-top: 12px;
-		.icon {
-			margin-right: 4px;
-		}
-	}
 
-	h2 .icon {
-		margin-right: 8px;
-	}
-
-	.mid-setting-heading {
-		margin-top: 32px;
-		text-decoration: underline;
-	}
-
-	.line {
-		> label {
-			width: 300px;
-			display: flex;
-			align-items: center;
-		}
-		> input {
-			width: 300px;
-		}
-		.spacer {
-			display: inline-block;
-			width: 32px;
-		}
-		.quota-table {
-			padding: 4px 8px 4px 8px;
-			border: 2px solid var(--color-border);
-			border-radius: var(--border-radius);
-			.text-cell {
-				opacity: 0.5;
-			}
-			th, td {
-				width: 300px;
-				text-align: left;
-			}
-		}
-	}
-
-	.model-select {
-		min-width: 350px;
+.line,
+.settings-hint {
+	display: flex;
+	align-items: center;
+	margin-top: 12px;
+	.icon {
+		margin-right: 4px;
 	}
 }
+
+.line {
+	> label {
+		width: 300px;
+		display: flex;
+		align-items: center;
+	}
+	.input-field {
+		width: 300px;
+	}
+}
+
 </style>

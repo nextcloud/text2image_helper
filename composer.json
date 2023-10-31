@@ -1,0 +1,12 @@
+{
+    "name": "nextcloud/text2image_helper",
+    "authors": [
+        {
+            "name": "Sami Finnilä",
+            "email": "sami.finnila@nextcloud.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0"
+    }
+}

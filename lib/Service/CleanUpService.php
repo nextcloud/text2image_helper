@@ -30,7 +30,6 @@ class CleanUpService
         private IConfig $config
     ) {
 
-
     }
 
     /**

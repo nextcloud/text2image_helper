@@ -39,20 +39,16 @@
 				</div>
 			</div>
 			<div class="footer">
-				<div class="line">
-					<NcCheckboxRadioSwitch class="include-query"
-						:checked.sync="displayPrompt">
-						{{ t('text2image_helper', 'Include the prompt in the result') }}
-					</NcCheckboxRadioSwitch>
-					<div class="spacer" />
-					<div class="n-results">
-						<label for="nResults">{{ t('text2image_helper', 'Number of results') }}</label>
-						<input id="nResults"
-							v-model="nResults"
-							type="number"
-							min="1"
-							max="10">
-					</div>
+				<div>
+					<NcButton class="advanced-button"
+						type="tertiary"
+						:aria-label="t('text2image_helper', 'Show/hide advanced options')"
+						@click="showAdvanced = !showAdvanced">
+						<template #icon>
+							<component :is="showAdvancedIcon" />
+						</template>
+						{{ t('text2image_helper', 'Advanced options') }}
+					</NcButton>
 				</div>
 				<div class="buttons">
 					<NcButton type="secondary"
@@ -85,6 +81,23 @@
 							<ArrowRightIcon />
 						</template>
 					</NcButton>
+				</div>
+			</div>
+			<div v-show="showAdvanced" class="advanced">
+				<div class="line">
+					<NcCheckboxRadioSwitch class="include-query"
+						:checked.sync="displayPrompt">
+						{{ t('text2image_helper', 'Include the prompt in the result') }}
+					</NcCheckboxRadioSwitch>
+				</div>
+				<div class="spacer" />
+				<div class="line">
+					<label for="nResults">{{ t('text2image_helper', 'Number of results') }}</label>
+					<input id="nResults"
+						v-model="nResults"
+						type="number"
+						min="1"
+						max="10">
 				</div>
 			</div>
 		</div>
@@ -151,6 +164,7 @@ export default {
 			prompts: null,
 			submitted: false,
 			nResults: 1,
+			showAdvanced: false,
 		}
 	},
 
@@ -383,6 +397,29 @@ export default {
 			>* {
 				margin-left: 4px;
 			}
+		}
+	}
+
+	.advanced {
+		width: 100%;
+		padding: 12px 0;
+		.line {
+			display: flex;
+			align-items: center;
+			margin-top: 8px;
+
+			input,
+			select {
+				margin-left: 24px;
+				width: 200px;
+			}
+		}
+
+		input[type=number] {
+			width: 80px;
+			appearance: initial !important;
+			-moz-appearance: initial !important;
+			-webkit-appearance: initial !important;
 		}
 	}
 }
