@@ -62,9 +62,9 @@
 							@load="isLoaded[index] = true"
 							@error="onError">
 					</div>
-					<div v-if="!hasVisibleImages" class="error_msg">
-						{{ t('text2image_helper', 'This generation has no visible images') }}
-					</div>
+				</div>
+				<div v-if="!hasVisibleImages" class="error_msg">
+					{{ t('text2image_helper', 'This generation has no visible images') }}
 				</div>
 			</div>
 		</div>
