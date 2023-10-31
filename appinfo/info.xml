@@ -9,7 +9,7 @@
 	<summary>A Smart Picker for interfacing with text-to-image providers</summary>
 	<description><![CDATA[A Smart Picker for interfacing with text-to-image providers.]]></description>
 	<version>1.0.0</version>
-	<license>agpl</license>
+	<licence>agpl</licence>
 	<author mail="sami.finnila@nextcloud.com">Sami Finnilä</author>
 	<namespace>Text2ImageHelper</namespace>
 	<category>integration</category>

@@ -114,6 +114,8 @@ import NcLoadingIcon from '@nextcloud/vue/dist/Components/NcLoadingIcon.js'
 import NcTextField from '@nextcloud/vue/dist/Components/NcTextField.js'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/dist/Components/NcCheckboxRadioSwitch.js'
 import NcUserBubble from '@nextcloud/vue/dist/Components/NcUserBubble.js'
+import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
+import ChevronDownIcon from 'vue-material-design-icons/ChevronDown.vue'
 
 import axios from '@nextcloud/axios'
 import { generateUrl } from '@nextcloud/router'
@@ -176,6 +178,11 @@ export default {
 		},
 		emptyResult() {
 			return this.result === null || this.result.length === 0
+		},
+		showAdvancedIcon() {
+			return this.showAdvanced
+				? ChevronDownIcon
+				: ChevronRightIcon
 		},
 	},
 

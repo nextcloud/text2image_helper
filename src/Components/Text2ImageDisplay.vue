@@ -72,7 +72,7 @@
 			class="processing-notification-container">
 			<div class="processing-notification">
 				<InformationOutlineIcon :size="20" class="icon" />
-				{{ t('text2image_helper', 'Generation time left (h:m): ' + timeUntilCompletion) + '\n' }}
+				{{ t('text2image_helper', 'Generation time left: ') + timeUntilCompletion + '. ' }}
 				{{ t('text2image_helper', 'The generated image is shown once ready.') }}
 			</div>
 		</div>
@@ -89,6 +89,7 @@ import InformationOutlineIcon from 'vue-material-design-icons/InformationOutline
 import axios from '@nextcloud/axios'
 import Text2ImageHelperIcon from '../Icons/Text2ImageHelperIcon.vue'
 import { generateUrl } from '@nextcloud/router'
+import humanizeDuration from 'humanize-duration'
 
 export default {
 	name: 'Text2ImageDisplay',
@@ -200,16 +201,14 @@ export default {
 				return
 			}
 
-			const hours = Math.floor(timeDifference / (1000 * 60 * 60))
-			const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / 60000)
-			const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000)
-			this.timeUntilCompletion = `${hours}:${minutes.toString().padStart(2, '0')}`
+			this.timeUntilCompletion = humanizeDuration(timeDifference,
+				{ units: ['h'], language: OC.getLanguage(), fallbacks: ['en'], round: true })
 
 			// Schedule next update at the next minute change:
 			if (!this.closed) {
 				setTimeout(() => {
 					this.updateTimeUntilCompletion(completionTimeStamp)
-				}, seconds * 1000 + 1000)
+				}, 5000)
 			}
 		},
 		onError(error) {
