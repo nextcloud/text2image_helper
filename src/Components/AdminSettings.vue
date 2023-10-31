@@ -54,9 +54,6 @@ export default {
 	},
 
 	computed: {
-		configured() {
-			return !!this.state.url || !!this.state.api_key
-		},
 		formattedModels() {
 			if (this.models) {
 				return this.models.map(m => {
@@ -79,12 +76,6 @@ export default {
 				this.onInput()
 			},
 		},
-	},
-
-	watch: {
-	},
-
-	mounted() {
 	},
 
 	methods: {
