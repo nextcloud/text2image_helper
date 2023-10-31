@@ -8,6 +8,7 @@ use OCP\IConfig;
 use OCP\IRequest;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http;
 
 use OCA\Text2ImageHelper\AppInfo\Application;
 
@@ -32,6 +33,17 @@ class ConfigController extends Controller
 	public function setAdminConfig(array $values): DataResponse
 	{
 		foreach ($values as $key => $value) {
+			switch ($key) {
+				case 'max_generation_idle_time':
+					$value = (int) $value;
+					if ($value < 1) {
+						return new DataResponse(['message' => 'Invalid value for max_generation_idle_time'], Http::STATUS_BAD_REQUEST);
+					}
+					break;
+				default:
+					return new DataResponse(['message' => 'Invalid config key'], Http::STATUS_BAD_REQUEST);
+			}
+
 			$this->config->setAppValue(Application::APP_ID, $key, $value);
 		}
 		return new DataResponse(1);

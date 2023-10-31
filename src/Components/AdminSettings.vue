@@ -109,7 +109,7 @@ export default {
 				.catch((error) => {
 					showError(
 						t('text2image_helper', 'Failed to save Text2Image Helper admin options')
-						+ ': ' + error.response?.request?.responseText,
+						+ ': ' + error.response?.message,
 					)
 				})
 		},
