@@ -196,7 +196,7 @@ class ImageGenerationMapper extends QBMapper
 
 		/** @var array[] $fileNames */
 		$fileNames = [];
-		$imageGenIds = [];
+		$generationIds = [];
 		foreach ($generations as $generation) {
 			$generationFiles = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($generation->getId());
 			array_map(function ($generationFile) use (&$fileNames) {
@@ -206,6 +206,7 @@ class ImageGenerationMapper extends QBMapper
 		}
 
 		// Only now delete associated file names if we encountered no errors:
+		/** @var int $genId */
 		foreach ($generationIds as $genId) {
 			$this->imageFileNameMapper->deleteImageFileNamesOfGenerationId($genId);
 		}

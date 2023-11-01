@@ -110,10 +110,10 @@ class PromptMapper extends QBMapper {
 	 * @param string $userId
 	 * @param string $value
 	 * @param int|null $timestamp
-	 * @return Prompt|Entity
+	 * @return Prompt
 	 * @throws Exception
 	 */
-	public function createPrompt(string $userId, string $value, ?int $timestamp = null): Prompt|Entity {
+	public function createPrompt(string $userId, string $value, ?int $timestamp = null): Prompt {
 		try {
 			$prompt = $this->getPromptOfUserByValue($userId, $value);
 			$ts = (new DateTime())->getTimestamp();

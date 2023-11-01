@@ -52,7 +52,7 @@ class CleanupImageGenerations extends Command
 
 		$output->writeln('Cleanning up image generation data older than ' . $maxAge . ' seconds.');
 		try {
-			$cleanedUp = $this->cleanUpService->cleanupGenerationsAndFiles((int) $maxAge);
+			$cleanedUp = $this->cleanUpService->cleanupGenerationsAndFiles($maxAge);
 		} catch (Exception $e) {
 			$output->writeln('Error: ' . $e->getMessage());
 			return 1;
