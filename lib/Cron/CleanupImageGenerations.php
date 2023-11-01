@@ -25,10 +25,12 @@ class CleanupImageGenerations extends TimedJob
 		$this->setInterval(60 * 60 * 24);
 	}
 
-	protected function run($argument)
+	protected function run($argument): void
 	{
 		$this->logger->debug('Run cleanup job for image generations');
 
 		$this->cleanUpService->cleanupGenerationsAndFiles();
+
+		return;
 	}
 }

@@ -79,7 +79,8 @@ class Text2ImageHelperService
 		}
 
 		// Generate nResults prompts
-		$imageGenId = (string) bin2hex(random_bytes(16));
+		$imageGenId = bin2hex(random_bytes(16));
+		/** @var Task $promptTask */
 		$promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageGenId);
 
 		$this->textToImageManager->runOrScheduleTask($promptTask);
@@ -88,7 +89,6 @@ class Text2ImageHelperService
 
 		/** @var IImage[]|null $images */
 		$images = [];
-		/** @var DateTime $expCompletionTime */
 		$expCompletionTime = new DateTime('now');
 
 		if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
@@ -259,7 +259,7 @@ class Text2ImageHelperService
 	 * @return ISimpleFolder
 	 * @throws \Exception
 	 */
-	private function getImageDataFolder(): ISimpleFolder
+	public function getImageDataFolder(): ISimpleFolder
 	{
 		if ($this->imageDataFolder === null) {
 			/** @var ISimpleFolder|null $imageFataFolder */

@@ -12,6 +12,7 @@ use OCA\Text2ImageHelper\Service\Text2ImageHelperService;
 use OCP\Files\IAppData;
 use OCP\Files\SimpleFS\ISimpleFolder;
 use OCP\Files\NotFoundException;
+use OCP\Files\NotPermittedException;
 use Psr\Log\LoggerInterface;
 use OCP\IConfig;
 
@@ -40,21 +41,19 @@ class CleanUpService
     public function cleanupGenerationsAndFiles(?int $maxAge = null): array
     {
         if ($maxAge === null) {
-            $maxAge = $this->config->getUserValue(
+            $maxAge = intval($this->config->getUserValue(
                 Application::APP_ID,
                 'max_generation_idle_time',
-                Application::DEFAULT_MAX_GENERATION_IDLE_TIME
-            ) ?: Application::DEFAULT_MAX_GENERATION_IDLE_TIME;
+                strval(Application::DEFAULT_MAX_GENERATION_IDLE_TIME)
+            ) ?: Application::DEFAULT_MAX_GENERATION_IDLE_TIME);
         }
-        $cleanedUp = $this->imageGenerationMapper->cleanupImageGenerations($maxAge);
+        $cleanedUp = $this->imageGenerationMapper->cleanupImageGenerations(intval($maxAge));
 
-        if ($cleanedUp['deleted_generations'] === 0) {
+        if (intval($cleanedUp['deleted_generations'] === 0)) {
             $this->logger->debug('No idle generations to delete');
             throw new Exception('No idle generations to delete');            
         }
 
-        /** @var ISimpleFolder $imageFataFolder */
-        $imageDataFolder = null;
         try {
             $imageDataFolder = $this->text2ImageHelperService->getImageDataFolder();
         } catch (NotFoundException | RuntimeException $e) {
@@ -65,11 +64,13 @@ class CleanUpService
         
         $deletedFiles = 0;
         $deletionErrors = 0;
+
+        /** @var string $fileName */
         foreach ($cleanedUp['file_names'] as $fileName) {
             try {
                 $imageDataFolder->getFile($fileName)->delete();
                 $deletedFiles++;
-            } catch (Exception $e) {
+            } catch (NotPermittedException $e) {
                 $this->logger->debug('Image file could not be deleted: ' . $e->getMessage(), ['app' => Application::APP_ID]);
                 $deletionErrors++;
             }

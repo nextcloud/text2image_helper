@@ -38,13 +38,18 @@ class Text2ImageResultListener implements IEventListener {
 
         $imageGenId = $event->getTask()->getIdentifier();
 
+        if ($imageGenId === null) {
+            $this->logger->warning('Image generation task has no identifier');
+            return;
+        }
+
         if ($event instanceof TaskSuccessfulEvent) {
             $this->logger->debug("TextToImageEvent succeeded");
             /** @var IImage $image */
                         
             $images = $event->getTask()->getOutputImages();
             
-            $this->text2ImageService->storeImages($images, $event->getTask()->getIdentifier());            
+            $this->text2ImageService->storeImages($images, $imageGenId);            
         }
 
         if ($event instanceof TaskFailedEvent) {

@@ -23,7 +23,7 @@ class ImageFileNameMapper extends QBMapper
 
 	/**
 	 * @param int $generationId
-	 * @return ImageFileName[]
+	 * @return ImageFileName[] | Entity[]
 	 * @throws Exception
 	 */
 	public function getImageFileNamesOfGenerationId(int $generationId): array
@@ -41,7 +41,7 @@ class ImageFileNameMapper extends QBMapper
 
 	/**
 	 * @param int $generationId
-	 * @return ImageFileName[]
+	 * @return ImageFileName[] | Entity[]
 	 * @throws Exception
 	 */
 	public function getVisibleImageFileNamesOfGenerationId(int $generationId): array
@@ -84,11 +84,11 @@ class ImageFileNameMapper extends QBMapper
 	/**
 	 * @param int $generationId
 	 * @param int $fileNameId
-	 * @return ?ImageFileName
+	 * @return Entity|ImageFileName|null
 	 * 
 	 */
 	 
-	public function getImageFileNameOfGenerationId(int $generationId, int $fileNameId): ?ImageFileName
+	public function getImageFileNameOfGenerationId(int $generationId, int $fileNameId): Entity | ImageFileName | null
 	{
 		$qb = $this->db->getQueryBuilder();
 
@@ -111,10 +111,10 @@ class ImageFileNameMapper extends QBMapper
 	 * @param int $generationId
 	 * @param string $fileName
 	 * @param string $prompt
-	 * @return ImageFileName
+	 * @return ImageFileName | Entity
 	 * @throws Exception
 	 */
-	public function createImageFileName(int $generationId, string $fileName): ImageFileName
+	public function createImageFileName(int $generationId, string $fileName): ImageFileName | Entity
 	{
 		$imageFile = new ImageFileName();
 		$imageFile->setGenerationId($generationId);

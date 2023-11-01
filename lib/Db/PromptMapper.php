@@ -14,6 +14,7 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
+use OCP\AppFramework\Db\Entity;
 
 class PromptMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
@@ -22,12 +23,12 @@ class PromptMapper extends QBMapper {
 
 	/**
 	 * @param int $id
-	 * @return Prompt
+	 * @return Prompt | Entity
 	 * @throws DoesNotExistException
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getPrompt(int $id): Prompt {
+	public function getPrompt(int $id): Prompt | Entity {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -42,12 +43,12 @@ class PromptMapper extends QBMapper {
 	/**
 	 * @param int $id
 	 * @param string $userId
-	 * @return Prompt
+	 * @return Prompt | Entity
 	 * @throws DoesNotExistException
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getPromptOfUser(int $id, string $userId): Prompt {
+	public function getPromptOfUser(int $id, string $userId): Prompt | Entity {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -65,12 +66,12 @@ class PromptMapper extends QBMapper {
 	/**
 	 * @param string $userId
 	 * @param string $value
-	 * @return Prompt
+	 * @return Prompt | Entity
 	 * @throws DoesNotExistException
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getPromptOfUserByValue(string $userId, string $value): Prompt {
+	public function getPromptOfUserByValue(string $userId, string $value): Prompt | Entity {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -109,10 +110,10 @@ class PromptMapper extends QBMapper {
 	 * @param string $userId
 	 * @param string $value
 	 * @param int|null $timestamp
-	 * @return Prompt
+	 * @return Prompt|Entity
 	 * @throws Exception
 	 */
-	public function createPrompt(string $userId, string $value, ?int $timestamp = null): Prompt {
+	public function createPrompt(string $userId, string $value, ?int $timestamp = null): Prompt|Entity {
 		try {
 			$prompt = $this->getPromptOfUserByValue($userId, $value);
 			$ts = (new DateTime())->getTimestamp();
@@ -172,6 +173,7 @@ class PromptMapper extends QBMapper {
 		$req = $qb->executeQuery();
 
 		$lastPromptTs = [];
+		/** @var array $row */
 		while ($row = $req->fetch()) {
 			$lastPromptTs[] = (int)$row['timestamp'];
 		}

@@ -47,7 +47,7 @@ class ImageFileName extends Entity implements \JsonSerializable
 
 	public function setHidden(?bool $hidden): void
 	{
-		$this->hidden = $hidden;
+		$this->hidden = $hidden === true;
 	}
 
 	public function getHidden(): bool

@@ -87,7 +87,7 @@ class Text2ImageHelperController extends Controller
 		}
 
 		return new DataDisplayResponse(
-			$result['image'],
+			$result['image'] ?? '',
 			Http::STATUS_OK,
 			['Content-Type' => $result['headers']['Content-Type'][0] ?? 'image/jpeg']
 		);

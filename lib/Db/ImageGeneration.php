@@ -70,18 +70,18 @@ class ImageGeneration extends Entity implements \JsonSerializable
 		];
 	}
 
-	public function setIsGenerated(?bool $isGenerated)
+	public function setIsGenerated(?bool $isGenerated): void
 	{
-		$this->isGenerated = $isGenerated;
+		$this->isGenerated = $isGenerated === true;
 	}
 	public function getIsGenerated(): bool
 	{
 		return $this->isGenerated === true;
 	}
 
-	public function setFailed(?bool $failed)
+	public function setFailed(?bool $failed): void
 	{
-		$this->failed = $failed;
+		$this->failed = $failed === true;
 	}
 
 	public function getFailed(): bool
@@ -89,9 +89,9 @@ class ImageGeneration extends Entity implements \JsonSerializable
 		return $this->failed === true;
 	}
 
-	public function setNotifyReady(?bool $notifyReady)
+	public function setNotifyReady(?bool $notifyReady): void
 	{
-		$this->notifyReady = $notifyReady;
+		$this->notifyReady = $notifyReady === true;
 	}
 
 	public function getNotifyReady(): bool

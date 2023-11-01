@@ -26,11 +26,11 @@ class CleanupImageGenerations extends Command
 
 	protected function configure()
 	{
-		$maxIdleTimeSetting = $this->config->getUserValue(
+		$maxIdleTimeSetting = intval($this->config->getUserValue(
 			Application::APP_ID,
 			'max_generation_idle_time',
-			Application::DEFAULT_MAX_GENERATION_IDLE_TIME
-		) ?: Application::DEFAULT_MAX_GENERATION_IDLE_TIME;
+			strval(Application::DEFAULT_MAX_GENERATION_IDLE_TIME)
+		) ?: Application::DEFAULT_MAX_GENERATION_IDLE_TIME);
 		$this->setName('text2image_helper:cleanup')
 			->setDescription('Cleanup image generation data')
 			->addArgument(
@@ -43,7 +43,13 @@ class CleanupImageGenerations extends Command
 
 	protected function execute(InputInterface $input, OutputInterface $output)
 	{
-		$maxAge = $input->getArgument('max_age');
+		$maxAge = intval($input->getArgument('max_age'));
+
+		if ($maxAge < 1) {
+			$output->writeln('Invalid value for max_age: ' . $maxAge);
+			return 1;
+		}
+
 		$output->writeln('Cleanning up image generation data older than ' . $maxAge . ' seconds.');
 		try {
 			$cleanedUp = $this->cleanUpService->cleanupGenerationsAndFiles((int) $maxAge);
