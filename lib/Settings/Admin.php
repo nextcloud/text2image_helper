@@ -23,11 +23,11 @@ class Admin implements ISettings
 	 */
 	public function getForm(): TemplateResponse
 	{
-		$maxGenerationIdleTime = $this->config->getAppValue(
+		$maxGenerationIdleTime = intval($this->config->getAppValue(
 			Application::APP_ID,
 			'max_generation_idle_time',
-			Application::DEFAULT_MAX_GENERATION_IDLE_TIME
-		) ?: Application::DEFAULT_MAX_GENERATION_IDLE_TIME;
+			strval(Application::DEFAULT_MAX_GENERATION_IDLE_TIME)
+		) ?: Application::DEFAULT_MAX_GENERATION_IDLE_TIME);
 
 		
 		$adminConfig = [			

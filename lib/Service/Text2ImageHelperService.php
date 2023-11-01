@@ -460,7 +460,7 @@ class Text2ImageHelperService
 		try {
 			$this->imageGenerationMapper->deleteImageGeneration($imageGenId);
 		} catch (Exception $e) {
-			$this->logger->debug('Image generation db entry deletion error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			$this->logger->debug('Image generation db entry deletion error : ' . $e->getMessage());
 		}
 	}
 
@@ -474,20 +474,20 @@ class Text2ImageHelperService
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
-			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			$this->logger->debug('Image request error : ' . $e->getMessage());
 			throw new BaseException('Image generation not found; it may have been cleaned up due to not being viewed for a long time.');
 		}
 
 		if ($imageGeneration->getUserId() !== $this->userId) {
-			$this->logger->warning('User attempted deleting another user\'s image generation!', ['app' => Application::APP_ID]);
+			$this->logger->warning('User attempted deleting another user\'s image generation!');
 			throw new BaseException('Unauthorized.');
 		}
-
+		/** @var array $fileVisStatus */
 		foreach ($fileVisSatusArray as $fileVisStatus) {
 			try {
-				$this->imageFileNameMapper->setFileNameHidden($fileVisStatus['id'], !((bool) $fileVisStatus['visible']));
+				$this->imageFileNameMapper->setFileNameHidden(intval($fileVisStatus['id']), !((bool) $fileVisStatus['visible']));
 			} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
-				$this->logger->error('Error setting image file visibility: ' . $e->getMessage(), ['app' => Application::APP_ID]);
+				$this->logger->error('Error setting image file visibility: ' . $e->getMessage());
 				throw new BaseException('Image file or files not found in database');
 			}
 		}
@@ -502,12 +502,12 @@ class Text2ImageHelperService
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
-			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
+			$this->logger->debug('Image request error : ' . $e->getMessage());
 			throw new BaseException('Image generation not found; it may have been cleaned up due to not being viewed for a long time.');
 		}
 
 		if ($imageGeneration->getUserId() !== $this->userId) {
-			$this->logger->warning('User attempted enabling notifications of another user\'s image generation!', ['app' => Application::APP_ID]);
+			$this->logger->warning('User attempted enabling notifications of another user\'s image generation!');
 			throw new BaseException('Unauthorized.');
 		}
 
@@ -528,16 +528,19 @@ class Text2ImageHelperService
 	{
 		$generationInfo = $this->getGenerationInfo($imageGenId, true);
 
+		/** @var array $imageFiles */
 		$imageFiles = $generationInfo['files'];
 
 		// Generate a HTML link to each image
+		/** @var string[] $links */
 		$links = [];
+		/** @var array $imageFile */
 		foreach ($imageFiles as $imageFile) {
 			$links[] = $this->urlGenerator->linkToRouteAbsolute(
 				Application::APP_ID . '.Text2ImageHelper.getImage',
 				[
 					'imageGenId' => $imageGenId,
-					'fileNameId' => $imageFile['id'],
+					'fileNameId' => intval($imageFile['id']),
 				]
 			);
 		}

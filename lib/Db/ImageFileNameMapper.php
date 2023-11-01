@@ -23,7 +23,7 @@ class ImageFileNameMapper extends QBMapper
 
 	/**
 	 * @param int $generationId
-	 * @return array|Entity
+	 * @return ImageFileName[]
 	 * @throws Exception
 	 */
 	public function getImageFileNamesOfGenerationId(int $generationId): array
@@ -41,7 +41,7 @@ class ImageFileNameMapper extends QBMapper
 
 	/**
 	 * @param int $generationId
-	 * @return array|Entity
+	 * @return ImageFileName[]
 	 * @throws Exception
 	 */
 	public function getVisibleImageFileNamesOfGenerationId(int $generationId): array
