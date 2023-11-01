@@ -4,6 +4,7 @@
 
 namespace OCA\Text2ImageHelper\Service;
 
+use GdImage;
 use Exception as BaseException;
 use RuntimeException;
 use OCP\Files\NotFoundException;
@@ -25,6 +26,8 @@ use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\Db\Exception;
 use OCP\Files\NotPermittedException;
+
+use function PHPUnit\Framework\isInstanceOf;
 
 class Text2ImageHelperService
 {
@@ -83,19 +86,21 @@ class Text2ImageHelperService
 		
 		$taskExecuted = false;
 
+		/** @var IImage[]|null $images */
+		$images = [];
+		/** @var DateTime $expCompletionTime */
+		$expCompletionTime = new DateTime('now');
+
 		if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
-			$expCompletionTime = new DateTime('now');
-			$taskExecuted = true;
-			            
+			$taskExecuted = true;			            
             $images = $promptTask->getOutputImages();   
 		} else {
-			$expCompletionTime = $promptTask->getCompletionExpectedAt();
-			$expCompletionTime = $expCompletionTime ?? new DateTime('now');
+			$expCompletionTime = $promptTask->getCompletionExpectedAt() ?? $expCompletionTime;
 			$this->logger->info('Task scheduled. Expected completion time: ' . $expCompletionTime->format('Y-m-d H:i:s'));
 		}
 
-		// Store the image id to the db:            
-		$this->imageGenerationMapper->createImageGeneration($imageGenId, $displayPrompt ? $prompt : '', $this->userId, $expCompletionTime->getTimestamp());
+		// Store the image id to the db:      
+		$this->imageGenerationMapper->createImageGeneration($imageGenId, $displayPrompt ? $prompt : '', $this->userId ?? '', $expCompletionTime->getTimestamp());
 
 		if ($taskExecuted) {
 			$this->storeImages($images, $imageGenId);
@@ -116,7 +121,9 @@ class Text2ImageHelperService
 		);
 
 		// Save the prompt to database
-		$this->promptMapper->createPrompt($this->userId, $prompt);
+		if($this->userId !== null) {
+			$this->promptMapper->createPrompt($this->userId, $prompt);
+		}		
 
 		return ['url' => $infoUrl, 'reference_url' => $referenceUrl, 'image_gen_id' => $imageGenId, 'prompt' => $prompt];
 	}
@@ -133,12 +140,15 @@ class Text2ImageHelperService
 
 	/**
 	 * Save image locally as jpg (to save space)
-	 * @param array<IImage> $iImages
+	 * @param array<IImage>|null $iImages
 	 * @param string $imageGenId
 	 * @return void
 	 */
-	public function storeImages(array $iImages, string $imageGenId): void
+	public function storeImages(?array $iImages, string $imageGenId): void
 	{
+		if ($iImages === null || count($iImages) === 0) {
+			return;
+		}
 		try {
 			$imageDataFolder = $this->getImageDataFolder();
 		} catch (BaseException $e) {
@@ -160,7 +170,7 @@ class Text2ImageHelperService
 		foreach ($iImages as $iImage) {
 			$image = $iImage->resource();
 
-			if ($image === false) {
+			if (!($image instanceof GdImage)) {
 				$this->logger->warning('Image save error: could not retrieve image resource');
 				continue;
 			}
@@ -249,12 +259,12 @@ class Text2ImageHelperService
 	private function getImageDataFolder(): ISimpleFolder
 	{
 		if ($this->imageDataFolder === null) {
-			/** @var ISimpleFolder $imageFataFolder */
+			/** @var ISimpleFolder|null $imageFataFolder */
 			try {
 				$this->imageDataFolder = $this->appData->getFolder(Application::IMAGE_FOLDER);
 			} catch (NotFoundException | RuntimeException $e) {
 				$this->logger->debug('Image data folder could not be accessed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
-				throw new Exception('Image data folder could not be accessed: ' . $e->getMessage());
+				$this->imageDataFolder = null;
 			}
 
 			if ($this->imageDataFolder === null) {
@@ -442,6 +452,7 @@ class Text2ImageHelperService
 						$fileNames = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($imageGeneration->getId());
 					} catch (BaseException $e) {
 						$this->logger->debug('No files to delete could be retrieved: ' . $e->getMessage());
+						$fileNames = [];
 					}
 
 					foreach ($fileNames as $fileName) {

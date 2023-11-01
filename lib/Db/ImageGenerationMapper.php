@@ -9,7 +9,6 @@ namespace OCA\Text2ImageHelper\Db;
 use DateTime;
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCP\AppFramework\Db\DoesNotExistException;
-use OCP\AppFramework\Db\Entity;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\Exception;
