@@ -90,7 +90,7 @@ class Text2ImageHelperService
             $images = $promptTask->getOutputImages();   
 		} else {
 			$expCompletionTime = $promptTask->getCompletionExpectedAt();
-			$expCompletionTime = $expCompletionTime ?? new DateTime('+1day');
+			$expCompletionTime = $expCompletionTime ?? new DateTime('now');
 			$this->logger->info('Task scheduled. Expected completion time: ' . $expCompletionTime->format('Y-m-d H:i:s'));
 		}
 
