@@ -52,6 +52,8 @@ class ImageFileNameMapper extends QBMapper
 			->from($this->getTableName())
 			->where(
 				$qb->expr()->eq('generation_id', $qb->createNamedParameter($generationId, IQueryBuilder::PARAM_STR))
+			)->andWhere(
+				$qb->expr()->eq('hidden', $qb->createNamedParameter(false, IQueryBuilder::PARAM_BOOL))
 			);
 
 		return $this->findEntities($qb);

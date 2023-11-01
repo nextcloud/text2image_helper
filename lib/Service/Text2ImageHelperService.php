@@ -312,9 +312,9 @@ class Text2ImageHelperService
 
 		try {
 			if ($isOwner) {
-				$fileNameEntities = $this->imageFileNameMapper->getVisibleImageFileNamesOfGenerationId($imageGeneration->getId());
-			} else {				
 				$fileNameEntities = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($imageGeneration->getId());
+			} else {				
+				$fileNameEntities = $this->imageFileNameMapper->getVisibleImageFileNamesOfGenerationId($imageGeneration->getId());	
 			}
 		} catch (Exception $e) {
 			$this->logger->warning('Fetching image filenames from db failed: ' . $e->getMessage());

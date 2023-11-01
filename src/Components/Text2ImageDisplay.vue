@@ -16,7 +16,8 @@
 				</strong>
 				{{ prompt }}
 			</div>
-			<Cog :size="30"
+			<Cog v-if="isOwner"
+				:size="30"
 				class="edit-icon"
 				:class="{ 'active': editModeEnabled}"
 				:title="t('text2image_helper', 'Edit visible images')"
@@ -132,7 +133,11 @@ export default {
 
 	computed: {
 		hasVisibleImages() {
-			return this.fileVisStatusArray.some(status => status.visible)
+			if (this.isOwner) {
+				return this.fileVisStatusArray.some(status => status.visible)
+			} else {
+				return this.imageUrls.length > 0
+			}
 		},
 	},
 	mounted() {
