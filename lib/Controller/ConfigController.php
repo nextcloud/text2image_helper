@@ -27,7 +27,7 @@ class ConfigController extends Controller
 	/**
 	 * Set admin config values
 	 *
-	 * @param array $values key/value pairs to store in app config
+	 * @param array<string> $values key/value pairs to store in app config
 	 * @return DataResponse
 	 */
 	public function setAdminConfig(array $values): DataResponse
@@ -39,6 +39,7 @@ class ConfigController extends Controller
 					if ($value < 1) {
 						return new DataResponse(['message' => 'Invalid value for max_generation_idle_time'], Http::STATUS_BAD_REQUEST);
 					}
+					$value = strval($value);
 					break;
 				default:
 					return new DataResponse(['message' => 'Invalid config key'], Http::STATUS_BAD_REQUEST);

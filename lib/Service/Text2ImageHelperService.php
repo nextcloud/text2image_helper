@@ -129,13 +129,16 @@ class Text2ImageHelperService
 	}
 
 	/**
-	 * @param string $userId
 	 * @return array
 	 * @throws \OCP\DB\Exception
 	 */
-	public function getPromptHistory(string $userId): array
+	public function getPromptHistory(): array
 	{
-		return $this->promptMapper->getPromptsOfUser($userId);
+		if ($this->userId === null) {
+			return [];
+		} else {
+			return $this->promptMapper->getPromptsOfUser($this->userId);
+		}		
 	}
 
 	/**
@@ -356,7 +359,7 @@ class Text2ImageHelperService
 	 * Get image based on imageFileNameId (imageGenId is used to prevent guessing image ids)
 	 * @param string $imageGenId
 	 * @param int $imageFileNameId
-	 * @return array|null
+	 * @return array
 	 * @throws BaseException
 	 */
 	public function getImage(string $imageGenId, int $imageFileNameId): ?array

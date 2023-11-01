@@ -10,7 +10,8 @@
         "php": "^8.0",
         "psalm/phar": "^5.15",
         "nextcloud/coding-standard": "^1.1",
-        "nextcloud/ocp": "dev-master"
+        "nextcloud/ocp": "dev-master",
+        "symfony/console": "^6.3"
     },
     "autoload": {
         "psr-4": {

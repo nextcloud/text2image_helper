@@ -31,14 +31,13 @@ class Text2ImageHelperController extends Controller
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 *
-	 * @param string|null $prompt
+	 * @param string $prompt
 	 * @param int $nResults
 	 * @param bool $displayPrompt
 	 * @return DataResponse
 	 */
-	public function processPrompt(string $prompt, int $nResults = 1, ?bool $displayPrompt = false): DataResponse
+	public function processPrompt(string $prompt, int $nResults = 1, bool $displayPrompt = false): DataResponse
 	{
-		$displayPrompt === null ? false : $displayPrompt;
 		$nResults = min(10, max(1, $nResults));
 		$result = $this->text2ImageHelperService->processPrompt($prompt, $nResults, $displayPrompt);
 		
@@ -58,7 +57,7 @@ class Text2ImageHelperController extends Controller
 	public function getPromptHistory(): DataResponse
 	{
 		try {
-			$response = $this->text2ImageHelperService->getPromptHistory($this->userId);
+			$response = $this->text2ImageHelperService->getPromptHistory();
 		} catch (Exception $e) {
 			return new DataResponse($e->getMessage(), Http::STATUS_BAD_REQUEST);
 		}
@@ -82,7 +81,7 @@ class Text2ImageHelperController extends Controller
 		} catch (Exception $e) {
 			return new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
 		}
-		
+
 		if (isset($result['processing'])) {
 			return new DataResponse($result, Http::STATUS_OK);
 		}
