@@ -28,8 +28,6 @@ use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\Db\Exception;
 use OCP\Files\NotPermittedException;
 
-use function PHPUnit\Framework\isInstanceOf;
-
 class Text2ImageHelperService
 {
 	/**
@@ -402,7 +400,6 @@ class Text2ImageHelperService
 	/**
 	 * Cancel image generation
 	 * @param string $imageGenId
-
 	 * @return void
 	 */
 	public function cancelGeneration(string $imageGenId): void
