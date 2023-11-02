@@ -12,6 +12,7 @@ use OCP\IConfig;
 use Psr\Log\LoggerInterface;
 use OCP\TextToImage\IManager;
 use OCP\TextToImage\Task;
+
 use OCP\IImage;
 use OCP\Files\SimpleFS\ISimpleFolder;
 use OCP\Files\IAppData;
@@ -70,6 +71,7 @@ class Text2ImageHelperService
 	 * @param bool $storePrompt
 	 * @return array
 	 * @throws \Exception
+	 * @throws \OCP\TextToImage\Exception\TaskFailureException;
 	 */
 	public function processPrompt(string $prompt, int $nResults, bool $displayPrompt): array
 	{
@@ -359,7 +361,7 @@ class Text2ImageHelperService
 	 * Get image based on imageFileNameId (imageGenId is used to prevent guessing image ids)
 	 * @param string $imageGenId
 	 * @param int $imageFileNameId
-	 * @return array
+	 * @return array('image' => string, 'content-type' => string)
 	 * @throws BaseException
 	 */
 	public function getImage(string $imageGenId, int $imageFileNameId): ?array
@@ -390,12 +392,10 @@ class Text2ImageHelperService
 			throw new BaseException('Image file not found');
 		}
 
-		// Return image content and headers
+		// Return image content and type
 		return [
 			'image' => $imageContent,
-			'headers' => [
-				'Content-Type' => ['image/jpeg'],
-			],
+			'content-type' => ['image/jpeg'],			
 		];
 	}
 

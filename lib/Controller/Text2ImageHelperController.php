@@ -12,6 +12,8 @@ use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Http\DataDisplayResponse;
 use OCP\AppFramework\Services\IInitialState;
+use OCP\AppFramework\Http\Attribute\BruteForceProtection;
+use OCP\TextToImage\Exception\TaskFailureException;
 use OCP\IRequest;
 use OCA\Text2ImageHelper\AppInfo\Application;
 
@@ -39,12 +41,12 @@ class Text2ImageHelperController extends Controller
 	public function processPrompt(string $prompt, int $nResults = 1, bool $displayPrompt = false): DataResponse
 	{
 		$nResults = min(10, max(1, $nResults));
-		$result = $this->text2ImageHelperService->processPrompt($prompt, $nResults, $displayPrompt);
-		
-		if (isset($result['error'])) {
-			return new DataResponse($result, Http::STATUS_BAD_REQUEST);
+		try {
+			$result = $this->text2ImageHelperService->processPrompt($prompt, $nResults, $displayPrompt);
+		} catch (Exception | TaskFailureException $e) {
+			return new DataResponse(['error' => $e->getMessage()], Http::STATUS_BAD_REQUEST);
 		}
-
+		
 		return new DataResponse($result);
 	}
 
@@ -68,18 +70,22 @@ class Text2ImageHelperController extends Controller
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
+	 * @PublicPage
 	 *
 	 * @param string $imageGenId
 	 * @param int $fileNameId
 	 * @return DataDisplayResponse | DataResponse
 	 */
+	#[BruteForceProtection(action: 'imageGenId')]
 	public function getImage(string $imageGenId, int $fileNameId): DataDisplayResponse | DataResponse
 	{
 
 		try {
 			$result = $this->text2ImageHelperService->getImage($imageGenId, $fileNameId);
 		} catch (Exception $e) {
-			return new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
+			$response = new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
+			$response->throttle(['action' => 'imageGenId']);
+			return $response;
 		}
 
 		if (isset($result['processing'])) {
@@ -89,23 +95,27 @@ class Text2ImageHelperController extends Controller
 		return new DataDisplayResponse(
 			$result['image'] ?? '',
 			Http::STATUS_OK,
-			['Content-Type' => $result['headers']['Content-Type'][0] ?? 'image/jpeg']
+			['Content-Type' => $result['content-type'] ?? 'image/jpeg']
 		);
 	}
 
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
+	 * @PublicPage
 	 * 
 	 * @param string $imageGenId
 	 * @return DataResponse
 	 */
+	#[BruteForceProtection(action: 'imageGenId')]
 	public function getGenerationInfo(string $imageGenId): DataResponse
 	{
 		try {
 			$result = $this->text2ImageHelperService->getGenerationInfo($imageGenId,true);
 		} catch (Exception $e) {
-			return new DataResponse($e->getMessage(), Http::STATUS_NOT_FOUND);
+			$response = new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
+			$response->throttle(['action' => 'imageGenId']);
+			return $response;
 		}
 		
 		return new DataResponse($result, Http::STATUS_OK);
@@ -164,6 +174,10 @@ class Text2ImageHelperController extends Controller
 	 * Show visibility dialog
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
+	 * @PublicPage
+	 * 
+	 * Does not need bruteforce protection
+	 * 
 	 * @param string|null $imageGenId
 	 * @return TemplateResponse
 	 */

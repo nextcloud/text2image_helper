@@ -35,7 +35,7 @@ class CleanUpService
 
     /**
      * @param int|null $maxAge
-     * @return array
+     * @return array('deleted_files' => int, 'file_deletion_errors' => int, 'deleted_generations' => int)
      * @throws Exception
      */
     public function cleanupGenerationsAndFiles(?int $maxAge = null): array

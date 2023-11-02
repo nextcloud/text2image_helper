@@ -15,7 +15,9 @@ use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use OCP\AppFramework\Db\Entity;
-
+/**
+ * @implements QBMapper<Prompt>
+ */
 class PromptMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
 		parent::__construct($db, 't2ih_prompts', Prompt::class);
@@ -43,12 +45,12 @@ class PromptMapper extends QBMapper {
 	/**
 	 * @param int $id
 	 * @param string $userId
-	 * @return Prompt | Entity
+	 * @return Prompt
 	 * @throws DoesNotExistException
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getPromptOfUser(int $id, string $userId): Prompt | Entity {
+	public function getPromptOfUser(int $id, string $userId): Prompt {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -66,12 +68,12 @@ class PromptMapper extends QBMapper {
 	/**
 	 * @param string $userId
 	 * @param string $value
-	 * @return Prompt | Entity
+	 * @return Prompt
 	 * @throws DoesNotExistException
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getPromptOfUserByValue(string $userId, string $value): Prompt | Entity {
+	public function getPromptOfUserByValue(string $userId, string $value): Prompt {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')

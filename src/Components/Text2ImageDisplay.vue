@@ -207,7 +207,7 @@ export default {
 			}
 
 			this.timeUntilCompletion = humanizeDuration(timeDifference,
-				{ units: ['h'], language: OC.getLanguage(), fallbacks: ['en'], round: true })
+				{ units: ['h', 'm'], language: OC.getLanguage(), fallbacks: ['en'], round: true })
 
 			// Schedule next update at the next minute change:
 			if (!this.closed) {

@@ -14,7 +14,9 @@ use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
-
+/**
+ * @implements QBMapper<ImageGeneration>
+ */
 class ImageGenerationMapper extends QBMapper
 {
 	public function __construct(IDBConnection $db, private ImageFileNameMapper $imageFileNameMapper)
@@ -173,7 +175,7 @@ class ImageGenerationMapper extends QBMapper
 
 	/**
 	 * @param int $maxAge
-	 * @return array
+	 * @return array('deleted_generations' => int, 'file_names' => string[])
 	 * @throws Exception
 	 */
 	public function cleanupImageGenerations(int $maxAge = Application::DEFAULT_MAX_GENERATION_IDLE_TIME): array
