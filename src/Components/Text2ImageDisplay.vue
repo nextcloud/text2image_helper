@@ -209,15 +209,20 @@ export default {
 			this.timeUntilCompletion = humanizeDuration(timeDifference,
 				{ units: ['h', 'm'], language: OC.getLanguage(), fallbacks: ['en'], round: true })
 
-			// Schedule next update at the next minute change:
+			// Schedule next update:
 			if (!this.closed) {
 				setTimeout(() => {
 					this.updateTimeUntilCompletion(completionTimeStamp)
-				}, 5000)
+				}, 30000)
 			}
 		},
 		onError(error) {
-			if (error.response?.data !== undefined) {
+			// If error response status is 429 let the user know that they are being rate limited
+			if (error.response?.status === 429) {
+				this.errorMsg = t('text2image_helper', 'Rate limit reached. Please try again later.')
+				this.failed = true
+				this.isLoaded = []
+			} else if (error.response?.data !== undefined) {
 				this.errorMsg = error.response.data
 				this.failed = true
 				this.isLoaded = []

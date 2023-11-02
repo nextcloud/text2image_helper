@@ -298,13 +298,13 @@ class Text2ImageHelperService
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
-			throw new BaseException('Image generation not found. It may have been deleted due to not being viewed for a long time.');
+			throw new BaseException('Image generation not found. It may have been deleted due to not being viewed for a long time.',1);
 		}
 		
 		$isOwner = ($imageGeneration->getUserId() === $this->userId);
 
 		if ($imageGeneration->getFailed() === true) {
-			throw new BaseException('Image generation failed');
+			throw new BaseException('Image generation failed or the generation was deleted.', 0);
 		}
 
 		if ($imageGeneration->getIsGenerated() === false) {
@@ -331,7 +331,7 @@ class Text2ImageHelperService
 			}
 		} catch (Exception $e) {
 			$this->logger->warning('Fetching image filenames from db failed: ' . $e->getMessage());
-			throw new BaseException('Image file names could not be fetched from database');
+			throw new BaseException('Image file names could not be fetched from database',0);
 		}
 
 		$fileIds = [];
@@ -348,14 +348,6 @@ class Text2ImageHelperService
 	}
 
 	/**
-	 * Get extended generation info
-	 * @param string $imageGenId
-	 * 
-	 * 
-	 */
-
-
-	/**
 	 * Get image based on imageFileNameId (imageGenId is used to prevent guessing image ids)
 	 * @param string $imageGenId
 	 * @param int $imageFileNameId
@@ -369,11 +361,12 @@ class Text2ImageHelperService
 			$imageFileName = $this->imageFileNameMapper->getImageFileNameOfGenerationId($generationId, $imageFileNameId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
-			throw new BaseException('Image request error');
+			// Set error code to one for rate limiting (brute force protection)
+			throw new BaseException('Image request error',1);
 		}
 
 		if ($imageFileName === null) {
-			throw new BaseException('Image file not found in database');
+			throw new BaseException('Image file not found in database',0);
 		}
 
 		// No need to catch here, since we'd be throwing BaseException anyways:
@@ -387,7 +380,7 @@ class Text2ImageHelperService
 		} catch (NotFoundException $e) {
 			$this->logger->debug('Image file reading failed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 
-			throw new BaseException('Image file not found');
+			throw new BaseException('Image file not found',0);
 		}
 
 		// Return image content and type
@@ -467,11 +460,11 @@ class Text2ImageHelperService
 			}
 		}
 
-		// Delete the image generation from db
+		// Set the image generation as failed (to prevent rate limiting when front end still polls this generation)
 		try {
-			$this->imageGenerationMapper->deleteImageGeneration($imageGenId);
+			$this->imageGenerationMapper->setFailed($imageGenId, true);
 		} catch (Exception $e) {
-			$this->logger->debug('Image generation db entry deletion error : ' . $e->getMessage());
+			$this->logger->debug('Image generation db entry failed flag could not be set : ' . $e->getMessage());
 		}
 	}
 

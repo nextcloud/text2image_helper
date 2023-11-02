@@ -52,14 +52,6 @@ class Version010000Date20231018153852 extends SimpleMigrationStep {
 			$table->addIndex(['user_id'], 't2ih_prompt_uid');
 		}
 
-		// Drop 't2ih_generations'
-		if ($schema->hasTable('t2ih_generations')) {
-			// Drop the index and table
-			$table = $schema->getTable('t2ih_generations');
-			$table->dropIndex('t2ih_image_gen_id');
-			$schema->dropTable('t2ih_generations');	
-		}
-
 		// Create 't2ih_generations'
 		if (!$schema->hasTable('t2ih_generations')) {
 			$table = $schema->createTable('t2ih_generations');
@@ -93,14 +85,6 @@ class Version010000Date20231018153852 extends SimpleMigrationStep {
 			]);
 			$table->setPrimaryKey(['id']);
 			$table->addIndex(['image_gen_id'], 't2ih_image_gen_id');
-		}
-
-		// Drop 't2ih_i_files'
-		if ($schema->hasTable('t2ih_i_files')) {
-			// Drop the index and table
-			$table = $schema->getTable('t2ih_i_files');
-			$table->dropIndex('t2ih_gen_id');
-			$schema->dropTable('t2ih_i_files');	
 		}
 
 		if (!$schema->hasTable('t2ih_i_files')) {

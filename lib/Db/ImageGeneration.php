@@ -19,7 +19,7 @@ use OCP\AppFramework\Db\Entity;
  * @method int getTimestamp()
  * @method void setExpGenTime(int $expGenTime)
  * @method int getExpGenTime()
- 
+ *  
  */
 class ImageGeneration extends Entity implements \JsonSerializable
 {

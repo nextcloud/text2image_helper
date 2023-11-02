@@ -84,7 +84,10 @@ class Text2ImageHelperController extends Controller
 			$result = $this->text2ImageHelperService->getImage($imageGenId, $fileNameId);
 		} catch (Exception $e) {
 			$response = new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
-			$response->throttle(['action' => 'imageGenId']);
+			if ($e->getCode() === 1) {
+				// Throttle brute force attempts
+				$response->throttle(['action' => 'imageGenId']);
+			}
 			return $response;
 		}
 
@@ -114,7 +117,10 @@ class Text2ImageHelperController extends Controller
 			$result = $this->text2ImageHelperService->getGenerationInfo($imageGenId,true);
 		} catch (Exception $e) {
 			$response = new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
-			$response->throttle(['action' => 'imageGenId']);
+			if ($e->getCode() === 1) {
+				// Throttle brute force attempts
+				$response->throttle(['action' => 'imageGenId']);
+			}
 			return $response;
 		}
 		
