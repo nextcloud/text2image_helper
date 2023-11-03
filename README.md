@@ -10,6 +10,8 @@ A Nextcloud Smart Picker integration that enables the user to generate images ba
 This app adds:
 - A custom SmartPicker dialog for generating images based on text prompts
 
+![image](https://github.com/nextcloud/text2image_helper/assets/64466176/5f2c0e24-441e-4a3e-888a-b82ca813cd7c)
+
 NOTE: This integration requires a separate integration to be installed that exposes a TextToImage processing provider, like the stable diffusion -integration, for example.
 
 
