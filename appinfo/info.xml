@@ -7,7 +7,13 @@
 	<id>text2image_helper</id>
 	<name>Text2Image helper</name>
 	<summary>A Smart Picker for interfacing with text-to-image providers</summary>
-	<description><![CDATA[A Smart Picker for interfacing with text-to-image providers.]]></description>
+	<description><![CDATA[
+	This app adds a Smart Picker for interfacing with text-to-image providers like the on-premises stable diffusion integration.
+	
+	The Smart Picker enables you to generate an image or multiple images based on a text prompt.
+	
+	If multiple images are requested and/or the generation will take a long time. The user can request to be notified
+	once the generated image(s) are ready.]]></description>
 	<version>1.0.0</version>
 	<licence>agpl</licence>
 	<author mail="sami.finnila@nextcloud.com">Sami Finnilä</author>
@@ -15,6 +21,7 @@
 	<category>integration</category>
 	<website>https://github.com/nextcloud/text2image_helper</website>
 	<bugs>https://github.com/nextcloud/text2image_helper/issues</bugs>
+	<screenshot>https://github.com/nextcloud/text2image_helper/assets/64466176/5f2c0e24-441e-4a3e-888a-b82ca813cd7c</screenshot>
 	<background-jobs>
 		<job>OCA\Text2ImageHelper\Cron\CleanupImageGenerations</job>
 	</background-jobs>

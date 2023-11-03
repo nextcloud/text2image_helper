@@ -52,7 +52,6 @@ class Version010000Date20231018153853 extends SimpleMigrationStep {
 			$table->addIndex(['user_id'], 't2ih_prompt_uid');
 		}
 
-		// Create 't2ih_generations'
 		if (!$schema->hasTable('t2ih_generations')) {
 			$table = $schema->createTable('t2ih_generations');
 			$table->addColumn('id', Types::BIGINT, [
