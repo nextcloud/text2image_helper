@@ -8,6 +8,7 @@ namespace OCA\Text2ImageHelper\Db;
 
 use DateTime;
 use OCA\Text2ImageHelper\AppInfo\Application;
+use OCA\Text2ImageHelper\Db\StaleGenerationMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Db\QBMapper;
@@ -19,7 +20,9 @@ use OCP\IDBConnection;
  */
 class ImageGenerationMapper extends QBMapper
 {
-	public function __construct(IDBConnection $db, private ImageFileNameMapper $imageFileNameMapper)
+	public function __construct(IDBConnection $db,
+								private ImageFileNameMapper $imageFileNameMapper,
+								private StaleGenerationMapper $staleGenerationMapper)
 	{
 		parent::__construct($db, 't2ih_generations', ImageGeneration::class);
 	}
@@ -198,19 +201,28 @@ class ImageGenerationMapper extends QBMapper
 
 		/** @var array[] $fileNames */
 		$fileNames = [];
+		$imageGenIds = [];
 		$generationIds = [];
+		
 		foreach ($generations as $generation) {
 			$generationFiles = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($generation->getId());
 			array_map(function ($generationFile) use (&$fileNames) {
 				$fileNames[] = $generationFile->getFileName();
 			}, $generationFiles);
+			$imageGenIds[] = $generation->getImageGenId();
 			$generationIds[] = $generation->getId();
 		}
 
 		// Only now delete associated file names if we encountered no errors:
 		/** @var int $genId */
 		foreach ($generationIds as $genId) {
-			$this->imageFileNameMapper->deleteImageFileNamesOfGenerationId($genId);
+			$this->imageFileNameMapper->deleteImageFileNamesOfGenerationId($genId);			
+		}
+
+		// Add the image generation ids to the stale generations table:
+		/** @var string $imageGenId */
+		foreach ($imageGenIds as $imageGenId) {
+			$this->staleGenerationMapper->createStaleGeneration($imageGenId);
 		}
 
 		// Delete generations

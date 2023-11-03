@@ -10,7 +10,7 @@ use OCP\DB\Types;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
-class Version010000Date20231018153852 extends SimpleMigrationStep {
+class Version010000Date20231018153853 extends SimpleMigrationStep {
 
 	/**
 	 * @param IOutput $output
@@ -104,6 +104,19 @@ class Version010000Date20231018153852 extends SimpleMigrationStep {
 			]);
 			$table->setPrimaryKey(['id']);
 			$table->addIndex(['generation_id'], 't2ih_gen_id');
+		}
+
+		if (!$schema->hasTable('t2ih_stale_gens')) {
+			$table = $schema->createTable('t2ih_stale_gens');
+			$table->addColumn('id', Types::BIGINT, [
+				'autoincrement' => true,
+				'notnull' => true,
+			]);
+			$table->addColumn('image_gen_id', Types::STRING, [
+				'notnull' => true,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addIndex(['image_gen_id'], 't2ih_i_gen_id');
 		}
 
 		return $schema;
