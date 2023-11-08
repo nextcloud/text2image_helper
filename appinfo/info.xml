@@ -14,7 +14,7 @@
 	
 	If multiple images are requested and/or the generation will take a long time. The user can request to be notified
 	once the generated image(s) are ready.]]></description>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<licence>agpl</licence>
 	<author mail="sami.finnila@nextcloud.com">Sami Finnilä</author>
 	<namespace>Text2ImageHelper</namespace>
