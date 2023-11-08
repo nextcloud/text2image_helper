@@ -1,17 +1,17 @@
 <?php
+
 // SPDX-FileCopyrightText: Sami Finnilä <sami.finnila@nextcloud.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
+
 namespace OCA\Text2ImageHelper\Settings;
 
+use OCA\Text2ImageHelper\AppInfo\Application;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IConfig;
 use OCP\Settings\ISettings;
-use OCA\Text2ImageHelper\AppInfo\Application;
 
-class Admin implements ISettings
-{
-
+class Admin implements ISettings {
 	public function __construct(
 		private IConfig $config,
 		private IInitialState $initialStateService
@@ -21,17 +21,16 @@ class Admin implements ISettings
 	/**
 	 * @return TemplateResponse
 	 */
-	public function getForm(): TemplateResponse
-	{
+	public function getForm(): TemplateResponse {
 		$maxGenerationIdleTime = intval($this->config->getAppValue(
 			Application::APP_ID,
 			'max_generation_idle_time',
 			strval(Application::DEFAULT_MAX_GENERATION_IDLE_TIME)
 		) ?: Application::DEFAULT_MAX_GENERATION_IDLE_TIME);
 
-		
-		$adminConfig = [			
-			'max_generation_idle_time' => $maxGenerationIdleTime,			
+
+		$adminConfig = [
+			'max_generation_idle_time' => $maxGenerationIdleTime,
 		];
 
 		$this->initialStateService->provideInitialState('admin-config', $adminConfig);
@@ -39,13 +38,11 @@ class Admin implements ISettings
 		return new TemplateResponse(Application::APP_ID, 'adminSettings');
 	}
 
-	public function getSection(): string
-	{
+	public function getSection(): string {
 		return 'ai';
 	}
 
-	public function getPriority(): int
-	{
+	public function getPriority(): int {
 		return 10;
 	}
 }

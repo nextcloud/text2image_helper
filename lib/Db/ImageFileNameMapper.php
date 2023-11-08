@@ -6,19 +6,18 @@ declare(strict_types=1);
 
 namespace OCA\Text2ImageHelper\Db;
 
+use OCP\AppFramework\Db\DoesNotExistException;
+use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
-use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-use OCP\AppFramework\Db\DoesNotExistException;
+
 /**
  * @implements QBMapper<ImageFileName>
  */
-class ImageFileNameMapper extends QBMapper
-{
-	public function __construct(IDBConnection $db)
-	{
+class ImageFileNameMapper extends QBMapper {
+	public function __construct(IDBConnection $db) {
 		parent::__construct($db, 't2ih_i_files', ImageFileName::class);
 	}
 
@@ -27,8 +26,7 @@ class ImageFileNameMapper extends QBMapper
 	 * @return ImageFileName[]
 	 * @throws Exception
 	 */
-	public function getImageFileNamesOfGenerationId(int $generationId): array
-	{
+	public function getImageFileNamesOfGenerationId(int $generationId): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -45,8 +43,7 @@ class ImageFileNameMapper extends QBMapper
 	 * @return ImageFileName[]
 	 * @throws Exception
 	 */
-	public function getVisibleImageFileNamesOfGenerationId(int $generationId): array
-	{
+	public function getVisibleImageFileNamesOfGenerationId(int $generationId): array {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -65,32 +62,30 @@ class ImageFileNameMapper extends QBMapper
 	 * @param bool $hidden
 	 * @return int
 	 */
-	public function setFileNameHidden(int $fileNameId, bool $hidden = true): int
-	{
+	public function setFileNameHidden(int $fileNameId, bool $hidden = true): int {
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
 			->set('hidden', $qb->createNamedParameter($hidden, IQueryBuilder::PARAM_BOOL))
 			->where(
 				$qb->expr()->eq('id', $qb->createNamedParameter($fileNameId, IQueryBuilder::PARAM_INT))
 			);
-		
-			try {
+
+		try {
 			return $qb->executeStatement();
 		} catch (Exception $e) {
 			return 0;
-		}			
+		}
 	}
-	 
+
 
 	/**
 	 * @param int $generationId
 	 * @param int $fileNameId
 	 * @return ImageFileName|null
-	 * 
+	 *
 	 */
-	 
-	public function getImageFileNameOfGenerationId(int $generationId, int $fileNameId): ImageFileName | null
-	{
+
+	public function getImageFileNameOfGenerationId(int $generationId, int $fileNameId): ImageFileName | null {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('file_name')
@@ -100,12 +95,12 @@ class ImageFileNameMapper extends QBMapper
 			)->andWhere(
 				$qb->expr()->eq('id', $qb->createNamedParameter($fileNameId, IQueryBuilder::PARAM_INT))
 			);
-		
+
 		try {
 			return $this->findEntity($qb);
 		} catch (MultipleObjectsReturnedException|DoesNotExistException|Exception $e) {
 			return null;
-		}		
+		}
 	}
 
 	/**
@@ -115,8 +110,7 @@ class ImageFileNameMapper extends QBMapper
 	 * @return ImageFileName
 	 * @throws Exception
 	 */
-	public function createImageFileName(int $generationId, string $fileName): ImageFileName
-	{
+	public function createImageFileName(int $generationId, string $fileName): ImageFileName {
 		$imageFile = new ImageFileName();
 		$imageFile->setGenerationId($generationId);
 		$imageFile->setFileName($fileName);
@@ -124,16 +118,15 @@ class ImageFileNameMapper extends QBMapper
 	}
 
 	/**
-	 * 
+	 *
 	 */
-	
+
 	/**
 	 * @param int $generationId
 	 * @return void
 	 * @throws Exception
 	 */
-	public function deleteImageFileNamesOfGenerationId(int $generationId): void
-	{
+	public function deleteImageFileNamesOfGenerationId(int $generationId): void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete($this->getTableName())
 			->where(
@@ -148,8 +141,7 @@ class ImageFileNameMapper extends QBMapper
 	 * @return void
 	 * @throws Exception
 	 */
-	public function deleteImageFileName(int $id): void
-	{
+	public function deleteImageFileName(int $id): void {
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete($this->getTableName())
 			->where(

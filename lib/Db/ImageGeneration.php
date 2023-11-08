@@ -19,11 +19,9 @@ use OCP\AppFramework\Db\Entity;
  * @method int getTimestamp()
  * @method void setExpGenTime(int $expGenTime)
  * @method int getExpGenTime()
- *  
+ *
  */
-class ImageGeneration extends Entity implements \JsonSerializable
-{
-
+class ImageGeneration extends Entity implements \JsonSerializable {
 	/** @var string */
 	protected $imageGenId;
 	/** @var string */
@@ -42,8 +40,7 @@ class ImageGeneration extends Entity implements \JsonSerializable
 	protected $expGenTime;
 
 
-	public function __construct()
-	{
+	public function __construct() {
 		$this->addType('image_gen_id', 'string');
 		$this->addType('prompt', 'string');
 		$this->addType('user_id', 'string');
@@ -55,47 +52,40 @@ class ImageGeneration extends Entity implements \JsonSerializable
 	}
 
 	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
-	{
+	public function jsonSerialize() {
 		return [
 			'id' => $this->id,
 			'image_gen_id' => $this->imageGenId,
 			'prompt' => $this->prompt,
-			'user_id'=> $this->userId,
+			'user_id' => $this->userId,
 			'timestamp' => $this->timestamp,
 			'is_generated' => $this->isGenerated,
 			'failed' => $this->failed,
-			'notify_ready'=> $this->notifyReady,
+			'notify_ready' => $this->notifyReady,
 			'exp_gen_time' => $this->expGenTime,
 		];
 	}
 
-	public function setIsGenerated(?bool $isGenerated): void
-	{
+	public function setIsGenerated(?bool $isGenerated): void {
 		$this->isGenerated = $isGenerated === true;
 	}
-	public function getIsGenerated(): bool
-	{
+	public function getIsGenerated(): bool {
 		return $this->isGenerated === true;
 	}
 
-	public function setFailed(?bool $failed): void
-	{
+	public function setFailed(?bool $failed): void {
 		$this->failed = $failed === true;
 	}
 
-	public function getFailed(): bool
-	{
+	public function getFailed(): bool {
 		return $this->failed === true;
 	}
 
-	public function setNotifyReady(?bool $notifyReady): void
-	{
+	public function setNotifyReady(?bool $notifyReady): void {
 		$this->notifyReady = $notifyReady === true;
 	}
 
-	public function getNotifyReady(): bool
-	{
+	public function getNotifyReady(): bool {
 		return $this->notifyReady === true;
 	}
 }

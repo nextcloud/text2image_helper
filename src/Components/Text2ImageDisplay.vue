@@ -73,7 +73,7 @@
 			class="processing-notification-container">
 			<div class="processing-notification">
 				<InformationOutlineIcon :size="20" class="icon" />
-				{{ t('text2image_helper', 'Generation time left: ') + timeUntilCompletion + '. ' }}
+				{{ t('text2image_helper', 'Estimated generation time left: ') + timeUntilCompletion + '. ' }}
 				{{ t('text2image_helper', 'The generated image is shown once ready.') }}
 			</div>
 		</div>
@@ -191,7 +191,6 @@ export default {
 					}
 				})
 				.catch((error) => {
-					console.error('Could not get image generation info: ' + error)
 					this.onError(error)
 				})
 			// If we didn't succeed in loading the image, try again
@@ -223,7 +222,7 @@ export default {
 				this.failed = true
 				this.isLoaded = []
 			} else if (error.response?.data !== undefined) {
-				this.errorMsg = error.response.data
+				this.errorMsg = error.response.data.error
 				this.failed = true
 				this.isLoaded = []
 			} else {

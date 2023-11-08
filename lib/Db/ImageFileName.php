@@ -13,11 +13,9 @@ use OCP\AppFramework\Db\Entity;
  * @method void setGenerationId(int $generationId)
  * @method string getFileName()
  * @method void setFileName(string $fileName)
- * 
+ *
  */
-class ImageFileName extends Entity implements \JsonSerializable
-{
-
+class ImageFileName extends Entity implements \JsonSerializable {
 	/** @var int */
 	protected $generationId;
 	/** @var string */
@@ -26,17 +24,15 @@ class ImageFileName extends Entity implements \JsonSerializable
 	protected $hidden;
 
 
-	public function __construct()
-	{
+	public function __construct() {
 		$this->addType('generation_id', 'int');
-        $this->addType('file_name','string');
-		$this->addType('hidden','boolean');
+		$this->addType('file_name', 'string');
+		$this->addType('hidden', 'boolean');
 
 	}
 
 	#[\ReturnTypeWillChange]
-	public function jsonSerialize()
-	{
+	public function jsonSerialize() {
 		return [
 			'id' => $this->id,
 			'generation_id' => $this->generationId,
@@ -45,13 +41,11 @@ class ImageFileName extends Entity implements \JsonSerializable
 		];
 	}
 
-	public function setHidden(?bool $hidden): void
-	{
+	public function setHidden(?bool $hidden): void {
 		$this->hidden = $hidden === true;
 	}
 
-	public function getHidden(): bool
-	{
+	public function getHidden(): bool {
 		return $this->hidden === true;
 	}
 }

@@ -8,22 +8,22 @@ namespace OCA\Text2ImageHelper\Db;
 
 use DateTime;
 use OCA\Text2ImageHelper\AppInfo\Application;
-use OCA\Text2ImageHelper\Db\StaleGenerationMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
+
 /**
  * @implements QBMapper<ImageGeneration>
  */
-class ImageGenerationMapper extends QBMapper
-{
-	public function __construct(IDBConnection $db,
-								private ImageFileNameMapper $imageFileNameMapper,
-								private StaleGenerationMapper $staleGenerationMapper)
-	{
+class ImageGenerationMapper extends QBMapper {
+	public function __construct(
+		IDBConnection $db,
+		private ImageFileNameMapper $imageFileNameMapper,
+		private StaleGenerationMapper $staleGenerationMapper
+	) {
 		parent::__construct($db, 't2ih_generations', ImageGeneration::class);
 	}
 
@@ -35,8 +35,7 @@ class ImageGenerationMapper extends QBMapper
 	 * @throws DoesNotExistException
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getImageGenerationOfImageGenId(string $imageGenId): ImageGeneration
-	{
+	public function getImageGenerationOfImageGenId(string $imageGenId): ImageGeneration {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -56,8 +55,7 @@ class ImageGenerationMapper extends QBMapper
 	 * @return ImageGeneration
 	 * @throws Exception
 	 */
-	public function createImageGeneration(string $imageGenId, string $prompt = '',string $userId = '',?int $expCompletionTime = null): ImageGeneration
-	{
+	public function createImageGeneration(string $imageGenId, string $prompt = '', string $userId = '', ?int $expCompletionTime = null): ImageGeneration {
 		$imageGeneration = new ImageGeneration();
 		$imageGeneration->setImageGenId($imageGenId);
 		$imageGeneration->setTimestamp((new DateTime())->getTimestamp());
@@ -77,8 +75,7 @@ class ImageGenerationMapper extends QBMapper
 	 * @return int
 	 * @throws Exception
 	 */
-	public function setImagesGenerated(string $imageGenId, bool $isGenerated = true): int
-	{
+	public function setImagesGenerated(string $imageGenId, bool $isGenerated = true): int {
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
 			->set('is_generated', $qb->createNamedParameter($isGenerated, IQueryBuilder::PARAM_BOOL))
@@ -97,8 +94,7 @@ class ImageGenerationMapper extends QBMapper
 	 * @return int
 	 * @throws Exception
 	 */
-	public function setFailed(string $imageGenId, bool $isFailed = true): int
-	{
+	public function setFailed(string $imageGenId, bool $isFailed = true): int {
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
 			->set('failed', $qb->createNamedParameter($isFailed, IQueryBuilder::PARAM_BOOL))
@@ -116,8 +112,7 @@ class ImageGenerationMapper extends QBMapper
 	 * @return int
 	 * @throws Exception
 	 */
-	public function touchImageGeneration(string $imageGenId): int
-	{
+	public function touchImageGeneration(string $imageGenId): int {
 		$qb = $this->db->getQueryBuilder();
 		$qb->update($this->getTableName())
 			->set('timestamp', $qb->createNamedParameter((new DateTime())->getTimestamp(), IQueryBuilder::PARAM_INT))
@@ -135,15 +130,14 @@ class ImageGenerationMapper extends QBMapper
 	 * @return void
 	 * @throws Exception
 	 */
-	public function deleteImageGeneration(string $imageGenId): void
-	{
+	public function deleteImageGeneration(string $imageGenId): void {
 		// Also delete associated file names, so first get the id for imageGenId:
 		try {
 			$rowId = $this->getImageGenerationOfImageGenId($imageGenId)->getId();
 		} catch (Exception|DoesNotExistException|MultipleObjectsReturnedException $e) {
 			return;
-		}		
-				
+		}
+
 		$qb = $this->db->getQueryBuilder();
 		$qb->delete($this->getTableName())
 			->where(
@@ -163,26 +157,24 @@ class ImageGenerationMapper extends QBMapper
 	 * @return int
 	 * @throws Exception
 	 */
-	 public function setNotifyReady(string $imageGenId, bool $notifyReady): int
-	 {
-		 $qb = $this->db->getQueryBuilder();
-		 $qb->update($this->getTableName())
-			 ->set('notify_ready', $qb->createNamedParameter($notifyReady, IQueryBuilder::PARAM_BOOL))
-			 ->where(
-				 $qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
-			 );
-		 $count = $qb->executeStatement();
-		 $qb->resetQueryParts();
-		 return $count;
-	 }
+	public function setNotifyReady(string $imageGenId, bool $notifyReady): int {
+		$qb = $this->db->getQueryBuilder();
+		$qb->update($this->getTableName())
+			->set('notify_ready', $qb->createNamedParameter($notifyReady, IQueryBuilder::PARAM_BOOL))
+			->where(
+				$qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
+			);
+		$count = $qb->executeStatement();
+		$qb->resetQueryParts();
+		return $count;
+	}
 
 	/**
 	 * @param int $maxAge
 	 * @return array('deleted_generations' => int, 'file_names' => string[])
 	 * @throws Exception
 	 */
-	public function cleanupImageGenerations(int $maxAge = Application::DEFAULT_MAX_GENERATION_IDLE_TIME): array
-	{
+	public function cleanupImageGenerations(int $maxAge = Application::DEFAULT_MAX_GENERATION_IDLE_TIME): array {
 		$ts = (new DateTime())->getTimestamp();
 		$maxTimestamp = $ts - $maxAge;
 
@@ -203,7 +195,7 @@ class ImageGenerationMapper extends QBMapper
 		$fileNames = [];
 		$imageGenIds = [];
 		$generationIds = [];
-		
+
 		foreach ($generations as $generation) {
 			$generationFiles = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($generation->getId());
 			array_map(function ($generationFile) use (&$fileNames) {
@@ -216,7 +208,7 @@ class ImageGenerationMapper extends QBMapper
 		// Only now delete associated file names if we encountered no errors:
 		/** @var int $genId */
 		foreach ($generationIds as $genId) {
-			$this->imageFileNameMapper->deleteImageFileNamesOfGenerationId($genId);			
+			$this->imageFileNameMapper->deleteImageFileNamesOfGenerationId($genId);
 		}
 
 		// Add the image generation ids to the stale generations table:

@@ -7,14 +7,12 @@ declare(strict_types=1);
 namespace OCA\Text2ImageHelper\Cron;
 
 use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
+use OCA\Text2ImageHelper\Service\CleanUpService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
 use Psr\Log\LoggerInterface;
-use OCA\Text2ImageHelper\Service\CleanUpService;
 
-class CleanupImageGenerations extends TimedJob
-{
-
+class CleanupImageGenerations extends TimedJob {
 	public function __construct(
 		ITimeFactory $time,
 		private ImageGenerationMapper $imageGenerationMapper,
@@ -25,8 +23,7 @@ class CleanupImageGenerations extends TimedJob
 		$this->setInterval(60 * 60 * 24);
 	}
 
-	protected function run($argument): void
-	{
+	protected function run($argument): void {
 		$this->logger->debug('Run cleanup job for image generations');
 
 		$this->cleanUpService->cleanupGenerationsAndFiles();

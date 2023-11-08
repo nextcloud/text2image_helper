@@ -1,20 +1,19 @@
 <?php
+
 // SPDX-FileCopyrightText: Sami Finnilä <sami.finnila@nextcloud.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 namespace OCA\Text2ImageHelper\Controller;
 
-use OCP\IConfig;
-use OCP\IRequest;
-use OCP\AppFramework\Http\DataResponse;
+use OCA\Text2ImageHelper\AppInfo\Application;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
+use OCP\IConfig;
 
-use OCA\Text2ImageHelper\AppInfo\Application;
+use OCP\IRequest;
 
-class ConfigController extends Controller
-{
-
+class ConfigController extends Controller {
 	public function __construct(
 		string $appName,
 		IRequest $request,
@@ -30,8 +29,7 @@ class ConfigController extends Controller
 	 * @param array<string> $values key/value pairs to store in app config
 	 * @return DataResponse
 	 */
-	public function setAdminConfig(array $values): DataResponse
-	{
+	public function setAdminConfig(array $values): DataResponse {
 		foreach ($values as $key => $value) {
 			switch ($key) {
 				case 'max_generation_idle_time':

@@ -1,4 +1,5 @@
 <?php
+
 // SPDX-FileCopyrightText: Sami Finnilä <sami.finnila@nextcloud.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
@@ -6,14 +7,13 @@ declare(strict_types=1);
 
 namespace OCA\Text2ImageHelper\Db;
 
-use RuntimeException;
-use OCA\Text2ImageHelper\AppInfo\Application;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Db\QBMapper;
 use OCP\DB\Exception;
 use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
+use RuntimeException;
 
 /**
  * @implements QBMapper<StaleGeneration>
@@ -42,7 +42,7 @@ class StaleGenerationMapper extends QBMapper {
 		return $this->findEntity($qb);
 	}
 
-	
+
 
 	/**
 	 * @param string $imageGenId
@@ -57,30 +57,30 @@ class StaleGenerationMapper extends QBMapper {
 			->where(
 				$qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
 			);
-		
+
 		return $this->findEntities($qb);
 	}
 
-    /**
-     * Check if a image_gen id exists in the database table
-     * @param string $imageGenId
-     * @return bool
-     * @throws Exception
-     * @throws RuntimeException    
-     */
-    public function genIdExists(string $imageGenId): bool {
-        $qb = $this->db->getQueryBuilder();
+	/**
+	 * Check if a image_gen id exists in the database table
+	 * @param string $imageGenId
+	 * @return bool
+	 * @throws Exception
+	 * @throws RuntimeException
+	 */
+	public function genIdExists(string $imageGenId): bool {
+		$qb = $this->db->getQueryBuilder();
 
-        $qb->select('*')
-            ->from($this->getTableName())
-            ->where(
-                $qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
-            );
+		$qb->select('*')
+			->from($this->getTableName())
+			->where(
+				$qb->expr()->eq('image_gen_id', $qb->createNamedParameter($imageGenId, IQueryBuilder::PARAM_STR))
+			);
 
-        $result = $qb->executeQuery();
-        $row = $result->fetch();
-        return $row !== false;
-    }
+		$result = $qb->executeQuery();
+		$row = $result->fetch();
+		return $row !== false;
+	}
 
 	/**
 	 * @param string $imageGenId
@@ -90,7 +90,7 @@ class StaleGenerationMapper extends QBMapper {
 	public function createStaleGeneration(string $imageGenId): StaleGeneration {
 		$staleGen = new StaleGeneration();
 		$staleGen->setImageGenId($imageGenId);
-		
+
 		$insertedStaleGeneration = $this->insert($staleGen);
 
 		return $insertedStaleGeneration;

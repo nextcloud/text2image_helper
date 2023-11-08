@@ -1,24 +1,24 @@
 <?php
+
 // SPDX-FileCopyrightText: Sami Finnilä <sami.finnila@nextcloud.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 namespace OCA\Text2ImageHelper\Controller;
 
 use Exception;
+use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Service\Text2ImageHelperService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\Attribute\BruteForceProtection;
+use OCP\AppFramework\Http\DataDisplayResponse;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\TemplateResponse;
-use OCP\AppFramework\Http\DataDisplayResponse;
 use OCP\AppFramework\Services\IInitialState;
-use OCP\AppFramework\Http\Attribute\BruteForceProtection;
-use OCP\TextToImage\Exception\TaskFailureException;
 use OCP\IRequest;
-use OCA\Text2ImageHelper\AppInfo\Application;
+use OCP\TextToImage\Exception\TaskFailureException;
 
-class Text2ImageHelperController extends Controller
-{
+class Text2ImageHelperController extends Controller {
 	public function __construct(
 		string $appName,
 		IRequest $request,
@@ -38,15 +38,14 @@ class Text2ImageHelperController extends Controller
 	 * @param bool $displayPrompt
 	 * @return DataResponse
 	 */
-	public function processPrompt(string $prompt, int $nResults = 1, bool $displayPrompt = false): DataResponse
-	{
+	public function processPrompt(string $prompt, int $nResults = 1, bool $displayPrompt = false): DataResponse {
 		$nResults = min(10, max(1, $nResults));
 		try {
 			$result = $this->text2ImageHelperService->processPrompt($prompt, $nResults, $displayPrompt);
 		} catch (Exception | TaskFailureException $e) {
 			return new DataResponse(['error' => $e->getMessage()], Http::STATUS_BAD_REQUEST);
 		}
-		
+
 		return new DataResponse($result);
 	}
 
@@ -56,14 +55,13 @@ class Text2ImageHelperController extends Controller
 	 *
 	 * @return DataResponse
 	 */
-	public function getPromptHistory(): DataResponse
-	{
+	public function getPromptHistory(): DataResponse {
 		try {
 			$response = $this->text2ImageHelperService->getPromptHistory();
 		} catch (Exception $e) {
 			return new DataResponse($e->getMessage(), Http::STATUS_BAD_REQUEST);
 		}
-		
+
 		return new DataResponse($response);
 	}
 
@@ -77,8 +75,7 @@ class Text2ImageHelperController extends Controller
 	 * @return DataDisplayResponse | DataResponse
 	 */
 	#[BruteForceProtection(action: 'imageGenId')]
-	public function getImage(string $imageGenId, int $fileNameId): DataDisplayResponse | DataResponse
-	{
+	public function getImage(string $imageGenId, int $fileNameId): DataDisplayResponse | DataResponse {
 
 		try {
 			$result = $this->text2ImageHelperService->getImage($imageGenId, $fileNameId);
@@ -106,15 +103,14 @@ class Text2ImageHelperController extends Controller
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 * @PublicPage
-	 * 
+	 *
 	 * @param string $imageGenId
 	 * @return DataResponse
 	 */
 	#[BruteForceProtection(action: 'imageGenId')]
-	public function getGenerationInfo(string $imageGenId): DataResponse
-	{
+	public function getGenerationInfo(string $imageGenId): DataResponse {
 		try {
-			$result = $this->text2ImageHelperService->getGenerationInfo($imageGenId,true);
+			$result = $this->text2ImageHelperService->getGenerationInfo($imageGenId, true);
 		} catch (Exception $e) {
 			$response = new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
 			if ($e->getCode() === 1) {
@@ -123,20 +119,19 @@ class Text2ImageHelperController extends Controller
 			}
 			return $response;
 		}
-		
+
 		return new DataResponse($result, Http::STATUS_OK);
-	}	
+	}
 
 	/**
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
-	 * 
+	 *
 	 * @param string $imageGenId
 	 * @param array $fileVisStatusArray
 	 */
-	public function setVisibilityOfImageFiles(string $imageGenId, array $fileVisStatusArray): DataResponse
-	{	
-		if (count($fileVisStatusArray)<1) {
+	public function setVisibilityOfImageFiles(string $imageGenId, array $fileVisStatusArray): DataResponse {
+		if (count($fileVisStatusArray) < 1) {
 			return new DataResponse('File visibility array empty', Http::STATUS_BAD_REQUEST);
 		}
 
@@ -145,7 +140,7 @@ class Text2ImageHelperController extends Controller
 		} catch (Exception $e) {
 			return new DataResponse($e->getMessage(), Http::STATUS_NOT_FOUND);
 		}
-		
+
 		return new DataResponse('success', Http::STATUS_OK);
 	}
 
@@ -154,8 +149,7 @@ class Text2ImageHelperController extends Controller
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 */
-	public function notifyWhenReady(string $imageGenId): DataResponse
-	{
+	public function notifyWhenReady(string $imageGenId): DataResponse {
 		try {
 			$this->text2ImageHelperService->notifyWhenReady($imageGenId);
 		} catch (Exception $e) {
@@ -170,8 +164,7 @@ class Text2ImageHelperController extends Controller
 	 * @param string $imageGenId
 	 * @return DataResponse
 	 */
-	public function cancelGeneration(string $imageGenId): DataResponse
-	{
+	public function cancelGeneration(string $imageGenId): DataResponse {
 		$this->text2ImageHelperService->cancelGeneration($imageGenId);
 		return new DataResponse('success', Http::STATUS_OK);
 	}
@@ -181,23 +174,22 @@ class Text2ImageHelperController extends Controller
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 * @PublicPage
-	 * 
+	 *
 	 * Does not need bruteforce protection
-	 * 
+	 *
 	 * @param string|null $imageGenId
 	 * @return TemplateResponse
 	 */
-	public function showGenerationPage(?string $imageGenId, ?bool $forceEditMode = false): TemplateResponse
-	{
+	public function showGenerationPage(?string $imageGenId, ?bool $forceEditMode = false): TemplateResponse {
 		if ($forceEditMode === null) {
 			$forceEditMode = false;
 		}
 		if ($imageGenId === null) {
 			return new TemplateResponse(Application::APP_ID, 'generationPage', ['imageGenId' => '']);
 		}
-	
+
 		$this->initialStateService->provideInitialState('generation-page-inputs', ['image_gen_id' => $imageGenId, 'force_edit_mode' => $forceEditMode]);
-	
+
 		return new TemplateResponse(Application::APP_ID, 'generationPage');
 	}
 }

@@ -11,10 +11,9 @@ use OCP\AppFramework\Db\Entity;
 /**
  * @method string getImageGenId()
  * @method void setImageGenId(string $imageGenId)
-
+ *
  */
 class StaleGeneration extends Entity implements \JsonSerializable {
-
 	/** @var string */
 	protected $imageGenId;
 

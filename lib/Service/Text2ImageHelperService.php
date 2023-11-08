@@ -1,37 +1,37 @@
 <?php
+
 // SPDX-FileCopyrightText: Sami Finnilä <sami.finnila@nextcloud.com>
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
 namespace OCA\Text2ImageHelper\Service;
 
-use GdImage;
-use Exception as BaseException;
-use RuntimeException;
-use OCP\Files\NotFoundException;
-use OCP\IConfig;
-use Psr\Log\LoggerInterface;
-use OCP\TextToImage\IManager;
-use OCP\TextToImage\Task;
-
-use OCP\IImage;
-use OCP\Files\SimpleFS\ISimpleFolder;
-use OCP\Files\IAppData;
-use OCP\IURLGenerator;
 use DateTime;
+use Exception as BaseException;
+use GdImage;
 use OCA\Text2ImageHelper\AppInfo\Application;
-use OCA\Text2ImageHelper\Db\PromptMapper;
-use OCP\Notification\IManager as INotificationManager;
-use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
 use OCA\Text2ImageHelper\Db\ImageFileNameMapper;
+use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
+use OCA\Text2ImageHelper\Db\PromptMapper;
 use OCA\Text2ImageHelper\Db\StaleGenerationMapper;
+
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
-use OCP\IL10N;
 use OCP\Db\Exception;
+use OCP\Files\IAppData;
+use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
+use OCP\Files\SimpleFS\ISimpleFolder;
+use OCP\IConfig;
+use OCP\IImage;
+use OCP\IL10N;
+use OCP\IURLGenerator;
+use OCP\Notification\IManager as INotificationManager;
+use OCP\TextToImage\IManager;
+use OCP\TextToImage\Task;
+use Psr\Log\LoggerInterface;
+use RuntimeException;
 
-class Text2ImageHelperService
-{
+class Text2ImageHelperService {
 	/**
 	 * @var ISimpleFolder|null
 	 */
@@ -69,7 +69,7 @@ class Text2ImageHelperService
 
 	/**
 	 * Process a prompt using ImageProcessingProvider and return a link to the generated image(s)
-	 * 
+	 *
 	 * @param string $prompt
 	 * @param int $nResults
 	 * @param bool $storePrompt
@@ -77,8 +77,7 @@ class Text2ImageHelperService
 	 * @throws \Exception
 	 * @throws \OCP\TextToImage\Exception\TaskFailureException;
 	 */
-	public function processPrompt(string $prompt, int $nResults, bool $displayPrompt): array
-	{
+	public function processPrompt(string $prompt, int $nResults, bool $displayPrompt): array {
 		if (!$this->textToImageManager->hasProviders()) {
 			$this->logger->error('No text to image processing provider available');
 			throw new BaseException($this->l10n->t('No text to image processing provider available'));
@@ -90,7 +89,7 @@ class Text2ImageHelperService
 		$promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageGenId);
 
 		$this->textToImageManager->runOrScheduleTask($promptTask);
-		
+
 		$taskExecuted = false;
 
 		/** @var IImage[]|null $images */
@@ -98,14 +97,14 @@ class Text2ImageHelperService
 		$expCompletionTime = new DateTime('now');
 
 		if ($promptTask->getStatus() === Task::STATUS_SUCCESSFUL || $promptTask->getStatus() === Task::STATUS_FAILED) {
-			$taskExecuted = true;			            
-            $images = $promptTask->getOutputImages();   
+			$taskExecuted = true;
+			$images = $promptTask->getOutputImages();
 		} else {
 			$expCompletionTime = $promptTask->getCompletionExpectedAt() ?? $expCompletionTime;
 			$this->logger->info('Task scheduled. Expected completion time: ' . $expCompletionTime->format('Y-m-d H:i:s'));
 		}
 
-		// Store the image id to the db:      
+		// Store the image id to the db:
 		$this->imageGenerationMapper->createImageGeneration($imageGenId, $displayPrompt ? $prompt : '', $this->userId ?? '', $expCompletionTime->getTimestamp());
 
 		if ($taskExecuted) {
@@ -129,7 +128,7 @@ class Text2ImageHelperService
 		// Save the prompt to database
 		if($this->userId !== null) {
 			$this->promptMapper->createPrompt($this->userId, $prompt);
-		}		
+		}
 
 		return ['url' => $infoUrl, 'reference_url' => $referenceUrl, 'image_gen_id' => $imageGenId, 'prompt' => $prompt];
 	}
@@ -138,13 +137,12 @@ class Text2ImageHelperService
 	 * @return array
 	 * @throws \OCP\DB\Exception
 	 */
-	public function getPromptHistory(): array
-	{
+	public function getPromptHistory(): array {
 		if ($this->userId === null) {
 			return [];
 		} else {
 			return $this->promptMapper->getPromptsOfUser($this->userId);
-		}		
+		}
 	}
 
 	/**
@@ -153,8 +151,7 @@ class Text2ImageHelperService
 	 * @param string $imageGenId
 	 * @return void
 	 */
-	public function storeImages(?array $iImages, string $imageGenId): void
-	{
+	public function storeImages(?array $iImages, string $imageGenId): void {
 		if ($iImages === null || count($iImages) === 0) {
 			return;
 		}
@@ -217,7 +214,7 @@ class Text2ImageHelperService
 		if ($imageGeneration->getNotifyReady()) {
 			$this->notifyUser($imageGenId);
 		}
-		
+
 	}
 
 	/**
@@ -225,8 +222,8 @@ class Text2ImageHelperService
 	 * @param string $imageGenId
 	 * @return void
 	 */
-	 public function notifyUser(string $imageGenId): void {
-		
+	public function notifyUser(string $imageGenId): void {
+
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
@@ -244,8 +241,8 @@ class Text2ImageHelperService
 
 		$deleteAction = $notification->createAction();
 		$deleteAction->setLabel('delete')
-				->setLink(Application::APP_ID, 'POST');		
-		
+				->setLink(Application::APP_ID, 'POST');
+
 		$notification->setApp(Application::APP_ID)
 			->setUser($imageGeneration->getUserId())
 			->setDateTime(new DateTime('now'))
@@ -254,19 +251,18 @@ class Text2ImageHelperService
 			->setMessage('text2image_helper', ['imageGenId' => $imageGenId, 'prompt' => $imageGeneration->getPrompt()])
 			->addAction($deleteAction)
 			->addAction($viewAction);
-			
+
 		$this->notificationManager->notify($notification);
-	 
+
 		return;
-	 }
+	}
 
 	/**
 	 * Get imageDataFolder
 	 * @return ISimpleFolder
 	 * @throws \Exception
 	 */
-	public function getImageDataFolder(): ISimpleFolder
-	{
+	public function getImageDataFolder(): ISimpleFolder {
 		if ($this->imageDataFolder === null) {
 			/** @var ISimpleFolder|null $imageFataFolder */
 			try {
@@ -290,30 +286,29 @@ class Text2ImageHelperService
 	}
 
 	/**
-	 * Get image generation info. 
+	 * Get image generation info.
 	 * @param string $imageGenId
 	 * @param bool $updateTimestamp
 	 * @param string|null $userId
 	 * @return array
 	 * @throws \Exception
 	 */
-	public function getGenerationInfo(string $imageGenId, bool $updateTimestamp = true): array
-	{
+	public function getGenerationInfo(string $imageGenId, bool $updateTimestamp = true): array {
 		// Check whether the task has completed:
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			if ($e instanceof DoesNotExistException) {
 				if ($this->staleGenerationMapper->genIdExists($imageGenId)) {
-					throw new BaseException($this->l10n->t('Image generation has been deleted.'),0);
-				}				
+					throw new BaseException($this->l10n->t('Image generation has been deleted.'), 0);
+				}
 			}
 
 			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			// Set error code to one to limit brute force attacks
-			throw new BaseException($this->l10n->t('Image generation not found.'),1);
+			throw new BaseException($this->l10n->t('Image generation not found.'), 1);
 		}
-		
+
 		$isOwner = ($imageGeneration->getUserId() === $this->userId);
 
 		if ($imageGeneration->getFailed() === true) {
@@ -339,21 +334,21 @@ class Text2ImageHelperService
 		try {
 			if ($isOwner) {
 				$fileNameEntities = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($imageGeneration->getId());
-			} else {				
-				$fileNameEntities = $this->imageFileNameMapper->getVisibleImageFileNamesOfGenerationId($imageGeneration->getId());	
+			} else {
+				$fileNameEntities = $this->imageFileNameMapper->getVisibleImageFileNamesOfGenerationId($imageGeneration->getId());
 			}
 		} catch (Exception $e) {
 			$this->logger->warning('Fetching image filenames from db failed: ' . $e->getMessage());
-			throw new BaseException($this->l10n->t('Image file names could not be fetched from database'),0);
+			throw new BaseException($this->l10n->t('Image file names could not be fetched from database'), 0);
 		}
 
 		$fileIds = [];
 		foreach ($fileNameEntities as $fileNameEntity) {
-			
+
 			if ($isOwner) {
 				$fileIds[] = ['id' => $fileNameEntity->getId(), 'visible' => !$fileNameEntity->getHidden()];
 			} else {
-				$fileIds[] = ['id' =>$fileNameEntity->getId()];
+				$fileIds[] = ['id' => $fileNameEntity->getId()];
 			}
 		}
 
@@ -367,24 +362,23 @@ class Text2ImageHelperService
 	 * @return array('image' => string, 'content-type' => string)
 	 * @throws BaseException
 	 */
-	public function getImage(string $imageGenId, int $imageFileNameId): ?array
-	{
+	public function getImage(string $imageGenId, int $imageFileNameId): ?array {
 		try {
 			$generationId = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId)->getId();
 			$imageFileName = $this->imageFileNameMapper->getImageFileNameOfGenerationId($generationId, $imageFileNameId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			// Set error code to one for rate limiting (brute force protection)
-			throw new BaseException($this->l10n->t('Image request error'),1);
+			throw new BaseException($this->l10n->t('Image request error'), 1);
 		}
 
 		if ($imageFileName === null) {
-			throw new BaseException($this->l10n->t('Image file not found in database'),0);
+			throw new BaseException($this->l10n->t('Image file not found in database'), 0);
 		}
 
 		// No need to catch here, since we'd be throwing BaseException anyways:
 		$imageDataFolder = $this->getImageDataFolder();
-		
+
 		// Load image from disk
 		try {
 			$imageFile = $imageDataFolder->getFile($imageFileName->getFileName());
@@ -393,13 +387,13 @@ class Text2ImageHelperService
 		} catch (NotFoundException $e) {
 			$this->logger->debug('Image file reading failed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 
-			throw new BaseException($this->l10n->t('Image file not found'),0);
+			throw new BaseException($this->l10n->t('Image file not found'), 0);
 		}
 
 		// Return image content and type
 		return [
 			'image' => $imageContent,
-			'content-type' => ['image/jpeg'],			
+			'content-type' => ['image/jpeg'],
 		];
 	}
 
@@ -408,8 +402,7 @@ class Text2ImageHelperService
 	 * @param string $imageGenId
 	 * @return void
 	 */
-	public function cancelGeneration(string $imageGenId): void
-	{
+	public function cancelGeneration(string $imageGenId): void {
 		// Get the task if it exists
 		try {
 			$task = $this->textToImageManager->getUserTasksByApp($this->userId, Application::APP_ID, $imageGenId);
@@ -522,8 +515,7 @@ class Text2ImageHelperService
 	 * Notify when image generation is ready
 	 * @param string $imageGenId
 	 */
-	public function notifyWhenReady(string $imageGenId): void
-	{
+	public function notifyWhenReady(string $imageGenId): void {
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
@@ -549,8 +541,7 @@ class Text2ImageHelperService
 	 * @param string $imageGenId
 	 * @return array
 	 */
-	public function getRawImagePage(string $imageGenId): array
-	{
+	public function getRawImagePage(string $imageGenId): array {
 		$generationInfo = $this->getGenerationInfo($imageGenId, true);
 
 		/** @var array $imageFiles */
@@ -578,8 +569,8 @@ class Text2ImageHelperService
 		}
 		$body .= '</body></html>';
 		return ['body' => $body,
-				'headers' => [
-					'Content-Type' => ['text/html'],
-				],];
+			'headers' => [
+				'Content-Type' => ['text/html'],
+			],];
 	}
 }
