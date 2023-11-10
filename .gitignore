@@ -10,3 +10,4 @@ node_modules/
 js/*hot-update.*
 /js/
 *composer.lock
+.php-cs-fixer.cache
