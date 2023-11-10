@@ -1,0 +1,8 @@
+{ "translations": {
+    "View" : "Xem",
+    "Delete" : "Xóa",
+    "Image generation" : "Tạo hình ảnh",
+    "Preview" : "Xem trước",
+    "Send" : "Gửi"
+},"pluralForm" :"nplurals=1; plural=0;"
+}

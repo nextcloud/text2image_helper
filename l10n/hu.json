@@ -1,0 +1,8 @@
+{ "translations": {
+    "Delete" : "Törlés",
+    "AI image generation" : "AI képgenerálás",
+    "Generated image" : "Generált kép",
+    "Preview" : "Előnézet",
+    "Copy link to clipboard" : "Hivatkozás vágólapra másolása"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}

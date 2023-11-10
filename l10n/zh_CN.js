@@ -1,0 +1,15 @@
+OC.L10N.register(
+    "text2image_helper",
+    {
+    "View" : "查看",
+    "Delete" : "删除",
+    "AI image generation" : "AI图像生成",
+    "Image generation" : "图像生成",
+    "Generated image" : "已生成的图像",
+    "Preview" : "预览",
+    "Show/hide advanced options" : "显示/隐藏高级选项",
+    "Send" : "发送",
+    "Regenerate" : "重新生成",
+    "Copy link to clipboard" : "复制链接到剪贴板"
+},
+"nplurals=1; plural=0;");

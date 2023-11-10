@@ -1,0 +1,8 @@
+{ "translations": {
+    "Delete" : "Slett",
+    "AI image generation" : "Generering av AI-bilder",
+    "Generated image" : "Generert bilde",
+    "Preview" : "Forhåndsvis",
+    "Regenerate" : "Regenerer"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}
