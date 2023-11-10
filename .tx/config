@@ -2,8 +2,8 @@
 host     = https://www.transifex.com
 lang_map = hu_HU: hu, nb_NO: nb, sk_SK: sk, th_TH: th, ja_JP: ja, bg_BG: bg, cs_CZ: cs, fi_FI: fi
 
-[o:nextcloud:p:nextcloud:r:gptfreeprompt]
-file_filter = translationfiles/<lang>/gptfreeprompt.po
-source_file = translationfiles/templates/gptfreeprompt.pot
+[o:nextcloud:p:nextcloud:r:text2image_helper]
+file_filter = translationfiles/<lang>/text2image_helper.po
+source_file = translationfiles/templates/text2image_helper.pot
 source_lang = en
 type        = PO
