@@ -1,8 +1,10 @@
 OC.L10N.register(
     "text2image_helper",
     {
+    "View" : "Zobraziť",
     "Delete" : "Vymazať",
     "Preview" : "Náhľad",
+    "Advanced options" : "Pokročilé možnosti",
     "Send" : "Odoslať",
     "Copy link to clipboard" : "Skopírovať odkaz do schránky"
 },

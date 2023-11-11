@@ -1,6 +1,8 @@
 { "translations": {
+    "View" : "Shiko",
     "Delete" : "Fshi",
     "Preview" : "Parapamje ",
+    "Advanced options" : "Opsione të avancuara",
     "Send" : "Dërgo"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

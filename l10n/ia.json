@@ -1,5 +1,8 @@
 { "translations": {
+    "View" : "Vider",
     "Delete" : "Deler",
-    "Preview" : "Previsualisar"
+    "Preview" : "Previsualisar",
+    "Advanced options" : "Optiones avantiate",
+    "Send" : "Inviar"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

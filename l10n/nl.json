@@ -1,0 +1,9 @@
+{ "translations": {
+    "View" : "Bekijken",
+    "Delete" : "Verwijder",
+    "Preview" : "Voorbeeld",
+    "Advanced options" : "Geavanceerde opties",
+    "Send" : "Verzenden",
+    "Copy link to clipboard" : "Kopieer link naar klembord"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}

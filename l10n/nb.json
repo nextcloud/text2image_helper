@@ -1,8 +1,14 @@
 { "translations": {
+    "View" : "Vis",
     "Delete" : "Slett",
     "AI image generation" : "Generering av AI-bilder",
+    "Image generation" : "Bildegenerering",
     "Generated image" : "Generert bilde",
     "Preview" : "Forhåndsvis",
+    "Show/hide advanced options" : "Vis/skjul avanserte alternativer",
+    "Advanced options" : "Avanserte innstillinger",
+    "Send" : "Send",
+    "Include the prompt in the result" : "Ta med ledeteksten i resultatet",
     "Regenerate" : "Regenerer"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

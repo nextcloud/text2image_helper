@@ -1,5 +1,7 @@
 { "translations": {
     "Delete" : "Kustuta",
-    "Preview" : "Eelvaade"
+    "Preview" : "Eelvaade",
+    "Advanced options" : "Täpsemad valikud",
+    "Send" : "Saada"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

@@ -1,4 +1,6 @@
 { "translations": {
-    "Delete" : "ړنګول"
+    "Delete" : "ړنګول",
+    "Advanced options" : "نور اختيارات",
+    "Send" : "لېږل"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

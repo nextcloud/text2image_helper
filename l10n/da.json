@@ -1,0 +1,8 @@
+{ "translations": {
+    "View" : "Vis",
+    "Delete" : "Slet",
+    "Preview" : "Forhåndsvisning",
+    "Advanced options" : "Avancerede indstillinger",
+    "Send" : "Send"
+},"pluralForm" :"nplurals=2; plural=(n != 1);"
+}

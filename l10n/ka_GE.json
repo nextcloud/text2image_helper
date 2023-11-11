@@ -1,5 +1,7 @@
 { "translations": {
     "Delete" : "წაშლა",
-    "Preview" : "წინასწარი ჩვენება"
+    "Preview" : "წინასწარი ჩვენება",
+    "Advanced options" : "დამატებითი ოპციონები",
+    "Send" : "გაგზავნა"
 },"pluralForm" :"nplurals=2; plural=(n!=1);"
 }
