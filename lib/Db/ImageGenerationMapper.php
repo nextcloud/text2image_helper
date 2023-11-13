@@ -184,7 +184,7 @@ class ImageGenerationMapper extends QBMapper {
 		$qb->select('*')
 			->from($this->getTableName())
 			->where(
-				$qb->expr()->lt('last_used_timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
+				$qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
 			);
 
 		/** @var ImageGeneration[] $generations */
@@ -220,7 +220,7 @@ class ImageGenerationMapper extends QBMapper {
 		// Delete generations
 		$qb->delete($this->getTableName())
 			->where(
-				$qb->expr()->lt('last_used_timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
+				$qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
 			);
 
 		$countDelGens = $qb->executeStatement();

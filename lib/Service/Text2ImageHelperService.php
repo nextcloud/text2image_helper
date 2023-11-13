@@ -89,7 +89,7 @@ class Text2ImageHelperService {
 		$promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageGenId);
 
 		$this->textToImageManager->runOrScheduleTask($promptTask);
-
+		
 		$taskExecuted = false;
 
 		/** @var IImage[]|null $images */
