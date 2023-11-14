@@ -1,6 +1,7 @@
 OC.L10N.register(
     "text2image_helper",
     {
+    "Image generation ready" : "图像生成就绪",
     "View" : "查看",
     "Delete" : "删除",
     "AI image generation" : "AI图像生成",
