@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Skoða",
     "Delete" : "Eyða",
+    "Image generation" : "Gerð mynda",
     "Preview" : "Forskoðun",
     "Advanced options" : "Ítarlegir valkostir",
     "Send" : "Senda",
