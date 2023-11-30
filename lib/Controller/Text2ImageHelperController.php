@@ -6,6 +6,7 @@
 namespace OCA\Text2ImageHelper\Controller;
 
 use Exception;
+use OCP\Db\Exception as DbException;
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Service\Text2ImageHelperService;
 use OCP\AppFramework\Controller;
@@ -17,6 +18,7 @@ use OCP\AppFramework\Http\TemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
 use OCP\IRequest;
 use OCP\TextToImage\Exception\TaskFailureException;
+
 
 class Text2ImageHelperController extends Controller {
 	public function __construct(
@@ -58,8 +60,8 @@ class Text2ImageHelperController extends Controller {
 	public function getPromptHistory(): DataResponse {
 		try {
 			$response = $this->text2ImageHelperService->getPromptHistory();
-		} catch (Exception $e) {
-			return new DataResponse($e->getMessage(), Http::STATUS_BAD_REQUEST);
+		} catch (DbException $e) {
+			return new DataResponse(['error' => 'Unknown error while retrieving prompt history.'], Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 
 		return new DataResponse($response);
@@ -80,8 +82,8 @@ class Text2ImageHelperController extends Controller {
 		try {
 			$result = $this->text2ImageHelperService->getImage($imageGenId, $fileNameId);
 		} catch (Exception $e) {
-			$response = new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
-			if ($e->getCode() === 1) {
+			$response = new DataResponse(['error' => $e->getMessage()], $e->getCode());
+			if ($e->getCode() === Http::STATUS_BAD_REQUEST | Http::STATUS_UNAUTHORIZED) {
 				// Throttle brute force attempts
 				$response->throttle(['action' => 'imageGenId']);
 			}
@@ -112,8 +114,8 @@ class Text2ImageHelperController extends Controller {
 		try {
 			$result = $this->text2ImageHelperService->getGenerationInfo($imageGenId, true);
 		} catch (Exception $e) {
-			$response = new DataResponse(['error' => $e->getMessage()], Http::STATUS_NOT_FOUND);
-			if ($e->getCode() === 1) {
+			$response = new DataResponse(['error' => $e->getMessage()], $e->getCode());
+			if ($e->getCode() === Http::STATUS_BAD_REQUEST | Http::STATUS_UNAUTHORIZED) {
 				// Throttle brute force attempts
 				$response->throttle(['action' => 'imageGenId']);
 			}
@@ -130,6 +132,7 @@ class Text2ImageHelperController extends Controller {
 	 * @param string $imageGenId
 	 * @param array $fileVisStatusArray
 	 */
+	#[BruteForceProtection(action: 'imageGenId')]
 	public function setVisibilityOfImageFiles(string $imageGenId, array $fileVisStatusArray): DataResponse {
 		if (count($fileVisStatusArray) < 1) {
 			return new DataResponse('File visibility array empty', Http::STATUS_BAD_REQUEST);
@@ -138,7 +141,12 @@ class Text2ImageHelperController extends Controller {
 		try {
 			$this->text2ImageHelperService->setVisibilityOfImageFiles($imageGenId, $fileVisStatusArray);
 		} catch (Exception $e) {
-			return new DataResponse($e->getMessage(), Http::STATUS_NOT_FOUND);
+			$response = new DataResponse(['error' => $e->getMessage()], $e->getCode());
+			if($e->getCode() === Http::STATUS_BAD_REQUEST | Http::STATUS_UNAUTHORIZED) {
+				// Throttle brute force attempts				
+				$response->throttle(['action' => 'imageGenId']);				
+			}
+			return $response;
 		}
 
 		return new DataResponse('success', Http::STATUS_OK);
@@ -149,11 +157,17 @@ class Text2ImageHelperController extends Controller {
 	 * @NoAdminRequired
 	 * @NoCSRFRequired
 	 */
+	#[BruteForceProtection(action: 'imageGenId')]
 	public function notifyWhenReady(string $imageGenId): DataResponse {
 		try {
 			$this->text2ImageHelperService->notifyWhenReady($imageGenId);
 		} catch (Exception $e) {
-			return new DataResponse($e->getMessage(), Http::STATUS_BAD_REQUEST);
+			$response = new DataResponse(['error' => $e->getMessage()], $e->getCode());
+			if($e->getCode() === Http::STATUS_BAD_REQUEST | Http::STATUS_UNAUTHORIZED) {
+				// Throttle brute force attempts				
+				$response->throttle(['action' => 'imageGenId']);				
+			}
+			return $response;
 		}
 		return new DataResponse('success', Http::STATUS_OK);
 	}
@@ -185,10 +199,10 @@ class Text2ImageHelperController extends Controller {
 			$forceEditMode = false;
 		}
 		if ($imageGenId === null) {
-			return new TemplateResponse(Application::APP_ID, 'generationPage', ['imageGenId' => '']);
-		}
-
-		$this->initialStateService->provideInitialState('generation-page-inputs', ['image_gen_id' => $imageGenId, 'force_edit_mode' => $forceEditMode]);
+			$this->initialStateService->provideInitialState('generation-page-inputs', ['image_gen_id' => $imageGenId, 'force_edit_mode' => $forceEditMode]);
+		} else {
+			$this->initialStateService->provideInitialState('generation-page-inputs', ['image_gen_id' => $imageGenId, 'force_edit_mode' => $forceEditMode]);
+		}		
 
 		return new TemplateResponse(Application::APP_ID, 'generationPage');
 	}
