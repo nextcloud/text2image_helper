@@ -5,6 +5,7 @@ OC.L10N.register(
     "Delete" : "Xóa",
     "Image generation" : "Tạo hình ảnh",
     "Preview" : "Xem trước",
+    "Advanced options" : "Tùy chọn nâng cao",
     "Send" : "Gửi"
 },
 "nplurals=1; plural=0;");
