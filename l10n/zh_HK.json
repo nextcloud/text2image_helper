@@ -44,8 +44,12 @@
     "Number of results" : "結果數目",
     "A hedgehog laid back on a couch" : "一隻刺蝟躺在沙發上",
     "Regenerate" : "重新生成",
+    "Image generation cancel error" : "影像產生取消錯誤",
     "Unknown image generation cancel error" : "未知的影像產生取消錯誤",
+    "Unexpected response from server." : "伺服器回應異常。",
+    "Image generation error" : "影像產生錯誤",
     "Unknown image generation error" : "未知的產生影像錯誤",
+    "You will be notified when the image generation is ready." : "影像產生就緒時將會通知您。",
     "Notify when ready error" : "就緒時通知錯誤",
     "Unknown notify when ready error" : "未知的就緒時通知錯誤",
     "Copy link to clipboard" : "複製連結到剪貼板"
