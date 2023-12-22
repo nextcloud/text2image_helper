@@ -7,11 +7,7 @@
         }
     ],
     "require": {
-        "php": "^8.1",
-        "psalm/phar": "^5.15",
-        "nextcloud/coding-standard": "^1.1",
-        "symfony/console": "^6.3",
-        "nextcloud/ocp": "dev-master"
+        "php": "^8.1"
     },
     "autoload": {
         "psr-4": {
@@ -25,6 +21,7 @@
         "psalm": "psalm.phar",
         "psalm:clear": "psalm.phar --clear-cache && psalm.phar --clear-global-cache",
         "test:unit": "phpunit --config tests/phpunit.xml"
+
     },
     "config": {
         "allow-plugins": {
@@ -33,8 +30,15 @@
         "platform": {
             "php": "8.1"
         },
-        "autoloader-suffix": "Recognize",
+        "autoloader-suffix": "Text2ImageHelper",
         "optimize-autoloader": true,
         "sort-packages": true
+    },
+    "require-dev": {
+        "nextcloud/coding-standard": "^1.1",
+        "nextcloud/ocp": "dev-master",
+        "phpunit/phpunit": "^10.5",
+        "psalm/phar": "^5.17",
+        "symfony/console": "^6.4"
     }
 }

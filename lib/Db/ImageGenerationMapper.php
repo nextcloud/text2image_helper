@@ -173,6 +173,7 @@ class ImageGenerationMapper extends QBMapper {
 	 * @param int $maxAge
 	 * @return array('deleted_generations' => int, 'file_names' => string[])
 	 * @throws Exception
+	 * @throws \RuntimeException
 	 */
 	public function cleanupImageGenerations(int $maxAge = Application::DEFAULT_MAX_GENERATION_IDLE_TIME): array {
 		$ts = (new DateTime())->getTimestamp();

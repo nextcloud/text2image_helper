@@ -11,6 +11,7 @@ use OCA\Text2ImageHelper\Service\CleanUpService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
 use Psr\Log\LoggerInterface;
+use Exception;
 
 class CleanupImageGenerations extends TimedJob {
 	public function __construct(
@@ -26,7 +27,12 @@ class CleanupImageGenerations extends TimedJob {
 	protected function run($argument): void {
 		$this->logger->debug('Run cleanup job for image generations');
 
-		$this->cleanUpService->cleanupGenerationsAndFiles();
+		try {
+			$this->cleanUpService->cleanupGenerationsAndFiles();
+		} catch (Exception $e) {
+			$this->logger->debug('Cleanup job for image generations failed: ' . $e->getMessage());
+		}
+		
 
 		return;
 	}
