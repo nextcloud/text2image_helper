@@ -13,7 +13,7 @@
 				<div class="button-wrapper">
 					<NcButton
 						type="primary"
-						@click="copyToClipboard">
+						@click="onCopy">
 						{{ t('text2image_helper', 'Copy link to clipboard') }}
 					</NcButton>
 				</div>
@@ -27,6 +27,11 @@ import NcButton from '@nextcloud/vue/dist/Components/NcButton.js'
 import NcAppContent from '@nextcloud/vue/dist/Components/NcAppContent.js'
 import Text2ImageDisplay from '../Components/Text2ImageDisplay.vue'
 import { generateUrl } from '@nextcloud/router'
+import { showError, showSuccess } from '@nextcloud/dialogs'
+import VueClipboard from 'vue-clipboard2'
+import Vue from 'vue'
+
+Vue.use(VueClipboard)
 
 export default {
 	name: 'Text2ImageHelperGenerationPage',
@@ -61,8 +66,14 @@ export default {
 		generateUrl() {
 			this.generationUrl = generateUrl('/apps/text2image_helper/info/' + this.imageGenId)
 		},
-		copyToClipboard() {
-			navigator.clipboard.writeText(this.generationUrl)
+		async onCopy() {
+			try {
+				await this.$copyText(window.location.href)
+				showSuccess(t('text2image_helper', 'Link copied to clipboard'))
+			} catch (error) {
+				console.error(error)
+				showError(t('text2image_helper', 'Failed to copy link to clipboard'))
+			}
 		},
 	},
 }

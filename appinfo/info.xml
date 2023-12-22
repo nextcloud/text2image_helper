@@ -32,6 +32,6 @@
         <admin>OCA\Text2ImageHelper\Settings\Admin</admin>
     </settings>
 	<dependencies>
-		<nextcloud min-version="28" max-version="28" />
+		<nextcloud min-version="28" max-version="29" />
 	</dependencies>
 </info>

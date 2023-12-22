@@ -55,7 +55,7 @@
 				<div v-for="(imageUrl, index) in imageUrls"
 					:key="index"
 					class="image-container">
-					<div v-if="!isOwner || fileVisStatusArray[index].visible" class="image-wrapper">
+					<div v-show="!isOwner || fileVisStatusArray[index].visible" class="image-wrapper">
 						<img
 							class="image-non-editable"
 							:src="imageUrl"
