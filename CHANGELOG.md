@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## 1.0.2 – 2023-11-08
+### Fixed
+* Imported multiple fixes based on the assistant app review items
+* Fixed cron job error
+
 ## 1.0.1 – 2023-11-08
 ### Fixed
 * Cs fix
