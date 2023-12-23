@@ -53,6 +53,8 @@ OC.L10N.register(
     "You will be notified when the image generation is ready." : "Až bude vytváření obrázku hotové, budete upozorněni.",
     "Notify when ready error" : "Chyba při upozorňování na dokončení",
     "Unknown notify when ready error" : "Neznámá chyba upozornění při dokončení",
-    "Copy link to clipboard" : "Zkopírovat odkaz do schránky"
+    "Copy link to clipboard" : "Zkopírovat odkaz do schránky",
+    "Link copied to clipboard" : "Odkaz zkopírován do schánky",
+    "Failed to copy link to clipboard" : "Nepodařilo se zkopírovat odkaz do schránky"
 },
 "nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;");

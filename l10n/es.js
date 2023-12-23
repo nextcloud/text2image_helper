@@ -13,6 +13,7 @@ OC.L10N.register(
     "Include the prompt in the result" : "Incluir el prompt en el resultado",
     "Regenerate" : "Regenerar",
     "Unknown image generation error" : "Error desconocido de generación de imágenes",
-    "Copy link to clipboard" : "Copiar enlace al portapapeles"
+    "Copy link to clipboard" : "Copiar enlace al portapapeles",
+    "Link copied to clipboard" : "Enlace copiado al portapapeles"
 },
 "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

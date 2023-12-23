@@ -13,6 +13,7 @@ OC.L10N.register(
     "Send" : "发送",
     "Include the prompt in the result" : "在结果中包含提示",
     "Regenerate" : "重新生成",
-    "Copy link to clipboard" : "复制链接到剪贴板"
+    "Copy link to clipboard" : "复制链接到剪贴板",
+    "Link copied to clipboard" : "链接已复制到剪贴板"
 },
 "nplurals=1; plural=0;");

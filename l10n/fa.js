@@ -12,6 +12,7 @@ OC.L10N.register(
     "Send" : "ارسال",
     "Include the prompt in the result" : "Include the prompt in the result",
     "Regenerate" : "Regenerate",
-    "Copy link to clipboard" : "Copy link to clipboard"
+    "Copy link to clipboard" : "Copy link to clipboard",
+    "Link copied to clipboard" : "پیوند در حافظه موقت کپی شده"
 },
 "nplurals=2; plural=(n > 1);");

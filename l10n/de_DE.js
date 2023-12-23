@@ -54,6 +54,8 @@ OC.L10N.register(
     "You will be notified when the image generation is ready." : "Sie werden benachrichtigt, wenn die Bilderstellung bereit ist.",
     "Notify when ready error" : "Bei Bereitschaftsfehler benachrichtigen",
     "Unknown notify when ready error" : "Unbekannter Fehler für \"Benachrichtigung bei Bereitschaft\"",
-    "Copy link to clipboard" : "Link in Zwischenablage kopieren"
+    "Copy link to clipboard" : "Link in Zwischenablage kopieren",
+    "Link copied to clipboard" : "Link wurde in die Zwischenablage kopiert",
+    "Failed to copy link to clipboard" : "Link konnte nicht in die Zwischenablage kopiert werden"
 },
 "nplurals=2; plural=(n != 1);");

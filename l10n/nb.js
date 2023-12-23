@@ -11,6 +11,7 @@ OC.L10N.register(
     "Advanced options" : "Avanserte innstillinger",
     "Send" : "Send",
     "Include the prompt in the result" : "Ta med ledeteksten i resultatet",
-    "Regenerate" : "Regenerer"
+    "Regenerate" : "Regenerer",
+    "Link copied to clipboard" : "Lenke kopiert til utklippstavlen"
 },
 "nplurals=2; plural=(n != 1);");

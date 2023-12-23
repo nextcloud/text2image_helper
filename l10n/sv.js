@@ -12,6 +12,7 @@ OC.L10N.register(
     "Send" : "Skicka",
     "Include the prompt in the result" : "Inkludera uppmaningen i resultatet",
     "Regenerate" : "Regenerera",
-    "Copy link to clipboard" : "Kopiera länken till urklipp"
+    "Copy link to clipboard" : "Kopiera länken till urklipp",
+    "Link copied to clipboard" : "Länken kopierad till urklipp"
 },
 "nplurals=2; plural=(n != 1);");

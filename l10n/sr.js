@@ -54,6 +54,8 @@ OC.L10N.register(
     "You will be notified when the image generation is ready." : "Бићете обавештени када генерисање слике заврши посао.",
     "Notify when ready error" : "Грешка при обавештавању о завршетку",
     "Unknown notify when ready error" : "Непозната грешка при обавештавању о завршетку",
-    "Copy link to clipboard" : "Копирај везу у оставу"
+    "Copy link to clipboard" : "Копирај везу у оставу",
+    "Link copied to clipboard" : "Веза копирана у оставу",
+    "Failed to copy link to clipboard" : "Није успело копирање линка у клипборд"
 },
 "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);");

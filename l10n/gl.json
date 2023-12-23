@@ -52,6 +52,8 @@
     "You will be notified when the image generation is ready." : "Recibirá unha notificación cando a xeración de imaxes estea lista.",
     "Notify when ready error" : "Produciuse un erro ao notificar cando está listo",
     "Unknown notify when ready error" : "Produciuse un error descoñecido ao notificar cando está listo",
-    "Copy link to clipboard" : "Copiar a ligazón no portapapeis"
+    "Copy link to clipboard" : "Copiar a ligazón no portapapeis",
+    "Link copied to clipboard" : "A ligazón foi copiada no portapapeis.",
+    "Failed to copy link to clipboard" : "Produciuse un fallo ao copiar a ligazón no portapapeis:"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

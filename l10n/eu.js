@@ -10,6 +10,7 @@ OC.L10N.register(
     "Advanced options" : "Ezarpen aurreratuak",
     "Send" : "Bidali",
     "Regenerate" : "Berriro sortu",
-    "Copy link to clipboard" : "Kopiatu esteka arbelera"
+    "Copy link to clipboard" : "Kopiatu esteka arbelera",
+    "Link copied to clipboard" : "Arbelara kopiatutako esteka"
 },
 "nplurals=2; plural=(n != 1);");

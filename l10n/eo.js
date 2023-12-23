@@ -5,6 +5,7 @@ OC.L10N.register(
     "Delete" : "Forigi",
     "Preview" : "Antaŭvidi",
     "Advanced options" : "Detalaj agordoj",
-    "Send" : "Sendi"
+    "Send" : "Sendi",
+    "Link copied to clipboard" : "Ligilo kopiita al tondujo"
 },
 "nplurals=2; plural=(n != 1);");

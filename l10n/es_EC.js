@@ -12,6 +12,7 @@ OC.L10N.register(
     "Send" : "Enviar",
     "Include the prompt in the result" : "Incluir el inicio en el resultado",
     "Regenerate" : "Regenerar",
-    "Copy link to clipboard" : "Copiar enlace al portapapeles"
+    "Copy link to clipboard" : "Copiar enlace al portapapeles",
+    "Link copied to clipboard" : "Enlace copiado al portapapeles"
 },
 "nplurals=3; plural=n == 1 ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

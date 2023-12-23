@@ -5,6 +5,7 @@ OC.L10N.register(
     "Delete" : "Slet",
     "Preview" : "Forhåndsvisning",
     "Advanced options" : "Avancerede indstillinger",
-    "Send" : "Send"
+    "Send" : "Send",
+    "Link copied to clipboard" : "Link kopieret til udklipsholder"
 },
 "nplurals=2; plural=(n != 1);");

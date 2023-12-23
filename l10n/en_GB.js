@@ -54,6 +54,8 @@ OC.L10N.register(
     "You will be notified when the image generation is ready." : "You will be notified when the image generation is ready.",
     "Notify when ready error" : "Notify when ready error",
     "Unknown notify when ready error" : "Unknown notify when ready error",
-    "Copy link to clipboard" : "Copy link to clipboard"
+    "Copy link to clipboard" : "Copy link to clipboard",
+    "Link copied to clipboard" : "Link copied to clipboard",
+    "Failed to copy link to clipboard" : "Failed to copy link to clipboard"
 },
 "nplurals=2; plural=(n != 1);");

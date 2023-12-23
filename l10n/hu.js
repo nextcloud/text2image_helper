@@ -23,6 +23,7 @@ OC.L10N.register(
     "Send" : "Küldés",
     "Include the prompt in the result" : "Prompt belefoglalása az eredménybe",
     "Regenerate" : "Újbóli előállítás",
-    "Copy link to clipboard" : "Hivatkozás vágólapra másolása"
+    "Copy link to clipboard" : "Hivatkozás vágólapra másolása",
+    "Link copied to clipboard" : "Hivatkozás a vágólapra másolva"
 },
 "nplurals=2; plural=(n != 1);");

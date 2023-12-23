@@ -10,6 +10,7 @@ OC.L10N.register(
     "Advanced options" : "詳細オプション",
     "Send" : "送信",
     "Regenerate" : "再生成する",
-    "Copy link to clipboard" : "リンクをクリップボードにコピーする"
+    "Copy link to clipboard" : "リンクをクリップボードにコピーする",
+    "Link copied to clipboard" : "クリップボードにリンクをコピーしました"
 },
 "nplurals=1; plural=0;");

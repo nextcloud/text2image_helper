@@ -54,6 +54,8 @@ OC.L10N.register(
     "You will be notified when the image generation is ready." : "影像產生就緒時將會通知您。",
     "Notify when ready error" : "就緒時通知錯誤",
     "Unknown notify when ready error" : "未知的就緒時通知錯誤",
-    "Copy link to clipboard" : "複製連結到剪貼簿"
+    "Copy link to clipboard" : "複製連結到剪貼簿",
+    "Link copied to clipboard" : "已複製連結至剪貼簿",
+    "Failed to copy link to clipboard" : "複製連結到剪貼簿失敗"
 },
 "nplurals=1; plural=0;");

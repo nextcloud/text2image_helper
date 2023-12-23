@@ -7,6 +7,7 @@ OC.L10N.register(
     "Preview" : "Forskoðun",
     "Advanced options" : "Ítarlegir valkostir",
     "Send" : "Senda",
-    "Copy link to clipboard" : "Afrita tengil á klippispjald"
+    "Copy link to clipboard" : "Afrita tengil á klippispjald",
+    "Link copied to clipboard" : "Tengill afritaður á klippispjald"
 },
 "nplurals=2; plural=(n % 10 != 1 || n % 100 == 11);");

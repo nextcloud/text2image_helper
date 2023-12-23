@@ -17,6 +17,8 @@ OC.L10N.register(
     "Regenerate" : "Régénérer",
     "Image generation error" : "Erreur de génération d'images",
     "Unknown image generation error" : "Erreur de génération d'images inconnue",
-    "Copy link to clipboard" : "Copier le lien dans le presse-papier"
+    "Copy link to clipboard" : "Copier le lien dans le presse-papier",
+    "Link copied to clipboard" : "Lien copié dans le presse-papier",
+    "Failed to copy link to clipboard" : "Échec de la copie du lien dans le presse-papier"
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

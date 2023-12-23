@@ -54,6 +54,8 @@ OC.L10N.register(
     "You will be notified when the image generation is ready." : "Oluşturulan görsel hazır olduğunda size bildirilecek.",
     "Notify when ready error" : "Hazır olduğunda bildirme sorunu",
     "Unknown notify when ready error" : "Bilinmeyen hazır olduğunda bildirme sorunu",
-    "Copy link to clipboard" : "Bağlantıyı panoya kopyala"
+    "Copy link to clipboard" : "Bağlantıyı panoya kopyala",
+    "Link copied to clipboard" : "Bağlantı panoya kopyalandı",
+    "Failed to copy link to clipboard" : "Bağlantı panoya kopyalanamadı"
 },
 "nplurals=2; plural=(n > 1);");

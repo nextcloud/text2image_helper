@@ -52,6 +52,8 @@
     "You will be notified when the image generation is ready." : "影像產生就緒時將會通知您。",
     "Notify when ready error" : "就緒時通知錯誤",
     "Unknown notify when ready error" : "未知的就緒時通知錯誤",
-    "Copy link to clipboard" : "複製連結到剪貼板"
+    "Copy link to clipboard" : "複製連結到剪貼板",
+    "Link copied to clipboard" : "已複製連結至剪貼板",
+    "Failed to copy link to clipboard" : "無法複製連結至剪貼板"
 },"pluralForm" :"nplurals=1; plural=0;"
 }

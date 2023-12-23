@@ -11,6 +11,8 @@ OC.L10N.register(
     "Advanced options" : "Erweiterte Optionen",
     "Send" : "Senden",
     "Regenerate" : "Neu erstellen",
-    "Copy link to clipboard" : "Link in die Zwischenablage kopieren"
+    "Copy link to clipboard" : "Link in die Zwischenablage kopieren",
+    "Link copied to clipboard" : "Link wurde in die Zwischenablage kopiert",
+    "Failed to copy link to clipboard" : "Link konnte nicht in die Zwischenablage kopiert werden"
 },
 "nplurals=2; plural=(n != 1);");
