@@ -5,6 +5,7 @@ OC.L10N.register(
     "View" : "Vue",
     "Delete" : "Supprimer",
     "AI image generation" : "Génération d'image par IA",
+    "Image generation failed." : "La génération d'images a échoué.",
     "Image generation" : "Génération d'image",
     "Generated image" : "Image générée",
     "Preview" : "Prévisualiser",
