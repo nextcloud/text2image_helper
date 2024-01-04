@@ -1,0 +1,9 @@
+{ "translations": {
+    "View" : "View",
+    "Delete" : "Delete",
+    "Image generation" : "Image generation",
+    "Preview" : "Preview",
+    "Advanced options" : "Advanced options",
+    "Send" : "Send"
+},"pluralForm" :"nplurals=2; plural=(n!=1);"
+}
