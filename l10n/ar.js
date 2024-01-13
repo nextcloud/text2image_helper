@@ -55,6 +55,7 @@ OC.L10N.register(
     "Notify when ready error" : "حدث خطأ عند الإعلام بالجاهزية",
     "Unknown notify when ready error" : "حدث خطأ غير محدد عند الإعلام بالجاهزية",
     "Copy link to clipboard" : "انسخ الرابط إلى الحافظة",
+    "Link copied to clipboard" : "تمّ نسخ الرابط إلى الحافظة",
     "Failed to copy link to clipboard" : "تعذّر نسخ الرابط إلى الحافظة"
 },
 "nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;");

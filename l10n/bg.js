@@ -11,6 +11,7 @@ OC.L10N.register(
     "Send" : "Изпращане",
     "Include the prompt in the result" : "Включване на подканата в резултата",
     "Regenerate" : "Регенериране",
-    "Copy link to clipboard" : "Копиране на връзката в клипборда"
+    "Copy link to clipboard" : "Копиране на връзката в клипборда",
+    "Link copied to clipboard" : "Връзката е копирана в клипборда"
 },
 "nplurals=2; plural=(n != 1);");
