@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "보기",
     "Delete" : "삭제",
+    "Image generation" : "이미지 생성",
     "Preview" : "미리 보기",
     "Advanced options" : "고급 설정",
     "Send" : "전송",
