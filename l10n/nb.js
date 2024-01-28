@@ -12,6 +12,7 @@ OC.L10N.register(
     "Send" : "Send",
     "Include the prompt in the result" : "Ta med ledeteksten i resultatet",
     "Regenerate" : "Regenerer",
+    "Copy link to clipboard" : "Kopier lenke til utklippstavlen",
     "Link copied to clipboard" : "Lenke kopiert til utklippstavlen"
 },
 "nplurals=2; plural=(n != 1);");
