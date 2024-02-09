@@ -7,6 +7,7 @@ OC.L10N.register(
     "Preview" : "Попередній перегляд",
     "Advanced options" : "Розширені налаштування",
     "Send" : "Надіслати",
+    "Copy link to clipboard" : "Копіювати посилання",
     "Link copied to clipboard" : "Посилання скопійовано в буфер обміну",
     "Failed to copy link to clipboard" : "Не вдалося скопіювати посилання в буфер обміну"
 },
