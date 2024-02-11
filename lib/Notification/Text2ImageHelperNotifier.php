@@ -2,7 +2,6 @@
 
 namespace OCA\Text2ImageHelper\Notification;
 
-use League\CommonMark\Parser\Block\BlockContinueParserWithInlinesInterface;
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCP\IL10N;
 use OCP\IURLGenerator;

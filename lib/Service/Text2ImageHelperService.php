@@ -27,9 +27,9 @@ use OCP\IImage;
 use OCP\IL10N;
 use OCP\IURLGenerator;
 use OCP\Notification\IManager as INotificationManager;
+use OCP\TextToImage\Exception\TaskFailureException;
 use OCP\TextToImage\IManager;
 use OCP\TextToImage\Task;
-use OCP\TextToImage\Exception\TaskFailureException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
@@ -463,7 +463,7 @@ class Text2ImageHelperService {
 						}
 					}
 				}
-			}			
+			}
 		}
 
 		// Remove the image generation from the database:
@@ -520,7 +520,7 @@ class Text2ImageHelperService {
 	 */
 	public function notifyWhenReady(string $imageGenId): void {
 		try {
-			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);			
+			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (DoesNotExistException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage());
 			throw new Exception('Image generation not found; it may have been cleaned up due to not being viewed for a long time.', Http::STATUS_BAD_REQUEST);

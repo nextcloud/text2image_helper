@@ -6,12 +6,12 @@ declare(strict_types=1);
 
 namespace OCA\Text2ImageHelper\Cron;
 
+use Exception;
 use OCA\Text2ImageHelper\Db\ImageGenerationMapper;
 use OCA\Text2ImageHelper\Service\CleanUpService;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\BackgroundJob\TimedJob;
 use Psr\Log\LoggerInterface;
-use Exception;
 
 class CleanupImageGenerations extends TimedJob {
 	public function __construct(
