@@ -22,6 +22,9 @@
 	<website>https://github.com/nextcloud/text2image_helper</website>
 	<bugs>https://github.com/nextcloud/text2image_helper/issues</bugs>
 	<screenshot>https://github.com/nextcloud/text2image_helper/assets/64466176/5f2c0e24-441e-4a3e-888a-b82ca813cd7c</screenshot>
+	<dependencies>
+		<nextcloud min-version="28" max-version="29" />
+	</dependencies>
 	<background-jobs>
 		<job>OCA\Text2ImageHelper\Cron\CleanupImageGenerations</job>
 	</background-jobs>
@@ -29,9 +32,6 @@
 		<command>OCA\Text2ImageHelper\Command\CleanupImageGenerations</command>
 	</commands>
 	<settings>
-        <admin>OCA\Text2ImageHelper\Settings\Admin</admin>
-    </settings>
-	<dependencies>
-		<nextcloud min-version="28" max-version="29" />
-	</dependencies>
+		<admin>OCA\Text2ImageHelper\Settings\Admin</admin>
+	</settings>
 </info>
