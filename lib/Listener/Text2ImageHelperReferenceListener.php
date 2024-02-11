@@ -14,15 +14,14 @@ use OCP\IConfig;
 use OCP\IGroupManager;
 use OCP\Util;
 
-#DEBUG: import logger
-use Psr\Log\LoggerInterface;
-
+/**
+ * @implements IEventListener<RenderReferenceEvent>
+ */
 class Text2ImageHelperReferenceListener implements IEventListener {
 	public function __construct(
 		private IConfig $config,
 		private IInitialState $initialState,
 		private ?string $userId,
-		private LoggerInterface $logger,
 		private IGroupManager $iGroupManager,
 	) {
 	}

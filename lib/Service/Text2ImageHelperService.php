@@ -6,7 +6,7 @@
 namespace OCA\Text2ImageHelper\Service;
 
 use DateTime;
-use Exception as BaseException;
+use Exception;
 use GdImage;
 use OCA\Text2ImageHelper\AppInfo\Application;
 use OCA\Text2ImageHelper\Db\ImageFileNameMapper;
@@ -17,7 +17,7 @@ use OCA\Text2ImageHelper\Db\StaleGenerationMapper;
 use OCP\AppFramework\Db\DoesNotExistException;
 use OCP\AppFramework\Db\MultipleObjectsReturnedException;
 use OCP\AppFramework\Http;
-use OCP\Db\Exception;
+use OCP\Db\Exception as DbException;
 use OCP\Files\IAppData;
 use OCP\Files\NotFoundException;
 use OCP\Files\NotPermittedException;
@@ -29,6 +29,7 @@ use OCP\IURLGenerator;
 use OCP\Notification\IManager as INotificationManager;
 use OCP\TextToImage\IManager;
 use OCP\TextToImage\Task;
+use OCP\TextToImage\Exception\TaskFailureException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
 
@@ -38,7 +39,7 @@ class Text2ImageHelperService {
 	 */
 	private ?ISimpleFolder $imageDataFolder = null;
 
-	/**
+	/**\OCP\TextToIma
 	 * @param IConfig $config
 	 * @param LoggerInterface $logger
 	 * @param IManager $textToImageManager
@@ -76,17 +77,16 @@ class Text2ImageHelperService {
 	 * @param bool $storePrompt
 	 * @return array
 	 * @throws \Exception
-	 * @throws \OCP\TextToImage\Exception\TaskFailureException;
+	 * @throws TaskFailureException
 	 */
 	public function processPrompt(string $prompt, int $nResults, bool $displayPrompt): array {
 		if (!$this->textToImageManager->hasProviders()) {
 			$this->logger->error('No text to image processing provider available');
-			throw new BaseException($this->l10n->t('No text to image processing provider available'));
+			throw new Exception($this->l10n->t('No text to image processing provider available'));
 		}
 
 		// Generate nResults prompts
 		$imageGenId = bin2hex(random_bytes(16));
-		/** @var Task $promptTask */
 		$promptTask = new Task($prompt, Application::APP_ID, $nResults, $this->userId, $imageGenId);
 
 		$this->textToImageManager->runOrScheduleTask($promptTask);
@@ -158,14 +158,14 @@ class Text2ImageHelperService {
 		}
 		try {
 			$imageDataFolder = $this->getImageDataFolder();
-		} catch (BaseException $e) {
+		} catch (Exception $e) {
 			$this->logger->error('Image save error: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			return;
 		}
 
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
-		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+		} catch (DbException | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			$this->logger->error('Image save error: image generation not found in db');
 			return;
 		}
@@ -203,7 +203,7 @@ class Text2ImageHelperService {
 
 			try {
 				$this->imageFileNameMapper->createImageFileName($imageGeneration->getId(), $fileName);
-			} catch (Exception $e) {
+			} catch (DbException $e) {
 				$this->logger->warning('Image save error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
 				continue;
 			}
@@ -227,7 +227,7 @@ class Text2ImageHelperService {
 
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
-		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+		} catch (DbException | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			$this->logger->warning('Generation notification error: image generation not found in db');
 			return;
 		}
@@ -298,22 +298,22 @@ class Text2ImageHelperService {
 		// Check whether the task has completed:
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
-		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+		} catch (DbException | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			if ($e instanceof DoesNotExistException) {
 				if ($this->staleGenerationMapper->genIdExists($imageGenId)) {
-					throw new BaseException($this->l10n->t('Image generation has been deleted.'), Http::STATUS_NOT_FOUND);
+					throw new Exception($this->l10n->t('Image generation has been deleted.'), Http::STATUS_NOT_FOUND);
 				}
 			}
 
 			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			// Set error code to one to limit brute force attacks
-			throw new BaseException($this->l10n->t('Image generation not found.'), Http::STATUS_BAD_REQUEST);
+			throw new Exception($this->l10n->t('Image generation not found.'), Http::STATUS_BAD_REQUEST);
 		}
 
 		$isOwner = ($imageGeneration->getUserId() === $this->userId);
 
 		if ($imageGeneration->getFailed() === true) {
-			throw new BaseException($this->l10n->t('Image generation failed.'), Http::STATUS_INTERNAL_SERVER_ERROR);
+			throw new Exception($this->l10n->t('Image generation failed.'), Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 
 		if ($imageGeneration->getIsGenerated() === false) {
@@ -327,7 +327,7 @@ class Text2ImageHelperService {
 		if ($updateTimestamp) {
 			try {
 				$this->imageGenerationMapper->touchImageGeneration($imageGenId);
-			} catch (Exception $e) {
+			} catch (DbException $e) {
 				$this->logger->warning('Image generation timestamp update failed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			}
 		}
@@ -338,9 +338,9 @@ class Text2ImageHelperService {
 			} else {
 				$fileNameEntities = $this->imageFileNameMapper->getVisibleImageFileNamesOfGenerationId($imageGeneration->getId());
 			}
-		} catch (Exception $e) {
+		} catch (DbException $e) {
 			$this->logger->warning('Fetching image filenames from db failed: ' . $e->getMessage());
-			throw new BaseException($this->l10n->t('Image file names could not be fetched from database'), Http::STATUS_INTERNAL_SERVER_ERROR);
+			throw new Exception($this->l10n->t('Image file names could not be fetched from database'), Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 
 		$fileIds = [];
@@ -360,24 +360,24 @@ class Text2ImageHelperService {
 	 * Get image based on imageFileNameId (imageGenId is used to prevent guessing image ids)
 	 * @param string $imageGenId
 	 * @param int $imageFileNameId
-	 * @return array('image' => string, 'content-type' => string)
-	 * @throws BaseException
+	 * @return array{content-type: list{'image/jpeg'}, image: string}|array{processing: int}
+	 * @throws Exception
 	 */
-	public function getImage(string $imageGenId, int $imageFileNameId): ?array {
+	public function getImage(string $imageGenId, int $imageFileNameId): array {
 		try {
 			$generationId = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId)->getId();
 			$imageFileName = $this->imageFileNameMapper->getImageFileNameOfGenerationId($generationId, $imageFileNameId);
-		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+		} catch (DbException | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			// Set error code to BAD_REQUEST to limit brute force attacks
-			throw new BaseException($this->l10n->t('Image request error'), Http::STATUS_BAD_REQUEST);
+			throw new Exception($this->l10n->t('Image request error'), Http::STATUS_BAD_REQUEST);
 		}
 
 		if ($imageFileName === null) {
-			throw new BaseException($this->l10n->t('Image file not found in database'), Http::STATUS_INTERNAL_SERVER_ERROR);
+			throw new Exception($this->l10n->t('Image file not found in database'), Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 
-		// No need to catch here, since we'd be throwing BaseException anyways:
+		// No need to catch here, since we'd be throwing Exception anyways:
 		$imageDataFolder = $this->getImageDataFolder();
 
 		// Load image from disk
@@ -388,7 +388,7 @@ class Text2ImageHelperService {
 		} catch (NotFoundException $e) {
 			$this->logger->debug('Image file reading failed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 
-			throw new BaseException($this->l10n->t('Image file not found'), Http::STATUS_INTERNAL_SERVER_ERROR);
+			throw new Exception($this->l10n->t('Image file not found'), Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 
 		// Return image content and type
@@ -406,7 +406,7 @@ class Text2ImageHelperService {
 	public function cancelGeneration(string $imageGenId): void {
 		try {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
-		} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+		} catch (DbException | DoesNotExistException | MultipleObjectsReturnedException $e) {
 			$this->logger->warning('Image generation being deleted not in db: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			$imageGeneration = null;
 		}
@@ -443,13 +443,13 @@ class Text2ImageHelperService {
 				$imageDataFolder = null;
 				try {
 					$imageDataFolder = $this->getImageDataFolder();
-				} catch (BaseException $e) {
+				} catch (Exception $e) {
 					$this->logger->debug('Error deleting image files associated with a generation: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 				}
 				if ($imageDataFolder !== null) {
 					try {
 						$fileNames = $this->imageFileNameMapper->getImageFileNamesOfGenerationId($imageGeneration->getId());
-					} catch (BaseException $e) {
+					} catch (Exception $e) {
 						$this->logger->debug('No files to delete could be retrieved: ' . $e->getMessage());
 						$fileNames = [];
 					}
@@ -469,14 +469,14 @@ class Text2ImageHelperService {
 		// Remove the image generation from the database:
 		try {
 			$this->imageGenerationMapper->deleteImageGeneration($imageGenId);
-		} catch (Exception $e) {
+		} catch (DbException $e) {
 			$this->logger->warning('Deleting image generation db entry failed: ' . $e->getMessage());
 		}
 
 		// Add the generation to the stale generation table:
 		try {
 			$this->staleGenerationMapper->createStaleGeneration($imageGenId);
-		} catch (Exception $e) {
+		} catch (DbException $e) {
 			$this->logger->warning('Adding stale generation to db failed: ' . $e->getMessage());
 		}
 
@@ -493,23 +493,23 @@ class Text2ImageHelperService {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);
 		} catch (DoesNotExistException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage());
-			throw new BaseException('Image generation not found; it may have been cleaned up due to not being viewed for a long time.', Http::STATUS_BAD_REQUEST);
-		} catch (Exception | MultipleObjectsReturnedException $e) {
+			throw new Exception('Image generation not found; it may have been cleaned up due to not being viewed for a long time.', Http::STATUS_BAD_REQUEST);
+		} catch (DbException | MultipleObjectsReturnedException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage());
-			throw new BaseException('Internal server error.', Http::STATUS_INTERNAL_SERVER_ERROR);
+			throw new Exception('Internal server error.', Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 
 		if ($imageGeneration->getUserId() !== $this->userId) {
 			$this->logger->warning('User attempted deleting another user\'s image generation!');
-			throw new BaseException('Unauthorized.', Http::STATUS_UNAUTHORIZED);
+			throw new Exception('Unauthorized.', Http::STATUS_UNAUTHORIZED);
 		}
 		/** @var array $fileVisStatus */
 		foreach ($fileVisSatusArray as $fileVisStatus) {
 			try {
 				$this->imageFileNameMapper->setFileNameHidden(intval($fileVisStatus['id']), !((bool) $fileVisStatus['visible']));
-			} catch (Exception | DoesNotExistException | MultipleObjectsReturnedException $e) {
+			} catch (DbException | DoesNotExistException | MultipleObjectsReturnedException $e) {
 				$this->logger->error('Error setting image file visibility: ' . $e->getMessage());
-				throw new BaseException('Image file or files not found in database', Http::STATUS_INTERNAL_SERVER_ERROR);
+				throw new Exception('Image file or files not found in database', Http::STATUS_INTERNAL_SERVER_ERROR);
 			}
 		}
 	}
@@ -523,15 +523,15 @@ class Text2ImageHelperService {
 			$imageGeneration = $this->imageGenerationMapper->getImageGenerationOfImageGenId($imageGenId);			
 		} catch (DoesNotExistException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage());
-			throw new BaseException('Image generation not found; it may have been cleaned up due to not being viewed for a long time.', Http::STATUS_BAD_REQUEST);
-		} catch (Exception | MultipleObjectsReturnedException $e) {
+			throw new Exception('Image generation not found; it may have been cleaned up due to not being viewed for a long time.', Http::STATUS_BAD_REQUEST);
+		} catch (DbException | MultipleObjectsReturnedException $e) {
 			$this->logger->debug('Image request error : ' . $e->getMessage());
-			throw new BaseException('Internal server error.', Http::STATUS_INTERNAL_SERVER_ERROR);
+			throw new Exception('Internal server error.', Http::STATUS_INTERNAL_SERVER_ERROR);
 		}
 
 		if ($imageGeneration->getUserId() !== $this->userId) {
 			$this->logger->warning('User attempted enabling notifications of another user\'s image generation!');
-			throw new BaseException('Unauthorized.', Http::STATUS_UNAUTHORIZED);
+			throw new Exception('Unauthorized.', Http::STATUS_UNAUTHORIZED);
 		}
 
 		$this->imageGenerationMapper->setNotifyReady($imageGenId, true);

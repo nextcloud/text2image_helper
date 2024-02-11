@@ -31,7 +31,7 @@ class CleanUpService {
 
 	/**
 	 * @param int|null $maxAge
-	 * @return array('deleted_files' => int, 'file_deletion_errors' => int, 'deleted_generations' => int)
+	 * @return array{deleted_files: int, file_deletion_errors: int, deleted_generations: int}
 	 * @throws Exception
 	 */
 	public function cleanupGenerationsAndFiles(?int $maxAge = null): array {
@@ -60,7 +60,6 @@ class CleanUpService {
 		$deletedFiles = 0;
 		$deletionErrors = 0;
 
-		/** @var string $fileName */
 		foreach ($cleanedUp['file_names'] as $fileName) {
 			try {
 				$imageDataFolder->getFile($fileName)->delete();

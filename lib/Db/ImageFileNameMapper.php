@@ -14,7 +14,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @implements QBMapper<ImageFileName>
+ * @extends QBMapper<ImageFileName>
  */
 class ImageFileNameMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {

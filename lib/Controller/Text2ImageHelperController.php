@@ -82,8 +82,9 @@ class Text2ImageHelperController extends Controller {
 		try {
 			$result = $this->text2ImageHelperService->getImage($imageGenId, $fileNameId);
 		} catch (Exception $e) {
-			$response = new DataResponse(['error' => $e->getMessage()], $e->getCode());
-			if ($e->getCode() === Http::STATUS_BAD_REQUEST | Http::STATUS_UNAUTHORIZED) {
+			$response = new DataResponse(['error' => $e->getMessage()], intval($e->getCode()));
+			if ($e->getCode() === Http::STATUS_BAD_REQUEST 
+				|| $e->getCode() === Http::STATUS_UNAUTHORIZED) {
 				// Throttle brute force attempts
 				$response->throttle(['action' => 'imageGenId']);
 			}
@@ -114,8 +115,9 @@ class Text2ImageHelperController extends Controller {
 		try {
 			$result = $this->text2ImageHelperService->getGenerationInfo($imageGenId, true);
 		} catch (Exception $e) {
-			$response = new DataResponse(['error' => $e->getMessage()], $e->getCode());
-			if ($e->getCode() === Http::STATUS_BAD_REQUEST | Http::STATUS_UNAUTHORIZED) {
+			$response = new DataResponse(['error' => $e->getMessage()], intval($e->getCode()));
+			if ($e->getCode() === Http::STATUS_BAD_REQUEST ||
+				$e->getCode() === Http::STATUS_UNAUTHORIZED) {
 				// Throttle brute force attempts
 				$response->throttle(['action' => 'imageGenId']);
 			}
@@ -141,8 +143,9 @@ class Text2ImageHelperController extends Controller {
 		try {
 			$this->text2ImageHelperService->setVisibilityOfImageFiles($imageGenId, $fileVisStatusArray);
 		} catch (Exception $e) {
-			$response = new DataResponse(['error' => $e->getMessage()], $e->getCode());
-			if($e->getCode() === Http::STATUS_BAD_REQUEST | Http::STATUS_UNAUTHORIZED) {
+			$response = new DataResponse(['error' => $e->getMessage()], intval($e->getCode()));
+			if($e->getCode() === Http::STATUS_BAD_REQUEST ||
+				$e->getCode() === Http::STATUS_UNAUTHORIZED) {
 				// Throttle brute force attempts				
 				$response->throttle(['action' => 'imageGenId']);				
 			}
@@ -162,8 +165,9 @@ class Text2ImageHelperController extends Controller {
 		try {
 			$this->text2ImageHelperService->notifyWhenReady($imageGenId);
 		} catch (Exception $e) {
-			$response = new DataResponse(['error' => $e->getMessage()], $e->getCode());
-			if($e->getCode() === Http::STATUS_BAD_REQUEST | Http::STATUS_UNAUTHORIZED) {
+			$response = new DataResponse(['error' => $e->getMessage()], intval($e->getCode()));
+			if($e->getCode() === Http::STATUS_BAD_REQUEST ||
+				$e->getCode() === Http::STATUS_UNAUTHORIZED) {
 				// Throttle brute force attempts				
 				$response->throttle(['action' => 'imageGenId']);				
 			}

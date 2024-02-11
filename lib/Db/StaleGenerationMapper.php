@@ -16,7 +16,7 @@ use OCP\IDBConnection;
 use RuntimeException;
 
 /**
- * @implements QBMapper<StaleGeneration>
+ * @extends QBMapper<StaleGeneration>
  */
 class StaleGenerationMapper extends QBMapper {
 	public function __construct(IDBConnection $db) {
@@ -78,6 +78,7 @@ class StaleGenerationMapper extends QBMapper {
 			);
 
 		$result = $qb->executeQuery();
+		/** @var array|bool $row */
 		$row = $result->fetch();
 		return $row !== false;
 	}
