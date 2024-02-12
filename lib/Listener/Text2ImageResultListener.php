@@ -13,6 +13,9 @@ use OCP\TextToImage\Events\TaskFailedEvent;
 use OCP\TextToImage\Events\TaskSuccessfulEvent;
 use Psr\Log\LoggerInterface;
 
+/**
+ * @implements IEventListener<AbstractTextToImageEvent>
+ */
 class Text2ImageResultListener implements IEventListener {
 	/**
 	 * Constructor

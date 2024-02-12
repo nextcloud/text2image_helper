@@ -46,8 +46,10 @@ class Text2ImageHelperNotifier implements INotifier {
 
 		$parameters = $notification->getMessageParameters();
 
+		$message = is_string($parameters['prompt']) ? $parameters['prompt'] : '';
+		$message = '"' . $message . '"';
+
 		$subject = $this->il10n->t('Image generation ready');
-		$message = '"' . $parameters['prompt'] . '"';
 		$notification->setParsedSubject($subject);
 		$notification->setParsedMessage($message);
 

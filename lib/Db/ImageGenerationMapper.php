@@ -16,7 +16,7 @@ use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 
 /**
- * @implements QBMapper<ImageGeneration>
+ * @extends QBMapper<ImageGeneration>
  */
 class ImageGenerationMapper extends QBMapper {
 	public function __construct(
@@ -171,7 +171,7 @@ class ImageGenerationMapper extends QBMapper {
 
 	/**
 	 * @param int $maxAge
-	 * @return array('deleted_generations' => int, 'file_names' => string[])
+	 * @return array{deleted_generations: int, file_names: string[]}
 	 * @throws Exception
 	 * @throws \RuntimeException
 	 */
@@ -188,11 +188,10 @@ class ImageGenerationMapper extends QBMapper {
 				$qb->expr()->lt('timestamp', $qb->createNamedParameter($maxTimestamp, IQueryBuilder::PARAM_INT))
 			);
 
-		/** @var ImageGeneration[] $generations */
 		$generations = $this->findEntities($qb);
 		$qb->resetQueryParts();
 
-		/** @var array[] $fileNames */
+		/** @var array<string> $fileNames */
 		$fileNames = [];
 		$imageGenIds = [];
 		$generationIds = [];
@@ -207,13 +206,11 @@ class ImageGenerationMapper extends QBMapper {
 		}
 
 		// Only now delete associated file names if we encountered no errors:
-		/** @var int $genId */
 		foreach ($generationIds as $genId) {
 			$this->imageFileNameMapper->deleteImageFileNamesOfGenerationId($genId);
 		}
 
 		// Add the image generation ids to the stale generations table:
-		/** @var string $imageGenId */
 		foreach ($imageGenIds as $imageGenId) {
 			$this->staleGenerationMapper->createStaleGeneration($imageGenId);
 		}
