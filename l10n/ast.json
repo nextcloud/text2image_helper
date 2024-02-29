@@ -1,6 +1,7 @@
 { "translations": {
     "View" : "Ver",
     "Delete" : "Desaniciar",
+    "Image generation" : "Xeneración d'imáxenes",
     "Send" : "Unviar"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }
