@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Zobraziť",
     "Delete" : "Vymazať",
+    "Image generation" : "Generovanie obrázka",
     "Preview" : "Náhľad",
     "Advanced options" : "Pokročilé možnosti",
     "Send" : "Odoslať",
