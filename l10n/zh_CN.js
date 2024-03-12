@@ -14,6 +14,7 @@ OC.L10N.register(
     "Include the prompt in the result" : "在结果中包含提示",
     "Regenerate" : "重新生成",
     "Copy link to clipboard" : "复制链接到剪贴板",
-    "Link copied to clipboard" : "链接已复制到剪贴板"
+    "Link copied to clipboard" : "链接已复制到剪贴板",
+    "Failed to copy link to clipboard" : "无法拷贝链接"
 },
 "nplurals=1; plural=0;");
