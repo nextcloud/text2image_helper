@@ -21,7 +21,7 @@ OC.L10N.register(
     "Unexpected response from server." : "Réponse inattendue du serveur.",
     "Image generation error" : "Erreur de génération d'images",
     "Unknown image generation error" : "Erreur de génération d'images inconnue",
-    "You will be notified when the image generation is ready." : "Vous serez notifiés lorsque l'image aura été générée.",
+    "You will be notified when the image generation is ready." : "Vous serez notifiés lorsque l’image aura été générée.",
     "Copy link to clipboard" : "Copier le lien dans le presse-papier",
     "Link copied to clipboard" : "Lien copié dans le presse-papier",
     "Failed to copy link to clipboard" : "Échec de la copie du lien dans le presse-papier"
