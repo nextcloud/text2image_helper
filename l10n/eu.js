@@ -4,6 +4,7 @@ OC.L10N.register(
     "View" : "Ikusi",
     "Delete" : "Ezabatu",
     "AI image generation" : "IA irudi sorpena",
+    "Image generation" : "Irudien sorpena",
     "Generated image" : "Sortutako irudia",
     "Preview" : "Aurrebista",
     "Show/hide advanced options" : "Erakutsi/ezkutatu aukera aurreratuak",
