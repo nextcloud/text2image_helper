@@ -1,9 +1,6 @@
-<!--
-SPDX-FileCopyrightText: Sami Finnilä <sami.finnila@nextcloud.com>
-SPDX-License-Identifier: CC0-1.0
--->
-
 # Text to Image Helper
+
+:warning: This app is now deprecated. The feature it provides is now included in the [Assistant app](https://apps.nextcloud.com/apps/assistant).
 
 A Nextcloud Smart Picker integration that enables the user to generate images based on text prompts. 
 
