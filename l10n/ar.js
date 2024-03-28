@@ -15,7 +15,6 @@ OC.L10N.register(
     "Image file not found" : "ملف الصورة غير موجود",
     "Text2Image helper" : "مُساعِد التحويل من نص إلى صورة Text2Image",
     "A Smart Picker for interfacing with text-to-image providers" : "لاقط ذكي للتواصل مع مزودي التحويل من نص إلى صورة",
-    "This app adds a Smart Picker for interfacing with text-to-image providers like the on-premises stable diffusion integration.\n\t\n\tThe Smart Picker enables you to generate an image or multiple images based on a text prompt.\n\t\n\tIf multiple images are requested and/or the generation will take a long time. The user can request to be notified\n\tonce the generated image(s) are ready." : "هذا التطبيق: \"اللاقط الذكي\" Smart Picker يسمح بالتواصل مع موفري خدمة تحويل النص إلى صورة مثل التكامل مع \"الانتشار المستقر\" Stable Diffusion المحلية. \n\t\n\tيُمكّنك اللاقط الذكي من إنشاء صورة أو صور متعددة بناءً على نصٍّ معطىً.\n\t\n\t إذا تم طلب صور متعددة فسيستغرق الإنشاء وقتًا طويلاً. يمكن للمستخدم أن يطلب أن يتم إعلامه \n\tبمجرد أن تصبح الصورة (أو الصور) التي طلب إنشاءها جاهزة.",
     "Image generation - Text2Image Helper" : "توليد الصِّوَر - مُساعِد التحويل من نص إلى صورة Text2Image",
     "Here you can define the settings for the Text2Image helper smart picker." : "هُنا يمكنك تعريف إعدادات اللاقط الذكي لمُساعد تحويل النص إلى صورة Text2Image.",
     "Max generation idle time (days): " : "الحد الأقصى (بالأيام) لفترة الخمول في التوليد generation idle:",

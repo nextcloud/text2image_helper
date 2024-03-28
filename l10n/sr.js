@@ -15,7 +15,6 @@ OC.L10N.register(
     "Image file not found" : "Није пронађен фајл слике",
     "Text2Image helper" : "Text2Image помоћник",
     "A Smart Picker for interfacing with text-to-image providers" : "Паметни бирач за интеракцију са пружаоцима услуге генерисања слике из текста",
-    "This app adds a Smart Picker for interfacing with text-to-image providers like the on-premises stable diffusion integration.\n\t\n\tThe Smart Picker enables you to generate an image or multiple images based on a text prompt.\n\t\n\tIf multiple images are requested and/or the generation will take a long time. The user can request to be notified\n\tonce the generated image(s) are ready." : "Ова апликација додаје Паметни бирач за интеракцију са пружаоцима услуге генерисања слике из текста, као на пример, са стабилном дифузијом на вашем хардверу.\n\t\n\tПаметни бирач вам омогућава да генеришете једну или више слика заснованих на текст захтеву.\n\t\n\tАко се захтева више слика и/или генерисање ће трајати дуго. Корисник може захтевати да се обавести\n\tкада генерисана слика (или више њих) буде спремна.",
     "Image generation - Text2Image Helper" : "Генерисање слике - Text2Image помоћник",
     "Here you can define the settings for the Text2Image helper smart picker." : "Овде можете да дефинишете подешавања паметног бирача Text2Image помоћник.",
     "Max generation idle time (days): " : "Максимално време неактивности генерисања (дана):",

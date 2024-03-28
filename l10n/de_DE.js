@@ -15,7 +15,6 @@ OC.L10N.register(
     "Image file not found" : "Bilddatei nicht gefunden",
     "Text2Image helper" : "Text2Bild-Helfer",
     "A Smart Picker for interfacing with text-to-image providers" : "Ein Smart Picker für die Verbindung mit Text-zu-Bild-Anbietern",
-    "This app adds a Smart Picker for interfacing with text-to-image providers like the on-premises stable diffusion integration.\n\t\n\tThe Smart Picker enables you to generate an image or multiple images based on a text prompt.\n\t\n\tIf multiple images are requested and/or the generation will take a long time. The user can request to be notified\n\tonce the generated image(s) are ready." : "Diese App fügt einen Smart Picker für die Verbindung mit Text-zu-Bild-Anbietern wie der lokalen Stable Diffusion-Integration hinzu.\n\t\n\tMit dem Smart Picker können Sie ein oder mehrere Bilder mittels einer Texteingabe generieren.\n\t\n\tWenn mehrere Bilder angefordert werden und/oder die Erstellung länger dauert, kann der Benutzer sich, sobald die Bilder fertig gestellt sind, \n\tbenachrichtigen lassen.",
     "Image generation - Text2Image Helper" : "Bilderstellung – Text2Bild-Helfer",
     "Here you can define the settings for the Text2Image helper smart picker." : "Hier können Sie die Einstellungen für den Smart Picker des Text-zu-Bild-Helfers festlegen.",
     "Max generation idle time (days): " : "Maximale Leerlaufzeit der Erstellung (Tage):",

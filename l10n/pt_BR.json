@@ -13,7 +13,6 @@
     "Image file not found" : "Arquivo de imagem não encontrado",
     "Text2Image helper" : "Ajudante TextoParaImagem",
     "A Smart Picker for interfacing with text-to-image providers" : "Um seletor inteligente para fazer interface com provedores de texto-para-imagem",
-    "This app adds a Smart Picker for interfacing with text-to-image providers like the on-premises stable diffusion integration.\n\t\n\tThe Smart Picker enables you to generate an image or multiple images based on a text prompt.\n\t\n\tIf multiple images are requested and/or the generation will take a long time. The user can request to be notified\n\tonce the generated image(s) are ready." : "Este app adiciona um seletor inteligente para fazer interface com provedores de texto-para-imagem como por exemplo o software embutido de difusão estável.\n\t\n\tO seletor inteligente permite que você gere uma ou mais imagens baseado em um prompt de texto.\n\t\n\tSe múltiplas imagens são solicitadas e/ou a geração leva muito tempo, o usuário pode solicitar ser notificado\n\tquando as imagens estiverem prontas.",
     "Image generation - Text2Image Helper" : "Geração de imagem - Ajudante TextoParaImagem",
     "Here you can define the settings for the Text2Image helper smart picker." : "Aqui você pode definir as configurações para o seletor inteligente TextoParaImagem",
     "Max generation idle time (days): " : "Tempo máximo de geração ociosa (dias):",
