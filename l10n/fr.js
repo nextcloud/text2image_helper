@@ -8,6 +8,7 @@ OC.L10N.register(
     "Image generation not found." : "Génération d'image non trouvée.",
     "Image generation failed." : "La génération d'images a échoué.",
     "Image file not found" : "Fichier image non trouvé",
+    "⚠️ This app is now deprecated. The feature it provides is now included in the [Assistant app](https://apps.nextcloud.com/apps/assistant).\n\nThis app adds a Smart Picker for interfacing with text-to-image providers like the on-premises stable diffusion integration.\n\nThe Smart Picker enables you to generate an image or multiple images based on a text prompt.\n\nIf multiple images are requested and/or the generation will take a long time. The user can request to be notified\nonce the generated image(s) are ready." : "⚠️ Cette application est désormais obsolète. La fonctionnalité assurée est maintenant incluse dans l’[application Assistant](https://apps.nextcloud.com/apps/assistant).\n\nCette application ajoute un sélecteur intelligent pour s’interfacer avec des fournisseurs de texte vers image comme l’intégration de diffusion stable en local.\n\nLe sélecteur intelligent vous permet de générer une image ou plusieurs selon un prompt texte.\n\nSi plusieurs images sont demandées et/ou que la génération prend un certain temps, l’utilisateur peut demander à être notifié\nune fois l’image ou les images générée(s) sont prêtes.",
     "Image generation" : "Génération d'image",
     "Generated image" : "Image générée",
     "Unexpected server response" : "Réponse du serveur inattendue",
