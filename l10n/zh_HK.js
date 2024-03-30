@@ -15,6 +15,7 @@ OC.L10N.register(
     "Image file not found" : "找不到圖像檔案",
     "Text2Image helper" : "文字轉影像小幫手",
     "A Smart Picker for interfacing with text-to-image providers" : "用於與文字轉影像提供者互動的智慧型挑選程式",
+    "⚠️ This app is now deprecated. The feature it provides is now included in the [Assistant app](https://apps.nextcloud.com/apps/assistant).\n\nThis app adds a Smart Picker for interfacing with text-to-image providers like the on-premises stable diffusion integration.\n\nThe Smart Picker enables you to generate an image or multiple images based on a text prompt.\n\nIf multiple images are requested and/or the generation will take a long time. The user can request to be notified\nonce the generated image(s) are ready." : "⚠️ 此應用程式現已棄用。其提供的功能現已包含在[小幫手應用程式](https://apps.nextcloud.com/apps/assistant)中。\n\n此應用程式新增了與文字轉影像提供者（如自架的 Stable Diffusion）整合的智慧型挑選程式。\n\n智慧型挑選程式讓您可以根據文字提示產生一個或多個影像。\n\n若請求多個影像及/或產生將需要很長時間。一旦生成的影像準備好，使用者可以請求通知。",
     "Image generation - Text2Image Helper" : "影像產生 - 文字轉影像幫手",
     "Here you can define the settings for the Text2Image helper smart picker." : "您可以在此處定義文字轉影像小幫手智慧挑選程式的設定。",
     "Max generation idle time (days): " : "最大產生閒置時間（天）：",
