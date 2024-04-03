@@ -30,6 +30,7 @@ OC.L10N.register(
     "Image generation error" : "Error de la xeneración d'imáxenes",
     "Unknown image generation error" : "Error de la xeneración d'imáxenes desconocíu",
     "Copy link to clipboard" : "Copiar l'enllaz nel cartafueyu",
+    "Link copied to clipboard" : "L'enllaz copióse nel cartafueyu",
     "Failed to copy link to clipboard" : "Nun se pue copiar l'enllaz nel cartfaueyu"
 },
 "nplurals=2; plural=(n != 1);");
