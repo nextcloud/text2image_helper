@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Näytä",
     "Delete" : "Poista",
+    "Image generation" : "Kuvien generointi",
     "Preview" : "Esikatselu",
     "Show/hide advanced options" : "Näytä/piilota lisäasetukset",
     "Advanced options" : "Lisävalinnat",
