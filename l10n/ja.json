@@ -3,6 +3,7 @@
     "Delete" : "削除",
     "AI image generation" : "AIによる画像生成",
     "Image request error" : "イメージリクエストのエラー",
+    "Image file not found" : "画像ファイルが見つかりません",
     "Image generation" : "画像の生成",
     "Generated image" : "生成された画像",
     "Image generation failed" : "画像合成失敗",
