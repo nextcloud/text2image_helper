@@ -4,6 +4,13 @@ OC.L10N.register(
     "View" : "Ikusi",
     "Delete" : "Ezabatu",
     "AI image generation" : "IA irudi sorpena",
+    "No text to image processing provider available" : "Ez dago testutik irudirako hornitzailerik erabilgarri",
+    "Image generation not found." : "Irudien sorrera ez da aurkitu.",
+    "Image generation failed." : "Irudiaren sorrerak huts egin du.",
+    "Image file names could not be fetched from database" : "Irudien fitxategien izenak ezin izan dira datu-basetik lortu",
+    "Image request error" : "Errorea irudia eskatzean",
+    "Image file not found in database" : "Ez da irudiaren fitxategia datu-basean aurkitu",
+    "Image file not found" : "Ez da irudiaren fitxategia aurkitu",
     "Image generation" : "Irudien sorpena",
     "Generated image" : "Sortutako irudia",
     "Preview" : "Aurrebista",
@@ -11,7 +18,9 @@ OC.L10N.register(
     "Advanced options" : "Ezarpen aurreratuak",
     "Send" : "Bidali",
     "Regenerate" : "Berriro sortu",
+    "Unknown image generation error" : "Irudi sorrera errore ezezaguna",
     "Copy link to clipboard" : "Kopiatu esteka arbelera",
-    "Link copied to clipboard" : "Arbelara kopiatutako esteka"
+    "Link copied to clipboard" : "Arbelara kopiatutako esteka",
+    "Failed to copy link to clipboard" : "Ezin izan da esteka arbelera kopiatu"
 },
 "nplurals=2; plural=(n != 1);");
