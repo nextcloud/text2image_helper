@@ -11,6 +11,7 @@ OC.L10N.register(
     "Image generation failed" : "画像合成失敗",
     "Preview" : "プレビュー",
     "Advanced options" : "詳細オプション",
+    "Preview image generation by AI" : "AIによって生成されたプレビュー画像",
     "Send" : "送信",
     "Regenerate" : "再生成する",
     "Copy link to clipboard" : "リンクをクリップボードにコピーする",
