@@ -1,6 +1,7 @@
 OC.L10N.register(
     "text2image_helper",
     {
+    "View" : "Amharc",
     "Delete" : "Scrios",
     "Image generation" : "Giniúint íomhá",
     "Advanced options" : "Ardroghanna",
