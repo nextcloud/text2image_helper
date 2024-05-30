@@ -4,6 +4,7 @@ OC.L10N.register(
     "View" : "Amharc",
     "Delete" : "Scrios",
     "Image generation" : "Giniúint íomhá",
+    "Preview" : "Réamhamharc",
     "Advanced options" : "Ardroghanna",
     "Send" : "Seol",
     "Copy link to clipboard" : "Cóipeáil an nasc chuig an ngearrthaisce"
