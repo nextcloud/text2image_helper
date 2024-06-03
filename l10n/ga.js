@@ -7,6 +7,7 @@ OC.L10N.register(
     "Preview" : "Réamhamharc",
     "Advanced options" : "Ardroghanna",
     "Send" : "Seol",
-    "Copy link to clipboard" : "Cóipeáil an nasc chuig an ngearrthaisce"
+    "Copy link to clipboard" : "Cóipeáil an nasc chuig an ngearrthaisce",
+    "Link copied to clipboard" : "Cóipeáladh an nasc chuig an ngearrthaisce"
 },
 "nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);");
