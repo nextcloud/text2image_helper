@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Режим просмотра",
     "Delete" : "Удалить",
+    "Image generation" : "Создание изображений",
     "Preview" : "Предварительный просмотр",
     "Show/hide advanced options" : "Показать/скрыть дополнительные настройки",
     "Advanced options" : "Дополнительные настройки",
