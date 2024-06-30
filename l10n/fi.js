@@ -7,6 +7,7 @@ OC.L10N.register(
     "Preview" : "Esikatselu",
     "Show/hide advanced options" : "Näytä/piilota lisäasetukset",
     "Advanced options" : "Lisävalinnat",
+    "Notify when ready" : "Ilmoita kun valmis",
     "Send" : "Lähetä",
     "Copy link to clipboard" : "Kopioi linkki leikepöydälle",
     "Link copied to clipboard" : "Linkki kopioitu leikepöydälle",
