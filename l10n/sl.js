@@ -7,6 +7,7 @@ OC.L10N.register(
     "Preview" : "Predogled",
     "Advanced options" : "Napredne možnosti",
     "Send" : "Pošlji",
+    "Unknown image generation error" : "Neznana napaka ustvarjanja slike",
     "Copy link to clipboard" : "Kopiraj povezavo v odložišče",
     "Link copied to clipboard" : "Povezava je kopirana v odložišče"
 },
