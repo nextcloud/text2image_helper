@@ -12,6 +12,7 @@ OC.L10N.register(
     "Image generation" : "Génération d'image",
     "Generated image" : "Image générée",
     "Unexpected server response" : "Réponse du serveur inattendue",
+    "AI Image Generation" : "Génération d'images par IA",
     "Preview" : "Prévisualiser",
     "Show/hide advanced options" : "Afficher/masquer les options avancées",
     "Advanced options" : "Options avancées",
