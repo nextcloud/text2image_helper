@@ -22,7 +22,7 @@ OC.L10N.register(
     "ERROR: No image generation provider available" : "ERROR: nun hai nengún fornidor disponible pa xenerar imáxenes",
     "AI Image Generation" : "Xeneración d'imáxenes per IA",
     "Preview" : "Previsualizar",
-    "Show/hide advanced options" : "Amosar/anubrir les opciones avanzaes",
+    "Show/hide advanced options" : "Amosar/esconder les opciones avanzaes",
     "Advanced options" : "Opciones avanzaes",
     "Send" : "Unviar",
     "Number of results" : "Númberu de resultaos",
