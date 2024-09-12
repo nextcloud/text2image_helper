@@ -33,7 +33,7 @@ class ConfigController extends Controller {
 		foreach ($values as $key => $value) {
 			switch ($key) {
 				case 'max_generation_idle_time':
-					$value = (int) $value;
+					$value = (int)$value;
 					if ($value < 1) {
 						return new DataResponse(['message' => 'Invalid value for max_generation_idle_time'], Http::STATUS_BAD_REQUEST);
 					}

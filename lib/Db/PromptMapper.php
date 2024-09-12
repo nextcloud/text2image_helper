@@ -32,7 +32,7 @@ class PromptMapper extends QBMapper {
 	 * @throws Exception
 	 * @throws MultipleObjectsReturnedException
 	 */
-	public function getPrompt(int $id): Prompt | Entity {
+	public function getPrompt(int $id): Prompt|Entity {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('*')
@@ -123,7 +123,7 @@ class PromptMapper extends QBMapper {
 			$ts = (new DateTime())->getTimestamp();
 			$prompt->setTimestamp($ts);
 			return $this->update($prompt);
-		} catch (DoesNotExistException | MultipleObjectsReturnedException $e) {
+		} catch (DoesNotExistException|MultipleObjectsReturnedException $e) {
 		}
 
 		// if the prompt does not exist, cleanup and create it

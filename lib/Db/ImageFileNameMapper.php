@@ -82,10 +82,8 @@ class ImageFileNameMapper extends QBMapper {
 	 * @param int $generationId
 	 * @param int $fileNameId
 	 * @return ImageFileName|null
-	 *
 	 */
-
-	public function getImageFileNameOfGenerationId(int $generationId, int $fileNameId): ImageFileName | null {
+	public function getImageFileNameOfGenerationId(int $generationId, int $fileNameId): ImageFileName|null {
 		$qb = $this->db->getQueryBuilder();
 
 		$qb->select('file_name')
