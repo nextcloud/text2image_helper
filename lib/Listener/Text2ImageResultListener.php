@@ -38,7 +38,7 @@ class Text2ImageResultListener implements IEventListener {
 		if (!$event instanceof AbstractTextToImageEvent || $event->getTask()->getAppId() !== Application::APP_ID) {
 			return;
 		}
-		$this->logger->debug("TextToImageEvent received");
+		$this->logger->debug('TextToImageEvent received');
 
 		$imageGenId = $event->getTask()->getIdentifier();
 
@@ -48,7 +48,7 @@ class Text2ImageResultListener implements IEventListener {
 		}
 
 		if ($event instanceof TaskSuccessfulEvent) {
-			$this->logger->debug("TextToImageEvent succeeded");
+			$this->logger->debug('TextToImageEvent succeeded');
 			/** @var IImage $image */
 
 			$images = $event->getTask()->getOutputImages();

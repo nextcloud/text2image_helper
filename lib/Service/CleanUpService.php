@@ -51,7 +51,7 @@ class CleanUpService {
 
 		try {
 			$imageDataFolder = $this->text2ImageHelperService->getImageDataFolder();
-		} catch (NotFoundException | RuntimeException $e) {
+		} catch (NotFoundException|RuntimeException $e) {
 			$this->logger->debug('Image data folder could not be accessed: ' . $e->getMessage(), ['app' => Application::APP_ID]);
 			throw new Exception('Image data folder could not be accessed');
 		}

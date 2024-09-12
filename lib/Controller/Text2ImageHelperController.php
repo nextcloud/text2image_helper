@@ -43,7 +43,7 @@ class Text2ImageHelperController extends Controller {
 		$nResults = min(10, max(1, $nResults));
 		try {
 			$result = $this->text2ImageHelperService->processPrompt($prompt, $nResults, $displayPrompt);
-		} catch (Exception | TaskFailureException $e) {
+		} catch (Exception|TaskFailureException $e) {
 			return new DataResponse(['error' => $e->getMessage()], Http::STATUS_BAD_REQUEST);
 		}
 
@@ -76,7 +76,7 @@ class Text2ImageHelperController extends Controller {
 	 * @return DataDisplayResponse | DataResponse
 	 */
 	#[BruteForceProtection(action: 'imageGenId')]
-	public function getImage(string $imageGenId, int $fileNameId): DataDisplayResponse | DataResponse {
+	public function getImage(string $imageGenId, int $fileNameId): DataDisplayResponse|DataResponse {
 
 		try {
 			$result = $this->text2ImageHelperService->getImage($imageGenId, $fileNameId);
@@ -143,7 +143,7 @@ class Text2ImageHelperController extends Controller {
 			$this->text2ImageHelperService->setVisibilityOfImageFiles($imageGenId, $fileVisStatusArray);
 		} catch (Exception $e) {
 			$response = new DataResponse(['error' => $e->getMessage()], intval($e->getCode()));
-			if($e->getCode() === Http::STATUS_BAD_REQUEST ||
+			if ($e->getCode() === Http::STATUS_BAD_REQUEST ||
 				$e->getCode() === Http::STATUS_UNAUTHORIZED) {
 				// Throttle brute force attempts
 				$response->throttle(['action' => 'imageGenId']);
@@ -165,7 +165,7 @@ class Text2ImageHelperController extends Controller {
 			$this->text2ImageHelperService->notifyWhenReady($imageGenId);
 		} catch (Exception $e) {
 			$response = new DataResponse(['error' => $e->getMessage()], intval($e->getCode()));
-			if($e->getCode() === Http::STATUS_BAD_REQUEST ||
+			if ($e->getCode() === Http::STATUS_BAD_REQUEST ||
 				$e->getCode() === Http::STATUS_UNAUTHORIZED) {
 				// Throttle brute force attempts
 				$response->throttle(['action' => 'imageGenId']);
