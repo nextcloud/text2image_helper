@@ -25,6 +25,8 @@
     "Image generation error" : "Erreur de génération d'images",
     "Unknown image generation error" : "Erreur de génération d'images inconnue",
     "You will be notified when the image generation is ready." : "Vous serez notifiés lorsque l’image aura été générée.",
+    "Notify when ready error" : "Erreur de notification lorsque prêt",
+    "Unknown notify when ready error" : "Erreur inconnue de notification lorsque prêt",
     "Copy link to clipboard" : "Copier le lien dans le presse-papier",
     "Link copied to clipboard" : "Lien copié dans le presse-papier",
     "Failed to copy link to clipboard" : "Échec de la copie du lien dans le presse-papier"
