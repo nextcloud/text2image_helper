@@ -16,6 +16,7 @@ OC.L10N.register(
     "Number of results" : "Antal resultat",
     "Regenerate" : "Regenerera",
     "Copy link to clipboard" : "Kopiera länken till urklipp",
-    "Link copied to clipboard" : "Länken kopierad till urklipp"
+    "Link copied to clipboard" : "Länken kopierad till urklipp",
+    "Failed to copy link to clipboard" : "Misslyckades kopiera länken till urklipp"
 },
 "nplurals=2; plural=(n != 1);");
