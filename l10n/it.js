@@ -7,6 +7,7 @@ OC.L10N.register(
     "Preview" : "Anteprima",
     "Advanced options" : "Opzioni avanzate",
     "Send" : "Invia",
+    "Unknown image generation error" : "Errore di generazione dell'immagine sconosciuto",
     "Copy link to clipboard" : "Copia collegamento negli appunti",
     "Link copied to clipboard" : "Collegamento copiato negli appunti"
 },
