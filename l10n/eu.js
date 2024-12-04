@@ -11,6 +11,7 @@ OC.L10N.register(
     "Image request error" : "Errorea irudia eskatzean",
     "Image file not found in database" : "Ez da irudiaren fitxategia datu-basean aurkitu",
     "Image file not found" : "Ez da irudiaren fitxategia aurkitu",
+    "Text2Image helper" : "Text2Image laguntzailea",
     "Image generation" : "Irudien sorpena",
     "Edit visible images" : "Editatu irudi ikusgarriak",
     "Click to toggle generation visibility" : "Egin klik sorpenen ikusgarritasuna aldatzeko",
