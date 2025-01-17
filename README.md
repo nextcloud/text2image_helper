@@ -1,4 +1,10 @@
+<!--
+  - SPDX-FileCopyrightText: 2023 Nextcloud GmbH and Nextcloud contributors
+  - SPDX-License-Identifier: AGPL-3.0-or-later
+-->
 # Text to Image Helper
+
+[![REUSE status](https://api.reuse.software/badge/github.com/nextcloud/text2image_helper)](https://api.reuse.software/info/github.com/nextcloud/text2image_helper)
 
 :warning: This app is now deprecated. The feature it provides is now included in the [Assistant app](https://apps.nextcloud.com/apps/assistant).
 
