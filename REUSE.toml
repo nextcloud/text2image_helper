@@ -6,9 +6,15 @@ SPDX-PackageSupplier = "Nextcloud GmbH and Nextcloud contributors"
 SPDX-PackageDownloadLocation = "https://github.com/nextcloud/text2image_helper"
 
 [[annotations]]
-path = ["package-lock.json", "package.json", "composer.json", "composer.lock"]
+path = [".tx/config", "package-lock.json", "package.json", "composer.json", "composer.lock"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2023 Nextcloud GmbH and Nextcloud contributors"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = ["vendor-bin/php-cs/composer.json", "vendor-bin/phpunit/composer.json", "vendor-bin/psalm/composer.json", "vendor-bin/symfony-console/composer.json"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 Nextcloud GmbH and Nextcloud contributors"
 SPDX-License-Identifier = "AGPL-3.0-or-later"
 
 [[annotations]]
@@ -16,3 +22,9 @@ path = ["l10n/**.js", "l10n/**.json"]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2023 Nextcloud translators <https://www.transifex.com/nextcloud/>"
 SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = ["img/app.svg", "img/app-dark.svg"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2018-2024 Google LLC"
+SPDX-License-Identifier = "Apache-2.0"

@@ -2,12 +2,12 @@
   "name": "text2image_helper",
   "description": "A SmartPicker for interfacing with the text to image prompt providers",
   "version": "1.0.2",
-  "author": "Sami Finnilä <sami.finnila@nextcloud.com>",
+  "author": "Nextcloud GmbH and Nextcloud contributors",
   "contributors": [],
   "bugs": {
     "url": "https://github.com/nextcloud/text2image_helper"
   },
-  "license": "agpl",
+  "license": "AGPL-3.0-or-later",
   "private": true,
   "scripts": {
     "build": "webpack --node-env production --progress",
