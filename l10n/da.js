@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Vis",
     "Delete" : "Slet",
+    "Image generation" : "Billedgenerering",
     "Preview" : "Forhåndsvisning",
     "Advanced options" : "Avancerede indstillinger",
     "Send" : "Send",
