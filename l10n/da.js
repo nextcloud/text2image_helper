@@ -7,6 +7,7 @@ OC.L10N.register(
     "Preview" : "Forhåndsvisning",
     "Advanced options" : "Avancerede indstillinger",
     "Send" : "Send",
+    "Unknown image generation error" : "Ukendt billedgenereringsfejl",
     "Link copied to clipboard" : "Link kopieret til udklipsholder"
 },
 "nplurals=2; plural=(n != 1);");
