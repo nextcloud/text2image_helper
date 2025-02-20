@@ -4,7 +4,7 @@ OC.L10N.register(
     "View" : "Skats",
     "Delete" : "Dzēst",
     "Preview" : "Priekšskatīt",
-    "Advanced options" : "Papildu opcijas",
+    "Advanced options" : "Papildu iespējas",
     "Send" : "Sūtīt"
 },
 "nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n != 0 ? 1 : 2);");
