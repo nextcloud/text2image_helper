@@ -5,10 +5,10 @@ OC.L10N.register(
     "Delete" : "Izbriši",
     "Image generation" : "Ustvarjanje slik",
     "Preview" : "Predogled",
+    "Unknown image generation error" : "Neznana napaka ustvarjanja slike",
     "Advanced options" : "Napredne možnosti",
     "Send" : "Pošlji",
-    "Unknown image generation error" : "Neznana napaka ustvarjanja slike",
-    "Copy link to clipboard" : "Kopiraj povezavo v odložišče",
-    "Link copied to clipboard" : "Povezava je kopirana v odložišče"
+    "Link copied to clipboard" : "Povezava je kopirana v odložišče",
+    "Copy link to clipboard" : "Kopiraj povezavo v odložišče"
 },
 "nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);");

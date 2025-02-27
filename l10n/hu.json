@@ -15,13 +15,13 @@
     "Image generation - Text2Image Helper" : "Képgenerálás - Text2Image Segéd",
     "Image generation" : "Kép generálás",
     "Generated image" : "Generált kép",
+    "Regenerate" : "Újbóli előállítás",
     "Preview" : "Előnézet",
     "Show/hide advanced options" : "Speciális beállítások megjelenítése/elrejtése",
     "Advanced options" : "Speciális beállítások",
     "Send" : "Küldés",
     "Include the prompt in the result" : "Prompt belefoglalása az eredménybe",
-    "Regenerate" : "Újbóli előállítás",
-    "Copy link to clipboard" : "Hivatkozás vágólapra másolása",
-    "Link copied to clipboard" : "Hivatkozás a vágólapra másolva"
+    "Link copied to clipboard" : "Hivatkozás a vágólapra másolva",
+    "Copy link to clipboard" : "Hivatkozás vágólapra másolása"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

@@ -6,7 +6,7 @@ OC.L10N.register(
     "Preview" : "Voorbeeld",
     "Advanced options" : "Geavanceerde opties",
     "Send" : "Verzenden",
-    "Copy link to clipboard" : "Kopieer link naar klembord",
-    "Link copied to clipboard" : "Link gekopieerd naar het klembord"
+    "Link copied to clipboard" : "Link gekopieerd naar het klembord",
+    "Copy link to clipboard" : "Kopieer link naar klembord"
 },
 "nplurals=2; plural=(n != 1);");

@@ -6,7 +6,7 @@ OC.L10N.register(
     "Preview" : "Eelvaade",
     "Advanced options" : "Täpsemad valikud",
     "Send" : "Saada",
-    "Copy link to clipboard" : "Kopeeri link lõikelauale",
-    "Link copied to clipboard" : "Link on lõikelauale kopeeritud"
+    "Link copied to clipboard" : "Link on lõikelauale kopeeritud",
+    "Copy link to clipboard" : "Kopeeri link lõikelauale"
 },
 "nplurals=2; plural=(n != 1);");

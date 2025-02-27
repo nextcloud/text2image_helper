@@ -9,8 +9,8 @@ OC.L10N.register(
     "Advanced options" : "Lisävalinnat",
     "Notify when ready" : "Ilmoita kun valmis",
     "Send" : "Lähetä",
-    "Copy link to clipboard" : "Kopioi linkki leikepöydälle",
     "Link copied to clipboard" : "Linkki kopioitu leikepöydälle",
-    "Failed to copy link to clipboard" : "Linkin kopiointi epäonnistui"
+    "Failed to copy link to clipboard" : "Linkin kopiointi epäonnistui",
+    "Copy link to clipboard" : "Kopioi linkki leikepöydälle"
 },
 "nplurals=2; plural=(n != 1);");

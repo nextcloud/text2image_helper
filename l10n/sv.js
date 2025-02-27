@@ -7,6 +7,7 @@ OC.L10N.register(
     "Image generation" : "Bildgenerering",
     "Generated image" : "Skapad bild",
     "The generated image is shown once ready." : "Den skapade bilden visas när den är klar.",
+    "Regenerate" : "Regenerera",
     "Preview" : "Förhandsvisa",
     "Show/hide advanced options" : "Visa/dölj avancerade alternativ",
     "Advanced options" : "Avancerade inställningar",
@@ -14,9 +15,8 @@ OC.L10N.register(
     "Send" : "Skicka",
     "Include the prompt in the result" : "Inkludera uppmaningen i resultatet",
     "Number of results" : "Antal resultat",
-    "Regenerate" : "Regenerera",
-    "Copy link to clipboard" : "Kopiera länken till urklipp",
     "Link copied to clipboard" : "Länken kopierad till urklipp",
-    "Failed to copy link to clipboard" : "Misslyckades kopiera länken till urklipp"
+    "Failed to copy link to clipboard" : "Misslyckades kopiera länken till urklipp",
+    "Copy link to clipboard" : "Kopiera länken till urklipp"
 },
 "nplurals=2; plural=(n != 1);");
