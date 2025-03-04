@@ -4,6 +4,7 @@ OC.L10N.register(
     "View" : "Προβολή",
     "Delete" : "Διαγραφή",
     "AI image generation" : "Δημιουργία εικόνων AI",
+    "Image generation" : "Δημιουργία εικόνας",
     "Preview" : "Προεπισκόπηση",
     "Show/hide advanced options" : "Εμφάνιση/απόκρυψη προηγμένων επιλογών",
     "Advanced options" : "Επιλογές για προχωρημένους",
