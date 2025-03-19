@@ -1,6 +1,7 @@
 { "translations": {
     "View" : "Vis",
     "Delete" : "Slet",
+    "AI image generation" : "AI billedgenerering",
     "Image generation" : "Billedgenerering",
     "Preview" : "Forhåndsvisning",
     "Unknown image generation error" : "Ukendt billedgenereringsfejl",

@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Vis",
     "Delete" : "Slet",
+    "AI image generation" : "AI billedgenerering",
     "Image generation" : "Billedgenerering",
     "Preview" : "Forhåndsvisning",
     "Unknown image generation error" : "Ukendt billedgenereringsfejl",
