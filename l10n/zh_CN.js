@@ -32,6 +32,8 @@ OC.L10N.register(
     "You will be notified when the image generation is ready." : "您将会在图像生成就绪时收到通知。",
     "Notify when ready error" : "就绪通知错误",
     "Unknown notify when ready error" : "未知就绪通知错误",
+    "ERROR: No image generation provider available" : "没有可用的图像生成提供程序",
+    "AI Image Generation" : "AI图像生成",
     "Show/hide advanced options" : "显示/隐藏高级选项",
     "Advanced options" : "高级选项",
     "Preview image generation by AI" : "预览AI生成的图片",
