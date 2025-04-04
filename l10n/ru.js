@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Режим просмотра",
     "Delete" : "Удалить",
+    "AI image generation" : "ИИ генерация изображения",
     "Image request error" : "Ошибка запроса изображения",
     "Text2Image helper" : "Помощник Text2Image",
     "A Smart Picker for interfacing with text-to-image providers" : "Умный селектор для взаимодействия с поставщиками преобразования текста в изображение",
