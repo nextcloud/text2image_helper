@@ -2,7 +2,7 @@ OC.L10N.register(
     "text2image_helper",
     {
     "View" : "Gwell",
-    "Delete" : "Lemel",
+    "Delete" : "Dilemel",
     "Preview" : "Ragwell",
     "Send" : "Kas"
 },
