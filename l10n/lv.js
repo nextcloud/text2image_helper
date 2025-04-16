@@ -2,7 +2,7 @@ OC.L10N.register(
     "text2image_helper",
     {
     "View" : "Skats",
-    "Delete" : "Dzēst",
+    "Delete" : "Izdzēst",
     "Preview" : "Priekšskatīt",
     "Advanced options" : "Papildu iespējas",
     "Send" : "Sūtīt"
