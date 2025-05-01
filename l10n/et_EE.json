@@ -1,6 +1,7 @@
 { "translations": {
     "View" : "Vaata",
     "Delete" : "Kustuta",
+    "AI image generation" : "Pildi joonistamine tehisaru abil",
     "Preview" : "Eelvaade",
     "Advanced options" : "Täpsemad valikud",
     "Send" : "Saada",

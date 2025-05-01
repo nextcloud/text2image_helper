@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Vaata",
     "Delete" : "Kustuta",
+    "AI image generation" : "Pildi joonistamine tehisaru abil",
     "Preview" : "Eelvaade",
     "Advanced options" : "Täpsemad valikud",
     "Send" : "Saada",

@@ -27,7 +27,7 @@
     "Unknown server query error" : "Unbekannter Serverabfragefehler",
     "Image generation" : "Bilderstellung",
     "Edit visible images" : "Sichtbare Bilder bearbeiten",
-    "Click to toggle generation visibility" : "Hier klicken um die Sichtbarkeit der Erstellung umzuschalten",
+    "Click to toggle generation visibility" : "Hier klicken, um die Sichtbarkeit der Erstellung umzuschalten",
     "Generated image" : "Erstelltes Bild",
     "Estimated generation time left: " : "Geschätzte verbleibende Erstellungszeit:",
     "The generated image is shown once ready." : "Das erstellte Bild wird angezeigt, sobald es fertig ist.",
