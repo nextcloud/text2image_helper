@@ -40,6 +40,7 @@ OC.L10N.register(
     "Include the prompt in the result" : "Kaasa lõpptulemusse ka sisend",
     "Number of results" : "Tulemuste arv",
     "Link copied to clipboard" : "Link on lõikelauale kopeeritud",
+    "Failed to copy link to clipboard" : "Lingi kopeerimine lõikelauale ei õnnestunud",
     "Copy link to clipboard" : "Kopeeri link lõikelauale"
 },
 "nplurals=2; plural=(n != 1);");
