@@ -6,6 +6,7 @@ OC.L10N.register(
     "Preview" : "Pré-visualizar",
     "Advanced options" : "Opções avançadas",
     "Send" : "Enviar",
-    "Link copied to clipboard" : "Ligação copiada para a área de transferência"
+    "Link copied to clipboard" : "Ligação copiada para a área de transferência",
+    "Failed to copy link to clipboard" : "Failed to copy link to clipboard"
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");
