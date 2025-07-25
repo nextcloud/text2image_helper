@@ -1,7 +1,7 @@
 OC.L10N.register(
     "text2image_helper",
     {
-    "Delete" : "Delete",
+    "Delete" : "O'chirish",
     "Preview" : "Ko‘rib chiqish",
     "Send" : "Yuborish"
 },
