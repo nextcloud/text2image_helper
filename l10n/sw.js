@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Angalia",
     "Delete" : "Futa",
+    "Image generation" : "Image generation",
     "Preview" : "Mwonekano wa awali",
     "Advanced options" : "Chaguzi za juu",
     "Send" : "Tuma",
