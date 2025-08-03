@@ -3,7 +3,10 @@ OC.L10N.register(
     {
     "View" : "Angalia",
     "Delete" : "Futa",
+    "AI image generation" : "AI image generation",
+    "Unexpected server response" : "Unexpected server response",
     "Image generation" : "Image generation",
+    "Regenerate" : "Regenerate",
     "Preview" : "Mwonekano wa awali",
     "Notify when ready error" : "Arifu ikiwa tayari hitilafu",
     "Unknown notify when ready error" : "Arifa isiyojulikana wakati hitilafu iko tayari",
