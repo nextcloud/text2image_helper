@@ -2,6 +2,7 @@ OC.L10N.register(
     "text2image_helper",
     {
     "Delete" : "Выдаліць",
+    "Preview" : "Перадпрагляд",
     "Send" : "Адправіць",
     "Link copied to clipboard" : "Спасылка скапіявана ў буфер абмену"
 },
