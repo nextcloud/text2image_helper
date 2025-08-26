@@ -5,6 +5,7 @@ OC.L10N.register(
     "Delete" : "Izdzēst",
     "Preview" : "Priekšskatīt",
     "Advanced options" : "Papildu iespējas",
+    "Notify when ready" : "Paziņot, kad gatavs",
     "Send" : "Sūtīt",
     "Copy link to clipboard" : "Ievietot saiti starpliktuvē"
 },
