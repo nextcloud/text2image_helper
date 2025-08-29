@@ -1,6 +1,7 @@
 OC.L10N.register(
     "text2image_helper",
     {
+    "View" : "Выгляд",
     "Delete" : "Выдаліць",
     "Preview" : "Перадпрагляд",
     "Send" : "Адправіць",
