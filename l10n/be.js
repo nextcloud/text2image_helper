@@ -3,6 +3,7 @@ OC.L10N.register(
     {
     "View" : "Выгляд",
     "Delete" : "Выдаліць",
+    "Image generation" : "Генерацыя відарысаў",
     "Preview" : "Перадпрагляд",
     "Send" : "Адправіць",
     "Link copied to clipboard" : "Спасылка скапіявана ў буфер абмену"
